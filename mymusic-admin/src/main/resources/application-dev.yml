@@ -1,0 +1,71 @@
+server:
+  port: 9999
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 300
+    min-spare-threads: 30
+spring:
+  datasource:
+      driver-class-name: com.mysql.jdbc.Driver
+      username: root
+      password: chen2908
+      url: jdbc:mysql://localhost:3306/tp_mymusic?characterEncoding=utf-8&useSSL=false
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+  devtools:
+    restart:
+      enabled: true
+mymusic:
+  jwt:
+    enabled: true
+    secret: fjkfaf;afa
+    expiration: 3600000
+    header: JWTHeaderName
+    userParamName: username
+    pwdParamName: password
+    useDefaultController: true
+    corsAllowedOrigins:
+      - http://localhost:8080
+      - http://127.0.0.1:8080
+      - http://localhost:8088
+      - http://localhost:8083
+    corsAllowedMethods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+    devOpeningURI:
+    permitAllURI:
+      - /songList/allSingList
+      - /songList/update
+      - /singer/allsinger
+      - /singer/name/detail
+      - /song/allsongs
+      - /song/SongOfSingerName
+      - /song/singer/detail
+      - /song/detail
+      - /sysuser/add
+      - /comment
+      - /comment/song/detail
+      - /comment/songList/detail
+      - /rank
+      - /admin/login/status
+      - /sysuser/allUser
+      - /user/alluser
+mybatis:
+  mapper-locations: classpath*:/mapper/*.xml
+  type-aliases-package: com.mymusic.domain
+
+# 上传七牛云的文件密钥
+file:
+  Access_Key:  Ud6hdmRtoRw2A0sO8V2j8MAX3E7SM-VvXdhHHX_g
+  Secret_Key:  =SP9eu88pWSAvUjseKuyEPEbCL8vAY04a_vhJ3NBF
+
+logging:
+  config: classpath:logback-spring.xml
+  file:
+    path: D:/code/project/mymusic/music-server/log
+
+

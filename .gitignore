@@ -1,0 +1,6 @@
+/mymusic-admin/target/
+/mymusic-common/target/
+/mymusic-generator/
+/mymusic-jwt/target/
+/mymusic-persistence/target/
+.idea

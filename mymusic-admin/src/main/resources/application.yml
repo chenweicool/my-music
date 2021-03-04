@@ -1,0 +1,5 @@
+spring:
+  profiles:
+    active: dev
+#  devtools:
+#    add-properties: false
