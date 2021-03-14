@@ -28,6 +28,7 @@ public interface CollectMapper {
 
     List<Collect> allCollect();
 
+    /*根据用户名返回他的收藏歌单信息*/
     List<Collect> collectionOfUser(Integer userId);
 
 }

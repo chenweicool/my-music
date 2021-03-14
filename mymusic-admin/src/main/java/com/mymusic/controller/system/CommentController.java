@@ -1,5 +1,6 @@
 package com.mymusic.controller.system;
 
+import com.mymusic.aop.Operation;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.domain.Comment;
 import com.mymusic.service.impl.CommentServiceImpl;
@@ -23,8 +24,9 @@ public class CommentController {
     @Resource
     private CommentServiceImpl commentService;
 
-  //  提交评论
+    //  提交评论
     @ResponseBody
+    @Operation(value = "提交评论",intoDb = false)
     @RequestMapping(value = "/comment/add", method = RequestMethod.POST)
     public AjaxResponse addComment(HttpServletRequest req){
 

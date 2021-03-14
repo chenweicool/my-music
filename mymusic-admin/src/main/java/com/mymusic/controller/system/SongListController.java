@@ -50,17 +50,30 @@ public class SongListController {
         String pic = req.getParameter("pic").trim();
         String introduction = req.getParameter("introduction").trim();
         String style = req.getParameter("style").trim();
+        String userIdStr = req.getParameter("userId");
 
         SongList songList = new SongList();
         songList.setTitle(title);
         songList.setPic(pic);
         songList.setIntroduction(introduction);
         songList.setStyle(style);
-        boolean res = songListService.addSongList(songList);
-        if (res){
-            return AjaxResponse.success("添加成功");
-        }else {
-            return AjaxResponse.error("添加失败");
+
+        // TODO 这里写的不好，需要优化一下。
+        if(userIdStr != null){
+            Long userId = Long.parseLong(userIdStr);
+            boolean res = songListService.addSongList(songList,userId);
+            if (res){
+                return AjaxResponse.success("添加成功");
+            }else {
+                return AjaxResponse.error("添加失败");
+            }
+        }else{
+            boolean res = songListService.addSongList(songList);
+            if (res){
+                return AjaxResponse.success("添加成功");
+            }else {
+                return AjaxResponse.error("添加失败");
+            }
         }
     }
 
@@ -69,6 +82,7 @@ public class SongListController {
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public AjaxResponse deleteSongList(HttpServletRequest req){
         String id = req.getParameter("id");
+        //Long userId = Long.parseLong(req.getParameter("userId"));
         boolean res = songListService.deleteSongList(Integer.parseInt(id));
         if (res) {
             return AjaxResponse.success("删除成功");
@@ -138,6 +152,14 @@ public class SongListController {
         List<SongList> allSongList = songListService.allSongList();
         //return AjaxResponse.ok().data("allSongList", allSongList);
         return allSongList;
+    }
+
+    //  查询用户创建的歌单的信息
+    @GetMapping("/mysonglist")
+    public List<SongList> mySongList(HttpServletRequest request) {
+       Long userId = Long.parseLong(request.getParameter("userId"));
+        List<SongList> mySongList = songListService.findMySongList(userId);
+        return  mySongList;
     }
 
     /*根据歌单的标题信息查找具体的歌单*/

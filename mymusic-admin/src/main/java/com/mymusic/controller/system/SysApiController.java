@@ -1,6 +1,7 @@
 package com.mymusic.controller.system;
 
 
+import com.mymusic.aop.Operation;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.domain.SysApi;
 import com.mymusic.model.RoleCheckedIds;
@@ -33,6 +34,7 @@ public class SysApiController {
 
     //接口管理:查询
     @PostMapping(value = "/tree")
+    @Operation(value = "查询接口",intoDb = false)
     public List<SysApiNode> tree(@RequestParam("apiNameLike") String apiNameLike,
                                  @RequestParam("apiStatus") Boolean apiStatus) {
 

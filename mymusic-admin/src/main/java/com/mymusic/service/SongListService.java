@@ -8,7 +8,10 @@ import java.util.List;
 public interface SongListService {
 
     /*增加一个歌单*/
-    boolean addSongList (SongList songList);
+    boolean addSongList (SongList songList,Long userId);
+
+    /*只有管理员才能增加的歌单信息*/
+    boolean addSongList(SongList songList);
 
     /*更新一个歌单的信息*/
     boolean updateSongListMsg(SongList songList);
@@ -33,4 +36,6 @@ public interface SongListService {
 
     /*根据歌单的id查询单个歌单的信息*/
     SongList songListById(Integer parseInt);
+
+    List<SongList> findMySongList(Long userId);
 }

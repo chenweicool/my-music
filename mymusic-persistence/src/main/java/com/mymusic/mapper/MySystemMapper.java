@@ -46,6 +46,7 @@ public interface MySystemMapper {
 
     List<String> selectMenuCheckedKeys(Long roleId);
 
+    // 实现分页
     IPage<SysUserOrg> selectUser(Page<SysUserOrg> page,
                                   @Param("avator") String avator ,
                                  @Param("sex") Integer sex ,

@@ -21,7 +21,7 @@ mymusic:
   jwt:
     enabled: true
     secret: fjkfaf;afa
-    expiration: 3600000
+    expiration: 36000000
     header: JWTHeaderName
     userParamName: username
     pwdParamName: password
@@ -54,6 +54,7 @@ mymusic:
       - /admin/login/status
       - /sysuser/allUser
       - /user/alluser
+      - /monitor/server
 mybatis:
   mapper-locations: classpath*:/mapper/*.xml
   type-aliases-package: com.mymusic.domain

@@ -53,4 +53,9 @@ public class SongList {
      * @mbg.generated Wed Dec 16 13:24:13 CST 2020
      */
     private String introduction;
+
+    /**
+     * 全局唯一id
+     */
+    private String uuid;
 }

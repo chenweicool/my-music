@@ -7,20 +7,21 @@
     <result column="pic" jdbcType="VARCHAR" property="pic" />
     <result column="style" jdbcType="VARCHAR" property="style" />
     <result column="introduction" jdbcType="LONGVARCHAR" property="introduction" />
+    <result column="uuid"  jdbcType="VARCHAR" property="uuid"/>
   </resultMap>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from song_list
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.mymusic.domain.SongList">
+  <insert id="insert" parameterType="com.mymusic.domain.SongList" >
     <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer">
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into song_list (id, title, pic, 
-      style, introduction)
+      style, introduction,uuid)
     values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{pic,jdbcType=VARCHAR}, 
-      #{style,jdbcType=VARCHAR}, #{introduction,jdbcType=LONGVARCHAR})
+      #{style,jdbcType=VARCHAR}, #{introduction,jdbcType=LONGVARCHAR},#{uuid,jdbcType=VARCHAR})
   </insert>
 
   <update id="updateByPrimaryKey" parameterType="com.mymusic.domain.SongList">
@@ -87,7 +88,18 @@
 
   <select id="songListOfTitle" parameterType="java.lang.String" resultMap="BaseResultMap">
     select id, title, pic, style, introduction
-    from song_list where title = #{title}
+     from song_list where title = #{title}
   </select>
 
+  <!--根据用户的id查询用户创建的歌单的信息-->
+  <select id="findMySongList" parameterType="java.lang.Long" resultMap="BaseResultMap">
+     select sl.id, sl.title, sl.pic, sl.style, sl.introduction from song_list sl
+      left join sys_user_songlist su on su.songlist_id = sl.id
+      left join sys_user u on u.id = su.user_id
+      where u.id = #{userId}
+  </select>
+
+  <select id="findSongListByUUID" parameterType="java.lang.String" resultMap="BaseResultMap">
+      select  sl.id, sl.title, sl.pic, sl.style, sl.introduction from song_list sl where sl.uuid = #{uuid}
+  </select>
 </mapper>

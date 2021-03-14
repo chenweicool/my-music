@@ -24,7 +24,7 @@ public class CollectServiceImpl implements CollectService {
     }
 
     /**
-     * 判断歌曲是否别收藏
+     * 判断歌曲是否被收藏
      * @param userId 用户的id
      * @param songId 歌曲的id的实现
      * @return 结果
@@ -61,7 +61,6 @@ public class CollectServiceImpl implements CollectService {
      */
     @Override
     public List<Collect> allCollect()
-
     {
         return collectMapper.allCollect();
     }
@@ -73,7 +72,6 @@ public class CollectServiceImpl implements CollectService {
      */
     @Override
     public List<Collect> collectionOfUser(Integer userId)
-
     {
         return collectMapper.collectionOfUser(userId);
     }

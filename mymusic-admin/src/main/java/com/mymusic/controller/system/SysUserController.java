@@ -6,6 +6,8 @@ import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.domain.SysUser;
 import com.mymusic.domain.SysUserOrg;
 import com.mymusic.formvo.SysUserVo;
+import com.mymusic.service.SongListService;
+import com.mymusic.service.SysUserSonglistService;
 import com.mymusic.service.impl.SysUserServiceImpl;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,12 @@ import java.util.List;
 public class SysUserController {
     @Resource
     private SysUserServiceImpl sysuserService;
+
+    @Resource
+    private SysUserSonglistService sysUserSonglistService;
+
+    @Resource
+    private SongListService songListService;
 
     //根据登录用户名查询用户信息
     @GetMapping(value = "/info")
@@ -56,8 +64,10 @@ public class SysUserController {
     }
     /**
      * 查询所有的用户的信息
+     * 没有分页，已经废弃了
      * @return 用户的信息
      */
+    @Deprecated
     @GetMapping("/allUser")
     public List<SysUserVo> getAllUser(){
         return sysuserService.getAllUser();
@@ -115,5 +125,16 @@ public class SysUserController {
         sysuserService.updateEnabled(userId, enabled);
         return AjaxResponse.success("用户状态更新成功！");
     }
+
+    // ======================================个人中心==============================
+
+    //=================================我的歌单模块在歌单中进行实现了=============
+
+
+
+
+
+
+
 }
 

@@ -12,7 +12,6 @@ public interface SongListMapper {
     /*增加一个用户*/
     int insert(SongList record);
 
-
    /*根据主键查询歌单*/
     SongList selectByPrimaryKey(Integer id);
 
@@ -31,6 +30,12 @@ public interface SongListMapper {
     /*根据歌曲的风格返回应有歌曲的信息*/
     List<SongList> likeStyle(String style);
 
-    /*精确查找歌单的标题*/
+    /*精确查找歌单的标题(一般要求歌单的标题唯一)*/
     List<SongList> songListOfTitle(String title);
+
+    /*根据用户的id查询用户的创建的歌单信息*/
+    List<SongList> findMySongList(Long userId);
+
+    /*根据uuid返回用户的信息*/
+    SongList findSongListByUUID(String uuid);
 }
