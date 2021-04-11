@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mymusic.config.DbLoadSysConfig;
 import com.mymusic.domain.SysUser;
 import com.mymusic.domain.SysUserOrg;
+import com.mymusic.domain.server.Sys;
 import com.mymusic.formvo.SysUserVo;
 import com.mymusic.mapper.MySystemMapper;
 import com.mymusic.mapper.SysUserMapper;
@@ -108,7 +109,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 dbLoadSysConfig.getConfigItem("user.init.password")
         ));
         sysuser.setCreateTime(new Date());  //创建时间
-        sysuser.setUpdateTime(new Date());  // 更新时间。默认是和创建的时间是一直的
+        sysuser.setUpdateTime(new Date());  // 更新时间。默认是和创建的时间是一致的
         sysuser.setEnabled(true); //新增用户激活
         sysUserMapper.insert(sysuser);
     }
@@ -166,4 +167,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUserMapper.updateById(sysUser);
     }
 
+    public SysUser getUserById(Long userId) {
+        return sysUserMapper.selectById(userId);
+    }
 }

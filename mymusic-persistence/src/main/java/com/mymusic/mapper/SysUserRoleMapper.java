@@ -1,7 +1,7 @@
 package com.mymusic.mapper;
 
-import com.mymusic.domain.SysUserRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.mymusic.domain.SysUserRole;
 
 /**
  * <p>

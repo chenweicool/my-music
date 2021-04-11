@@ -4,3 +4,8 @@
 /mymusic-jwt/target/
 /mymusic-persistence/target/
 .idea
+/*.iml
+
+/front-vue/node_modules
+/front-vue/.vscode
+/music-client/node_modules

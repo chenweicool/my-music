@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mymusic.mapper.UserCommentMapper">
+
+    <!--分页查询评论的内容-->
+    <select id="getUserCommentByPage" resultType="com.mymusic.domain.UserCommentConsumer">
+          select
+         c.id,c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status,s.name
+         from  user_comment c left join song s on c.song_id = s.id
+              ORDER BY c.like_num desc
+    </select>
+
+    <!--根据用户名查询他的所有评论内容-->
+    <select id="getCommentByUserName" parameterType="java.lang.String" resultType="com.mymusic.domain.UserCommentConsumer">
+         select
+              c.id,c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status,s.name
+            from  user_comment c left join song s on c.song_id = s.id
+            where user_name = #{userName}
+            ORDER BY c.like_num desc
+    </select>
+
+    <!--根据歌曲名查询歌曲应有的评论-->
+   <select id="getCommentBySongName" resultType="com.mymusic.domain.UserCommentConsumer">
+       select
+       c.id,c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status,s.name
+       from  user_comment c left join song s on c.song_id = s.id
+       where
+       <if test="songIds != null and songIds.size() >0">
+           song_id IN
+           <foreach collection="songIds" item="value" separator="," open="(" close=")">
+               #{value}
+           </foreach>
+       </if>
+       ORDER BY c.like_num desc
+   </select>
+
+    <select id="getCommentBySongId" parameterType="java.lang.Long" resultType="com.mymusic.domain.UserCommentConsumer">
+         select
+            c.id, c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status,s.name
+             from  user_comment c left join song s on c.song_id = s.id
+            where song_id = #{songId}
+            ORDER BY c.like_num desc
+    </select>
+    <select id="selectByUUID" parameterType="java.lang.String" resultType="com.mymusic.domain.UserComment">
+       select * from user_comment where uuid = #{commentUUID}
+    </select>
+</mapper>

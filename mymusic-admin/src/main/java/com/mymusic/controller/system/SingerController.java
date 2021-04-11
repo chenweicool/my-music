@@ -8,11 +8,14 @@ import com.mymusic.common.utils.Constants;
 import com.mymusic.common.utils.FileUtils;
 import com.mymusic.domain.Singer;
 import com.mymusic.domain.Song;
+import com.mymusic.jwt.utils.TimeUtils;
 import com.mymusic.service.SingerService;
 import com.mymusic.service.SongService;
 import io.swagger.annotations.Api;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
+import org.omg.PortableInterceptor.INACTIVE;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,7 +52,7 @@ public class SingerController {
      * @return 添加的结果
      */
     @ResponseBody
-    @RequestMapping(value = "/addSinger", method = RequestMethod.POST)
+    @RequestMapping(value = "/addsinger", method = RequestMethod.POST)
     public AjaxResponse addSinger(@RequestParam(value = "singer",required = false) String singers, @RequestParam(value = "file",required = false)
                             MultipartFile file){
 
@@ -116,20 +119,39 @@ public class SingerController {
 
     }
 
-    /*更新歌手的信息*/
+    /**
+     * 更新歌手的信息
+     * @param request 请求的实体信息
+     * @return   //TODO 这里需要优化更新
+     */
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public AjaxResponse updateSingerMsg(@RequestParam("singer") String singers){
+    public AjaxResponse updateSingerMsg(HttpServletRequest request){
+//        params.append('id', this.form.id)
+//        params.append('name', this.form.name)
+//        params.append('sex', this.form.sex)
+//        params.append('pic', this.form.pic)
+//        params.append('birth', datetime)
+//        params.append('location', this.form.location)
+//        params.append('introduction', this.form.introduction)
 
-        Singer singerVo = JSON.parseObject(singers, Singer.class);
+        String id = request.getParameter("id");
+        String name = request.getParameter("name");
+        String sex = request.getParameter("sex");
+        String pic = request.getParameter("pic");
+        String birth = request.getParameter("birth");
+        String location = request.getParameter("location");
+        String introduction = request.getParameter("introduction");
 
         Singer singer = new Singer();
-        singer.setId(singerVo.getId());
-        singer.setName(singerVo.getName());
-        singer.setSex(singerVo.getSex());
-        singer.setBirth(singerVo.getBirth());
-        singer.setLocation(singerVo.getLocation());
-        singer.setIntroduction(singerVo.getIntroduction());
+        singer.setId(Integer.parseInt(id));
+        singer.setSex(Integer.parseInt(sex));
+        singer.setPic(pic);
+        singer.setName(name);
+        singer.setLocation(location);
+        singer.setIntroduction(introduction);
+        Date birthDb = TimeUtils.stringConvertData(birth);
+        singer.setBirth(birthDb);
         boolean res = singerService.updateSinger(singer);
         if (res) {
             return AjaxResponse.success("更新成功");

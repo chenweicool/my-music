@@ -29,7 +29,7 @@ public interface SongMapper extends BaseMapper<Song> {
     int updateByPrimaryKey(Song record);
 
     /*根据歌曲的名字，查询歌曲的信息*/
-    Song songOfName(String name);
+    List<Song> songOfName(String name);
 
     /*更新歌手的图片*/
     int  updateSongPic(Song song);

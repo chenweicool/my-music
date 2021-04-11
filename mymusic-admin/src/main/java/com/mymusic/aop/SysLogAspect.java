@@ -75,14 +75,14 @@ public class SysLogAspect {
    // @AfterReturning(value = "webLog()&& @annotation(controllerWebLog)", returning = "ret")
     @AfterReturning(value = "webLog()", returning = "ret")
     public void doAfterReturning( Object ret) throws Throwable {
-        Map<String, Object> threadInfo = threadLocal.get();
-        threadInfo.put("result", ret);
+//        Map<String, Object> threadInfo = threadLocal.get();
+//        threadInfo.put("result", ret);
 //        if (controllerWebLog.intoDb()) {
 //            //插入数据库操作
 //            //insertResult(threadInfo);
 //        }
-        // 处理完请求，返回内容
-        logger.info("RESPONSE : " + ret);
+//         //理完请求，返回内容
+//        logger.info("RESPONSE : " + ret);
     }
     /**
      * 获取执行时间

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mymusic.mapper.UserReplyCommentMapper">
+    <select id="getByReplyCommentId" resultType="com.mymusic.domain.UserReplyComment" parameterType="java.lang.Long">
+    select  c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status
+     from  user_reply_comment c where c.reply_user_id = #{replyUserId}
+    </select>
+
+</mapper>

@@ -21,6 +21,9 @@ public class SysMenu implements Serializable {
 
     private static final long serialVersionUID=1L;
 
+    /**
+     * 用户id
+     */
     private Long id;
 
     /**
@@ -48,6 +51,9 @@ public class SysMenu implements Serializable {
      */
     private String url;
 
+    /**
+     * 图标
+     */
     private String icon;
 
     /**
@@ -64,6 +70,5 @@ public class SysMenu implements Serializable {
      * 是否禁用，0:启用(否）,1:禁用(是)
      */
     private Boolean status;
-
 
 }
