@@ -40,16 +40,13 @@ mymusic:
     permitAllURI:
       - /songList/allSingList
       - /songList/update
-      - /singer/allsinger
       - /singer/name/detail
-      - /song/allsongs
+      - /song/querysong
       - /song/SongOfSingerName
       - /song/singer/detail
       - /song/detail
       - /sysuser/add
-      - /comment
-      - /comment/song/detail
-      - /comment/songList/detail
+      - /comment/getCommentByPage
       - /rank
       - /admin/login/status
       - /sysuser/allUser

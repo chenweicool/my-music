@@ -6,6 +6,7 @@ import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.Constants;
 import com.mymusic.common.utils.FileUtils;
 import com.mymusic.domain.Song;
+import com.mymusic.domain.SongList;
 import com.mymusic.service.SongService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.security.acl.LastOwnerException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +44,6 @@ public class SongController {
      * 这里的歌曲只是添加歌曲
      * 一般不需要这么做。
      * //TODO 需要判断一下重复的歌曲，不能重复的添加
-     * @param req  前端传递过来的参数
      * @param file 歌曲文件
      * @return 添加的结果
      */
@@ -59,19 +60,14 @@ public class SongController {
         // 将歌曲文件上传至七牛云
         String SongKey = Constants.SONG_FILE + System.currentTimeMillis() + file.getOriginalFilename();  // 上传歌手文件的key的值
         String songUrl = FileUtils.getAvatarPic(file, Access_Key, Secret_Key, SongKey);  // 返回歌曲的播放地址信息
-
+        Song song = new Song();
         /*完成歌手的信息的插入操作*/
-        Song songDb = new Song();
-        songDb.setSingerId(Integer.parseInt(singer_id));
-        songDb.setName(songName);
-        songDb.setIntroduction(introduction);
-        songDb.setCreateTime(new Date());
-        songDb.setUpdateTime(new Date());
-        songDb.setPic(pic);
-        songDb.setLyric(lyric);
-        songDb.setUrl(songUrl);
+        song.setCreateTime(new Date());
+        song.setUpdateTime(new Date());
+        song.setPic(pic);
+        song.setUrl(songUrl);
 
-        boolean res = songService.insertSong(songDb);
+        boolean res = songService.insertSong(song);
 
         if (res) {
             return AjaxResponse.success("添加成功");
@@ -83,7 +79,7 @@ public class SongController {
     /**
      * 更新歌曲的信息
      *
-     * @param req 请求的实体
+     * @param  req
      * @return //TODo 需要优化
      */
     @ResponseBody
@@ -103,7 +99,7 @@ public class SongController {
         song.setName(name);
         song.setIntroduction(introduction);
         song.setUpdateTime(new Date());
-        song.setLyric(lyric);
+       // song.setLyric(lyric);
 
         boolean res = songService.updateSong(song);
         if (res) {
@@ -147,13 +143,13 @@ public class SongController {
 
     /*删除歌曲的信息*/
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
-    public AjaxResponse deleteSinger(HttpServletRequest req) {
-        String id = req.getParameter("id");
-        boolean result =  songService.deleteSong(Long.parseLong(id));
+    public AjaxResponse deleteSinger(HttpServletRequest request) {
+        String songId = request.getParameter("songId");
+        boolean result = songService.deleteSong(Long.parseLong(songId));
         if (result) {
             return AjaxResponse.success("删除成功");
         } else {
-            return  AjaxResponse.error("图片上传失败");
+            return  AjaxResponse.error("删除失败");
         }
     }
 
@@ -171,6 +167,15 @@ public class SongController {
         return songList;
     }
 
+    /**
+     * 歌曲信息的分页展示信息
+     * @param name 歌曲名
+     * @param introduction 歌曲介绍
+     * @param lyric 歌词的信息
+     * @param pageNum 分页数量
+     * @param pageSize   每页的大小
+     * @return 具体的页数
+     */
     @RequestMapping(value = "/querysong",method = RequestMethod.POST)
    public IPage<Song> querySong(@RequestParam("name")String name,
                                 @RequestParam("introduction")String introduction,
@@ -188,13 +193,13 @@ public class SongController {
      * @return  返回结果
      */
     @RequestMapping(value = "/SongOfSingerName", method = RequestMethod.GET)
-    public AjaxResponse songOfName(HttpServletRequest req) {
+    public  List<Song> songOfName(HttpServletRequest req) {
         String name = req.getParameter("songName").trim();
-        Song song = songService.songOfName(name);
-        if (song == null) {
-            return AjaxResponse.setResult(ResultCodeEnum.SONG_NOT_EXISTS);
+        List<Song> songList = songService.songOfName(name);
+        if (songList == null) {
+            throw new RuntimeException("查询的歌曲不存在");
         }
-        return AjaxResponse.success(song);
+        return songList;
     }
 
     /**

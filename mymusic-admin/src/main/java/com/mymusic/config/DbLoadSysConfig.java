@@ -11,7 +11,7 @@ import java.util.Optional;
 
 /**
  * 解决了包引不进来的问题
- * 怎么解决的不知道，但是解决为题必须多坚持一下
+ * 怎么解决的不知道，但是解决问题必须多坚持一下
  */
 @Component
 public class DbLoadSysConfig implements CommandLineRunner {

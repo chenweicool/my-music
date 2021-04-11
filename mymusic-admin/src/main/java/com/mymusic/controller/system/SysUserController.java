@@ -43,6 +43,11 @@ public class SysUserController {
         return sysuserService.getUserByUserName(username);
     }
 
+    @PostMapping("/getuser")
+    public SysUser getUserById(@RequestParam("userId") Long userId) {
+        return  sysuserService.getUserById(userId);
+    }
+
     @PostMapping("/query")
     public IPage<SysUserOrg> query(@RequestParam("avator") String avator ,
                                    @RequestParam("sex") Integer sex ,

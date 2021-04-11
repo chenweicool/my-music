@@ -19,5 +19,4 @@ public interface ConsumerMapper {
 
     int updateUserAvator(Consumer consumer);
 
-
 }

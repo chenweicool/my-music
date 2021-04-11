@@ -44,7 +44,7 @@ public class SongListController {
      * @param req 前台传入的数据信息
      * @return  歌单是否添加成功的信息
      */
-    @PostMapping("/addSongList")
+    @PostMapping("/addsonglist")
     public AjaxResponse addSongList(HttpServletRequest req){
         String title = req.getParameter("title").trim();
         String pic = req.getParameter("pic").trim();
@@ -147,7 +147,7 @@ public class SongListController {
      * //TODO  后期也需要优化，肯定是后端进行分页的
      * @return
      */
-    @GetMapping("/allSingList")
+    @GetMapping("/allsinglist")
     public List<SongList> allSongList(){
         List<SongList> allSongList = songListService.allSongList();
         //return AjaxResponse.ok().data("allSongList", allSongList);

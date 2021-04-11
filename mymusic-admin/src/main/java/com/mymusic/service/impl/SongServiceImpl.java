@@ -7,6 +7,7 @@ import com.mymusic.common.exception.CustomException;
 import com.mymusic.common.exception.SongException;
 import com.mymusic.domain.Song;
 import com.mymusic.mapper.SongMapper;
+import com.mymusic.service.ListSongService;
 import com.mymusic.service.SongService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,8 +72,8 @@ public class SongServiceImpl implements SongService
     }
 
     @Override
-    public Song songOfName(String name) {
-        Song song = songMapper.songOfName(name);
+    public List<Song> songOfName(String name) {
+        List<Song> song = songMapper.songOfName(name);
         if (song == null) {
             throw new SongException(SongConsumerType.SONG_NOT_EXIST.getMessage());
         }
