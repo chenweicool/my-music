@@ -1,6 +1,7 @@
 /* eslint-disable */
 import axios from 'axios';
 import {getJwtToken} from "../lib/utils";
+import {Message} from 'element-ui'
 
 axios.defaults.timeout = 5000;  //超时时间设置
 axios.defaults.withCredentials = true;  //true允许跨域
@@ -37,49 +38,109 @@ axios.interceptors.request.use(function (config) {
 
 // 响应拦截器
 axios.interceptors.response.use(
+  // response => {
+  //   // 如果返回的状态码为200，说明接口请求成功，可以正常拿到数据
+  //   // 否则的话抛出错误
+  //   if (response.status === 200) {
+  //     return Promise.resolve(response);
+  //   } else {
+  //     return Promise.reject(response);
+  //   }
+  // },
   response => {
-    // 如果返回的状态码为200，说明接口请求成功，可以正常拿到数据
-    // 否则的话抛出错误
-    if (response.status === 200) {
-      return Promise.resolve(response);
+    const res = response.data;
+    if (!res.isok) {
+         //console.log(res)
+        throw res;
     } else {
-      return Promise.reject(response);
+        return res;
     }
   },
-  // 服务器状态码不是2开头的的情况
-  error => {
-    if (error.response.status) {
-      switch (error.response.status) {
-        // 401: 未登录
-        case 401:
-          router.replace({
-            path: '/',
-            query: {
-              redirect: router.currentRoute.fullPath
-            }
-          });
-          break;
-        case 403:
-          // console.log('管理员权限已修改请重新登录')
-          // 跳转登录页面，并将要浏览的页面fullPath传过去，登录成功后跳转需要访问的页面
-          setTimeout(() => {
-            router.replace({
-              path: '/',
-              query: {
-                redirect: router.currentRoute.fullPath
-              }
-            });
-          }, 1000);
-          break;
 
-        // 404请求不存在
-        case 404:
-          // console.log('请求页面飞到火星去了')
-          break;
-      }
-      return Promise.reject(error.response);
+  error => {
+    if (error && error.response) {
+        switch (error.response.code) {
+            case 400:
+                error.message = error.response.data.message;
+                break;
+            case 401:
+                error.message = '未授权，请重新登录';
+                break;
+            case 403:
+                error.message = '拒绝访问';
+                break;
+            case 404:
+                error.message = '请求错误,未找到该资源';
+                break;
+            case 405:
+                error.message = '请求方法未允许';
+                break;
+            case 408:
+                error.message = '请求超时';
+                break;
+            case 500:
+                error.message = error.response.data.message;
+                break;
+            case 501:
+                error.message = '网络未实现';
+                break;
+            case 502:
+                error.message = '网络错误';
+                break;
+            case 503:
+                error.message = '服务不可用';
+                break;
+            case 504:
+                error.message = '网络超时';
+                break;
+            case 505:
+                error.message = 'http版本不支持该请求';
+                break;
+            default:
+                error.message = error.response.code;
+        }
+    } else {
+        error.message = "连接到服务器失败";
     }
-  });
+    Message({message: error.message, type: 'error'});
+    return Promise.reject(error);
+}
+  // 服务器状态码不是2开头的的情况
+  // error => {
+  //   if (error.response.status) {
+  //     switch (error.response.status) {
+  //       // 401: 未登录
+  //       case 401:
+  //         router.replace({
+  //           path: '/',
+  //           query: {
+  //             redirect: router.currentRoute.fullPath
+  //           }
+  //         });
+  //         break;
+  //       case 403:
+  //         // console.log('管理员权限已修改请重新登录')
+  //         // 跳转登录页面，并将要浏览的页面fullPath传过去，登录成功后跳转需要访问的页面
+  //         setTimeout(() => {
+  //           router.replace({
+  //             path: '/',
+  //             query: {
+  //               redirect: router.currentRoute.fullPath
+  //             }
+  //           });
+  //         }, 1000);
+  //         break;
+
+  //       // 404请求不存在
+  //       case 404:
+  //         // console.log('请求页面飞到火星去了')
+  //         break;
+  //     }
+  //     return Promise.reject(error.response);
+  //   }
+  // }
+  
+  );
 
 
 

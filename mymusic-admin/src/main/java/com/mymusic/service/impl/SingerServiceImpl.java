@@ -1,5 +1,8 @@
 package com.mymusic.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mymusic.common.domain.SongVo;
 import com.mymusic.mapper.SingerMapper;
 import com.mymusic.domain.Singer;
 import com.mymusic.common.enums.SingerConsumerType;
@@ -47,14 +50,11 @@ public class SingerServiceImpl implements SingerService{
         return singerMapper.findByPrimaryKey(id);
     }
 
-    @Override
-    public List<Singer> findAllSinger() {
-        return singerMapper.findAllSinger();
-    }
 
     @Override
-    public List<Singer> singerOfName(String name) {
-        return singerMapper.singerOfName(name);
+    public IPage<Singer> singerOfName(Integer pageNum, Integer pageSize, String name) {
+        IPage<Singer> page = new Page<>(pageNum, pageSize);
+        return singerMapper.singerOfName(page,name);
     }
 
     @Override

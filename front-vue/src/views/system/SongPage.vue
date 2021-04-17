@@ -1,32 +1,43 @@
 <template>
-  <div class="table">
-    <div class="crumbs">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item>
-          <i class="el-icon-tickets"></i> 歌曲信息
-        </el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
-    <div class="container">
-      <div class="handle-box">
-        <el-button type="primary" size="mini" class="handle-del mr10" @click="delAll">批量删除</el-button>
-        <el-input v-model="select_word" size="mini" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-        <el-button type="primary" size="mini" @click="centerDialogVisible = true">添加歌曲</el-button>
-      </div>
-      <el-table :data="data" size="mini" border style="width: 100%" ref="multipleTable" height="550px" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="40"></el-table-column>
-        <el-table-column label="歌手图片" width="110" align="center">
+  <div>
+        <el-card body-style="padding: 10">
+              <el-form ref="songQueryForm" :model="songQueryForm" label-width="80px">
+                <el-row :gutter="20">
+                    <el-col :span="15">
+                    <el-form-item label="歌曲名" prop="queryName">
+                      <el-input v-model="songQueryForm.queryName"
+                                placeholder="请输入歌曲名或者歌手名查询"/>
+                    </el-form-item>
+                  </el-col>
+                  
+                  <el-col :span="12" :offset="18">
+                    <el-form-item>
+                      <el-button type="primary" size="small"
+                                @click="querySong()" icon="el-icon-search">
+                        查询</el-button>
+                      <el-button type="primary" size="small" plain
+                                @click="resetQueryForm()" icon="el-icon-refresh">
+                        重置</el-button>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-form>
+            </el-card>
+      <el-card>
+      <el-table :data="tableData"  border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
+        <!-- <el-table-column type="selection" width="40"></el-table-column> -->
+        <el-table-column label="播放按钮" width="100" align="center">
           <template slot-scope="scope">
-            <div style="width: 80px; height: 80px; overflow: hidden">
+            <div style="width: 80px; height: 10px; overflow: hidden">
               <img :src="getUrl(scope.row.pic)" alt="" style="width: 100%;"/>
             </div>
-            <div class="play" @click="setSongUrl(scope.row.url, scope.row.name)">
-              <div v-if="toggle !== scope.row.name">
+            <div class="play" @click="setSongUrl(scope.row.url, scope.row.songName)">
+              <div v-if="toggle !== scope.row.songName">
                 <svg class="icon" aria-hidden="true">
                   <use xlink:href="#icon-bofanganniu"></use>
                 </svg>
               </div>
-              <div v-if="toggle === scope.row.name">
+              <div v-if="toggle === scope.row.songName">
                 <svg class="icon" aria-hidden="true">
                   <use xlink:href="#icon-zanting"></use>
                 </svg>
@@ -34,9 +45,9 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="歌名" prop="name" width="150" align="center"></el-table-column>
-        <el-table-column label="专辑" prop="introduction" width="150" align="center"></el-table-column>
-        <el-table-column label="歌词" align="center">
+        <el-table-column label="歌名" prop="songName" width="100" align="center"></el-table-column>
+        <el-table-column label="歌手名" prop="singerName" width="100" align="center"></el-table-column>
+        <el-table-column label="歌词"  width="350" align="center">
           <template slot-scope="scope">
             <ul style="height: 100px; overflow: scroll">
               <li>
@@ -46,7 +57,7 @@
             </ul>
           </template>
         </el-table-column>
-        <el-table-column label="资源更新" width="100" align="center">
+        <el-table-column label="歌曲海报" width="150" align="center">
           <template slot-scope="scope">
             <el-upload
               class="upload-demo"
@@ -55,42 +66,49 @@
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
               >
-                <el-button size="mini">更新图片</el-button>
+                <el-button >更新图片</el-button>
             </el-upload>
             <br>
-            <el-upload
+            <!-- <el-upload
               class="upload-demo change"
               :action="uploadSongUrl(scope.row.id)"
               :show-file-list="false"
               :on-success="handleSongSuccess"
               :before-upload="beforeSongUpload">
-              <el-button size="mini">更新歌曲</el-button>
-            </el-upload>
+              <el-button >更新歌曲</el-button>
+            </el-upload> -->
           </template>
         </el-table-column>
-        <el-table-column label="评论" width="80" align="center">
+        <el-table-column label="歌曲评论" width="130" align="center">
             <template  slot-scope="scope">
-                <el-button size="mini" @click="getComment(data[scope.$index].id)">评论</el-button>
+                <el-button  @click="getComment(scope.row.id)">歌曲评论</el-button>
+            </template>
+        </el-table-column>
+        <el-table-column label="创建时间" width="150" align="center">
+            <template  slot-scope="scope">
+                <div>{{formData(scope.row.createTime)}}</div>
             </template>
         </el-table-column>
         <el-table-column label="操作" width="150" align="center">
             <template slot-scope="scope">
-                <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-                <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
+                <el-button  size="mini" type="primary" icon="el-icon-edit" circle  @click="handleEdit(scope.row)"/>
+                <el-button size="mini" type="danger" icon="el-icon-delete" circle
+                       @click="handleDelete(scope.row.id)"/>
             </template>
         </el-table-column>
       </el-table>
-      <div class="pagination">
-        <el-pagination
-          @current-change="handleCurrentChange"
-          background
-          layout="total, prev, pager, next"
-          :current-page="currentPage"
-          :page-size="pageSize"
-          :total="tableData.length">
-        </el-pagination>
-      </div>
-    </div>
+         <el-pagination
+            :page-sizes="[20, 50, 100, 200]"
+            layout="total, sizes, prev, pager, next, jumper"
+            :current-page="pagination.pageNum"
+            :page-size="pagination.pageSize"
+            :total="pagination.total"
+            @size-change="handlePageSizeChange"
+            @current-change="handlePageNumChange"
+            background
+            style="float: right;margin-bottom: 10px">
+          </el-pagination>
+      </el-card>
 
     <!--添加歌曲-->
     <el-dialog title="添加歌曲" :visible.sync="centerDialogVisible" width="400px" center>
@@ -154,10 +172,13 @@ import SongAudio from '../../components/SongAudio'
 import { mixin } from '../../mixins'
 import { mapGetters } from 'vuex'
 import '@/assets/js/iconfont.js'
-import { getAllSongs, updateSongMsg, deleteSong } from '../../api/system/song'
+import { getSongsByPage, updateSongMsg, deleteSong ,querySongByName} from '../../api/system/song'
+import MixinCUD from '../../components/MixinCUD'
+ import * as dateUtils from "@/api/data";
 
 export default {
   name: 'song-page',
+  mixins:[MixinCUD],
   components: {
     SongAudio
   },
@@ -176,7 +197,6 @@ export default {
       tableData: [],
       tempDate: [],
       is_search: false,
-      multipleSelection: [], // 记录要删除的歌曲
       centerDialogVisible: false,
       editVisible: false,
       delVisible: false,
@@ -192,34 +212,22 @@ export default {
         lyric: '',
         url: ''
       },
-      pageSize: 5, // 页数
-      currentPage: 1, // 当前页
-      idx: -1
+      queryFormRefName:"songQueryForm",
+      songQueryForm:{
+          queryName: "",   // 查询的参数可以是歌曲或者用户名
+        },
+       pagination:{
+          pageNum: 1,
+          pageSize: 20,
+          total: null
+        },
     }
   },
   computed: {
     ...mapGetters([
       'isPlay' // 播放状态
     ]),
-    // 计算当前表格中的数据
-    data () {
-    //  console.log("歌曲的加载信息是:"+this.tableData);
-      return this.tableData.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
-    }
-  },
-  watch: {
-    select_word: function () {
-      if (this.select_word === '') {
-        this.tableData = this.tempDate
-      } else {
-        this.tableData = []
-        for (let item of this.tempDate) {
-          if (item.name.includes(this.select_word)) {
-            this.tableData.push(item)
-          }
-        }
-      }
-    }
+   
   },
   created () {
     this.singerId = this.$route.query.id
@@ -235,16 +243,39 @@ export default {
     getData () {
       this.tableData = []
       this.tempDate = []
-      getAllSongs().then((res) => {
-       // console.log('所有歌曲信息', res)
-        this.tableData = res.data
-        //console.log(this.tableData)
-        this.tempDate = res.data
-        this.currentPage = 1
+      getSongsByPage(this.pagination.pageNum,this.pagination.pageSize).then((res) => {
+       // console.log('所有歌曲信息', res.records)
+        this.tableData = res.records
+        this.pagination.total = res.total;
+        this.tempDate = res.records
       }).catch(err => {
         console.log(err)
       })
     },
+
+       //根据歌曲名查询歌曲
+    querySong(){
+        this.tableData = []
+        querySongByName(this.pagination.pageNum,this.pagination.pageSize,this.songQueryForm.queryName).then
+        ((res) => {
+            if(res.total >=0){
+                console.log(res)
+                this.tableData = res.records
+                this.pagination.total = res.total;
+                this.tempDate = res.records
+                console.log(res.records)
+            }else{
+                this.$message({message: res, type:'success'});
+                this.getData();
+            }
+           
+           // console.log("查询的歌曲信息",res);
+          }).catch(err => {
+             this.$message({message: err.message, type: 'error'});
+             this.getData();
+          })
+    },
+
     setSongUrl (url, name) {
       this.$store.commit('setUrl', this.$store.state.HOST + url)
       this.toggle = name
@@ -274,10 +305,17 @@ export default {
       return extension
     },
     // 获取当前页
-    handleCurrentChange (val) {
-      this.currentPage = val
-    },
-    handleSongSuccess (res, file) {
+     // 分页的设置
+      handlePageSizeChange(val){
+        this.pagination.pageSize = val;
+        this.getData();
+      },
+      handlePageNumChange(val){
+        this.pagination.pageNum = val;
+        this.getData();
+      },
+
+     handleSongSuccess (res, file) {
       if (res.code === 1) {
         this.getData()
         this.notify('上传成功', 'success')
@@ -311,6 +349,7 @@ export default {
       req.send(form)
       _this.centerDialogVisible = false
     },
+
     // 编辑
     handleEdit (row) {
       this.idx = row.id
@@ -328,8 +367,9 @@ export default {
       this.editVisible = true
     },
     getComment (id) {
-      this.$router.push({path: '/Comment', query: {id: id, type: 0}})
+      this.$router.push({path: '/home/comment', query: {songId: id, type: 0}})
     },
+
     // 保存编辑
     saveEdit () {
       let params = new URLSearchParams()
@@ -369,24 +409,35 @@ export default {
         })
       this.delVisible = false
     },
+
+   resetQueryForm() {
+        this.$refs[this.queryFormRefName].resetFields();
+        this.getData()
+    }, 
+
+    // 日期的转换类
+    formData (val) {
+      let date = new Date(val);
+      return dateUtils.formatDate(date,'yyyy-MM-dd');
+    },
     // 解析歌词
     parseLyric (text) {
-      let lines = text.split('\n')
-      let pattern = /\[\d{2}:\d{2}.(\d{3}|\d{2})\]/g
-      let result = []
+          let lines = text.split('\n')
+          let pattern = /\[\d{2}:\d{2}.(\d{3}|\d{2})\]/g
+          let result = []
 
-      // 对于歌词格式不对的特殊处理
-      if (!(/\[.+\]/.test(text))) {
-        return [text]
-      }
-      for (let item of lines) {
-        if (pattern.test(item)) {
-          let value = item.replace(pattern, '') // 存歌词
-          result.push(value)
-        }
-      }
-      return result
-    }
+          // 对于歌词格式不对的特殊处理
+          if (!(/\[.+\]/.test(text))) {
+            return [text]
+          }
+          for (let item of lines) {
+            if (pattern.test(item)) {
+              let value = item.replace(pattern, '') // 存歌词
+              result.push(value)
+            }
+          }
+          return result
+     }
   }
 }
 

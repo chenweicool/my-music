@@ -1,6 +1,7 @@
 package com.mymusic.controller.system;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.mymusic.common.domain.SongVo;
 import com.mymusic.common.enums.ResultCodeEnum;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.Constants;
@@ -10,6 +11,8 @@ import com.mymusic.domain.SongList;
 import com.mymusic.service.SongService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.aspectj.weaver.loadtime.Aj;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,26 +45,25 @@ public class SongController {
     /**
      * 添加歌曲
      * 这里的歌曲只是添加歌曲
-     * 一般不需要这么做。
      * //TODO 需要判断一下重复的歌曲，不能重复的添加
      * @param file 歌曲文件
      * @return 添加的结果
      */
     @ResponseBody
     @RequestMapping(value = "/addSong", method = RequestMethod.POST)
-    public AjaxResponse addSinger(HttpServletRequest req, @RequestParam(value = "file", required = false)
+    public AjaxResponse addSong(HttpServletRequest req, @RequestParam(value = "file", required = false)
             MultipartFile file) {
-        // 设置歌曲的信息
+        // todo 对歌曲名字进行正则处理
         String singer_id = req.getParameter("singerId").trim();
         String songName = req.getParameter("name").trim();
         String introduction = req.getParameter("introduction").trim();
         String lyric = req.getParameter("lyric").trim();
         String pic = Constants.DEFAULT_PIC;    // 默认的图片的地址的信息
-        // 将歌曲文件上传至七牛云
+        // 将歌曲文件上传至七牛云 todo 这里有问题
         String SongKey = Constants.SONG_FILE + System.currentTimeMillis() + file.getOriginalFilename();  // 上传歌手文件的key的值
         String songUrl = FileUtils.getAvatarPic(file, Access_Key, Secret_Key, SongKey);  // 返回歌曲的播放地址信息
-        Song song = new Song();
-        /*完成歌手的信息的插入操作*/
+
+         Song song = new Song();
         song.setCreateTime(new Date());
         song.setUpdateTime(new Date());
         song.setPic(pic);
@@ -118,11 +120,11 @@ public class SongController {
      */
     @ResponseBody
     @RequestMapping(value = "/img/update", method = RequestMethod.POST)
-    public HashMap<String,Object> updateSongPic(@RequestParam("file") MultipartFile picFile, @RequestParam("id") Long id) {
+    public AjaxResponse updateSongPic(@RequestParam("file") MultipartFile picFile, @RequestParam("id") Long id) {
         HashMap<String, Object> res = new HashMap<>();
         if (picFile.isEmpty()) {
             res.put("文件夹不能为空", ResultCodeEnum.FILE_NOT_NULL);
-            return res;
+            return AjaxResponse.error("上传的文件不能为空");
         }
 
         String songPic = Constants.SONG_PIC + System.currentTimeMillis() + picFile.getOriginalFilename();
@@ -134,16 +136,15 @@ public class SongController {
         boolean flag = songService.updateSongPic(song);
         if (flag) {
             res.put("avator", picPath);
-            return res;
+            return AjaxResponse.success(res);
         } else {
-            res.put("error", ResultCodeEnum.UNKNOWN_ERROR);
-            return res;
+            return AjaxResponse.setResult(ResultCodeEnum.UNKNOWN_ERROR);
         }
     }
 
     /*删除歌曲的信息*/
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
-    public AjaxResponse deleteSinger(HttpServletRequest request) {
+    public AjaxResponse deleteSongBySongId(HttpServletRequest request) {
         String songId = request.getParameter("songId");
         boolean result = songService.deleteSong(Long.parseLong(songId));
         if (result) {
@@ -153,73 +154,57 @@ public class SongController {
         }
     }
 
-
-    /**
-     * 这个方法后期应该是不行的，如果歌曲太多的话，系统就会崩溃
-     * 所以，必须要分页
-     * // TODO 这个方法
-     * @return
-     */
-    @Deprecated
-    @RequestMapping(value = "/allsongs", method = RequestMethod.GET)
-    public List<Song> allSong() {
-        List<Song> songList = songService.selectAll();
-        return songList;
-    }
-
     /**
      * 歌曲信息的分页展示信息
-     * @param name 歌曲名
-     * @param introduction 歌曲介绍
-     * @param lyric 歌词的信息
      * @param pageNum 分页数量
      * @param pageSize   每页的大小
      * @return 具体的页数
      */
-    @RequestMapping(value = "/querysong",method = RequestMethod.POST)
-   public IPage<Song> querySong(@RequestParam("name")String name,
-                                @RequestParam("introduction")String introduction,
-                                @RequestParam("lyric")String lyric,
+    @RequestMapping(value ="/querySongByPage")
+    @ResponseBody
+   public AjaxResponse querySong(
                                 @RequestParam("pageNum") Integer pageNum,
                                 @RequestParam("pageSize") Integer pageSize
                                 ){
+        IPage<SongVo> page = songService.selectSongByPage(pageNum, pageSize);
+        if (page.getTotal() >= 1) {
+            return AjaxResponse.success(page);
+        }else{
+            return AjaxResponse.success("暂无歌曲信息");
+        }
 
-          return songService.querySong(name,introduction,lyric,pageNum,pageSize);
    }
+
     /**
-     * 根据歌曲的名字返回歌曲的信息
-     * //TODO 需要异常处理,将异常处理的消息返回给前端
-     * @param req 前端传来的参数
-     * @return  返回结果
+     * 根据歌曲名和歌手名返回歌曲的信息
+     * @param pageNum 当前页
+     * @param pageSize  分页的大小
+     * @param queryName 查询的名字
+     * @return
      */
-    @RequestMapping(value = "/SongOfSingerName", method = RequestMethod.GET)
-    public  List<Song> songOfName(HttpServletRequest req) {
-        String name = req.getParameter("songName").trim();
-        List<Song> songList = songService.songOfName(name);
-        if (songList == null) {
-            throw new RuntimeException("查询的歌曲不存在");
+    @RequestMapping(value = "/SongOfQuerySongNameOrSingerName", method = RequestMethod.GET)
+    public  AjaxResponse querySongBySongNameOrSingerName( @RequestParam("pageNum") Integer pageNum,
+                                                        @RequestParam("pageSize") Integer pageSize,
+                                                        @RequestParam("queryName") String queryName) {
+        if(StringUtils.isEmpty(queryName)){
+            return AjaxResponse.success("参数不能为空");
         }
-        return songList;
+        IPage<SongVo> page = songService.querySongBySongNameOrSingerName(pageNum, pageSize, queryName);
+         log.info("查询的总数是:"+page.getTotal());
+        if(page.getTotal()!= 0){
+            return  AjaxResponse.success(page);
+        }else{
+            AjaxResponse ajaxResponse = AjaxResponse.setResult(ResultCodeEnum.QUERY_NO_EXIST);
+            log.info(ajaxResponse.toString());
+            return AjaxResponse.success("查询的歌曲信息不存在，请重新查询");
+        }
     }
 
     /**
-     * 根据歌手的id返回属于他的歌曲的信息
-     *
-     * @param request 查询的歌手的id
-     * @return 返回这个数据
+     * 根据歌曲的id
+     * @param request
+     * @return
      */
-    @Deprecated
-    @GetMapping("/singer/detail")
-    public Object songOfSingerId(HttpServletRequest request) {
-        String singerId = request.getParameter("singerId");
-        if (singerId == null) {
-            return AjaxResponse.setResult(ResultCodeEnum.SINGERID_NOT_NULL);
-        }
-        List<Song> songList = songService.selectSongBySingerId(Integer.parseInt(singerId));
-        return songList;
-    }
-
-    /*根据歌曲的id 返回歌曲*/
     @GetMapping("/detail")
     public AjaxResponse songOfSongId(HttpServletRequest request) {
         String songId = request.getParameter("id");
@@ -229,4 +214,42 @@ public class SongController {
         Song song = songService.selectSong(Long.parseLong(songId));
         return AjaxResponse.success(song);
     }
+
+
+    /**
+     * 根据歌手的id返回属于他的歌曲的信息
+     * @return 返回这个数据
+     */
+    @GetMapping("/getSongOfSingerId")
+    public AjaxResponse getSongOfSingerId(@RequestParam("pageNum") Integer pageNum,
+                                       @RequestParam("pageSize") Integer pageSize,
+                                       @RequestParam("singerId") String singerId) {
+        if (singerId == null) {
+            return AjaxResponse.setResult(ResultCodeEnum.SINGERID_NOT_NULL);
+        }
+        IPage<SongVo> songVoIpage = songService.selectSongBySingerId(pageNum,pageSize,Integer.parseInt(singerId));
+        if(songVoIpage.getRecords().isEmpty()){
+            return AjaxResponse.success("没有该歌曲的信息");
+        }
+        return AjaxResponse.success(songVoIpage);
+    }
+
+    /**
+     * 根据歌单信息返回歌曲信息
+     * @param pageNum 具体的页数大小
+     * @param pageSize  分页的大小
+     * @param songListId 歌单id的信息
+     * @return
+     */
+    @GetMapping("/getSongOfSongListId")
+    public AjaxResponse getSongOfSongListId(@RequestParam("pageNum") Integer pageNum,
+                                            @RequestParam("pageSize") Integer pageSize,
+                                            @RequestParam("songListId") String songListId){
+        IPage<SongVo> page = songService.selectSongBySongListId(pageNum, pageSize, Integer.parseInt(songListId));
+        if (page.getRecords().isEmpty()) {
+            return AjaxResponse.success("没有对应的数据信息");
+        }
+        return AjaxResponse.success(page);
+    }
+
 }

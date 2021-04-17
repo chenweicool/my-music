@@ -1,5 +1,6 @@
 package com.mymusic.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.domain.Singer;
 
 import java.util.List;
@@ -31,16 +32,11 @@ public interface SingerService {
     Singer findSinger(Integer id);
 
     /**
-     * 查询全部的歌手
-     */
-    List<Singer> findAllSinger();
-
-    /**
      * 根据歌手名进行模糊查询
      * @param name 歌手名
      * @return 返回查询的结果
      */
-    List<Singer> singerOfName(String name);
+    IPage<Singer> singerOfName(Integer pageNum, Integer pageSize, String name);
 
     /*根据歌手的性别来进行模糊查询*/
     List<Singer>  singerOfSex(Integer sex);

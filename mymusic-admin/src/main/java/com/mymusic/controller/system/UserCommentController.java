@@ -2,13 +2,13 @@ package com.mymusic.controller.system;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mymusic.common.domain.UserCommentVo;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.domain.UserComment;
-import com.mymusic.domain.UserCommentConsumer;
 import com.mymusic.formvo.UserCommentSongRequest;
-import com.mymusic.formvo.UserCommentVo;
 import com.mymusic.service.UserCommentService;
 import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -17,6 +17,7 @@ import java.util.List;
 @Api(tags = "评论的接口")
 @RestController
 @RequestMapping("/comment")
+@Slf4j
 public class UserCommentController {
 
     @Resource
@@ -60,10 +61,11 @@ public class UserCommentController {
      * @return
      */
     @GetMapping("/getCommentByPage")
-    public IPage<UserCommentVo> getCommentByPage(  @RequestParam(value = "pageNum" ,defaultValue = "1") Integer pageNum,
+    public AjaxResponse getCommentByPage(  @RequestParam(value = "pageNum" ,defaultValue = "1") Integer pageNum,
                                                   @RequestParam(value = "pageSize",defaultValue = "20") Integer pageSize){
-        Page<UserCommentConsumer> page = new Page<>(pageNum, pageSize);
-        return userCommentService.getUserCommentByPage(page);
+        Page<UserCommentVo> page = new Page<>(pageNum, pageSize);
+        IPage<UserCommentVo> page1 = userCommentService.getUserCommentByPage(page);
+        return AjaxResponse.success(page1);
     }
 
     /**
@@ -72,8 +74,9 @@ public class UserCommentController {
      * @return {@link List}
      */
     @GetMapping("/getCommentByUserName")
-    public List<UserCommentVo> getCommentByUserName(@RequestParam("userName") String userName){
-            return  userCommentService.getCommentByUserName(userName);
+    public AjaxResponse getCommentByUserName(@RequestParam("userName") String userName){
+        List<UserCommentVo> userCommentVos = userCommentService.getCommentByUserName(userName);
+        return  AjaxResponse.success(userCommentVos);
     }
 
     /**
@@ -84,11 +87,13 @@ public class UserCommentController {
      * @return
      */
     @GetMapping("/getCommentBySongName")
-    public IPage<UserCommentVo> getCommentBySongName(@RequestParam(value = "pageNum",defaultValue = "1") Integer pageNum,
-                                                     @RequestParam(value = "pageSize",defaultValue = "20") Integer pageSize,
-                                                     @RequestParam("songName") String songName) {
-        Page<UserCommentConsumer> page = new Page<>(pageNum, pageSize);
-        return userCommentService. getCommentBySongName(page,songName);
+    public AjaxResponse getCommentBySongName(@RequestParam(value = "pageNum",defaultValue = "1") Integer pageNum,
+                                                        @RequestParam(value = "pageSize",defaultValue = "20") Integer pageSize,
+                                                        @RequestParam("songName") String songName) {
+        Page<UserCommentVo> page = new Page<>(pageNum, pageSize);
+        IPage<UserCommentVo> commentVoIPage = userCommentService.getCommentBySongName(page, songName);
+        log.info("歌曲的总数是："+commentVoIPage.getTotal());
+        return AjaxResponse.success(commentVoIPage);
     }
 
     /**
@@ -99,11 +104,12 @@ public class UserCommentController {
      * @return
      */
     @GetMapping("/getCommentBySongId")
-    public IPage<UserCommentVo> getCommentBySongId(@RequestParam(value = "pageNum",defaultValue = "1") Integer pageNum,
+    public AjaxResponse getCommentBySongId(@RequestParam(value = "pageNum",defaultValue = "1") Integer pageNum,
                                                    @RequestParam(value = "pageSize",defaultValue = "20") Integer pageSize,
                                                    @RequestParam("songId") Long songId){
-        Page<UserCommentConsumer> page = new Page<>(pageNum, pageSize);
-        return  userCommentService.getCommentBySongId(page,songId);
+        Page<UserCommentVo> page = new Page<>(pageNum, pageSize);
+        IPage<UserCommentVo> commentBySongId = userCommentService.getCommentBySongId(page, songId);
+        return AjaxResponse.success(commentBySongId);
     }
 
 }

@@ -1,8 +1,8 @@
 package com.mymusic.service;
 
+import com.mymusic.common.domain.UserCommentVo;
 import com.mymusic.domain.UserComment;
 import com.mymusic.domain.UserReplyComment;
-import com.mymusic.formvo.UserCommentVo;
 
 import java.util.List;
 

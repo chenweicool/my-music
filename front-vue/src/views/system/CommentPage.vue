@@ -3,20 +3,20 @@
     <el-card body-style="padding: 0">
       <el-form ref="commentQueryForm" :model="commentQueryForm" label-width="80px">
         <el-row :gutter="20">
-             <el-col :span="10">
+             <el-col :span="8">
             <el-form-item label="歌曲名" prop="songName">
               <el-input v-model="commentQueryForm.songName"
                         placeholder="请输入歌曲名查询"/>
             </el-form-item>
           </el-col>
-          <el-col :span="10">
+          <el-col :span="8">
             <el-form-item label="用户名" prop="userName">
               <el-input v-model="commentQueryForm.userName"
                         placeholder="请输入用户名查询"/>
             </el-form-item>
           </el-col>
           
-          <el-col :span="12" :offset="6">
+          <el-col :span="10" :offset="18">
             <el-form-item>
               <el-button type="primary" size="small"
                          @click="queryComment()" icon="el-icon-search">
@@ -119,7 +119,7 @@
 </template>
 
 <script>
-  import {getCommentByPage,getCommentBySongName,addComment,deleteComment,updateCommentMsg,getCommentByUserName}
+  import {getCommentByPage,getCommentBySongName,addComment,deleteComment,updateCommentMsg,getCommentByUserName,getCommentOfSongId}
   from '../../api/system/comment'
    import * as dateUtils from "@/api/data";
   import MixinCUD from '@/components/MixinCUD'
@@ -135,7 +135,8 @@
           songName: "",   // 歌曲名
           userName: ""   // 用户名
         },
-
+        
+       songId: '',  // 歌曲的Id的信息，根据这个来查询歌曲的评论信息
        pagination:{
           pageNum: 1,
           pageSize: 20,
@@ -143,9 +144,9 @@
         },
 
         dialogFormVisible: false,
-
         dialogTitle:"",
         dialogRefName:"dialogForm",
+
         dialogForm: {
           id: null,
           uesrName: '',
@@ -171,15 +172,19 @@
     },
 
   created () {
+    this.songId = this.$route.query.songId  // 获取歌曲的评论信息
     this.getData()
   },
 
     methods: {
       getData(){
+        if(this.songId != null){
+            this.getCommentBySongId()
+        }
         getCommentByPage(this.pagination.pageNum,this.pagination.pageSize)
           .then(res => {
              //console.log(res)
-            this.setData(res)
+             this.setData(res)
           })
       },
      
@@ -188,29 +193,32 @@
 
         // if(this.queryFormRefName.songName != null && this.queryFormRefName.userName == null){
         // }
-
         getCommentBySongName(this.pagination.pageNum,this.pagination.pageSize,this.commentQueryForm.songName).then(res =>{   
-             console.log(res) 
+             //console.log(res) 
             this.setData(res)
            }).catch(err => {
                 this.$message({message: err.message, type: 'error'});
           })
-
           // if(this.queryFormRefName.songName == null && this.queryFormRefName.userName != null){
           //   getCommentByUserName(this.commentQueryForm.userName).then(res =>{
           //      console.log(res);
           //       this.tableData = res.data;
           //  })
-          // } 
-           
+          // }           
      },
 
+    // 根据歌曲id来查询他的评论信息
+     getCommentBySongId(){
+         getCommentOfSongId(this.pagination.pageNum,this.pagination.pageSize,this.songId).then(res =>{
+           console.log(res)
+            this.setData(res)
+         })
+     },
 
-         // 重新的设置数据,分页才能用到这个函数
+      // 重新的设置数据,分页才能用到这个函数
       setData(comments) {
-        if (comments.isok) {
-          this.tableData = comments.data.records
-        }
+          this.tableData = comments.records
+          this.pagination.total = comments.total;
       },
 
       updateData(){
@@ -247,6 +255,11 @@
         this.pagination.pageNum = val;
         this.submitQueryForm()
       },
+
+      resetQueryForm() {
+        this.$refs[this.queryFormRefName].resetFields();
+        this.getData()
+    }, 
 
         // 日期的转换类
      formData (val) {

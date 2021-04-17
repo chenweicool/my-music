@@ -1,5 +1,7 @@
 package com.mymusic.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mymusic.common.enums.SongConsumerType;
 import com.mymusic.common.exception.SongException;
 import com.mymusic.domain.SongList;
@@ -34,7 +36,7 @@ public class SongListServiceImpl implements SongListService {
         String uuid = UUID.randomUUID().toString();
         songList.setUuid(uuid);
         if(songListMapper.insert(songList) > 0){
-           songList = songListMapper.findSongListByUUID(uuid);
+            songList = songListMapper.findSongListByUUID(uuid);
             sysUserSonglist.setSonglistId(songList.getId());
             sysUserSonglist.setUserId(userId);
             return sysUserSonglistService.addSysUserSongList(sysUserSonglist);
@@ -84,40 +86,6 @@ public class SongListServiceImpl implements SongListService {
           return  songListMapper.deleteByPrimaryKey(id) >0;
         }
     }
-
-    //TODO 优化，分页优化
-    @Override
-    public List<SongList> allSongList() {
-        return songListMapper.selectAll();
-    }
-
-    @Override
-    public List<SongList> likeTitle(String title) {
-        List<SongList> getTitleList = songListMapper.likeTitle(title);
-        if(getTitleList == null){
-            throw new SongException(SongConsumerType.SONGLIST_TITLE_EXIST.getMessage());
-        }
-        return getTitleList;
-    }
-
-    @Override
-    public List<SongList> likeStyle(String style) {
-        List<SongList> getTitleList = songListMapper.likeStyle(style);
-        if(getTitleList == null){
-            throw new SongException(SongConsumerType.SONGLIST_STYLE_EXIST.getMessage());
-        }
-        return getTitleList;
-    }
-
-    @Override
-    public List<SongList> songListOfTitle(String title) {
-        List<SongList> getTitleList = songListMapper.songListOfTitle(title);
-        if(getTitleList == null){
-            throw new SongException(SongConsumerType.SONGLIST_TITLE_EXIST.getMessage());
-        }
-        return getTitleList;
-    }
-
     @Override
     public SongList songListById(Integer  id) {
         SongList songList = songListMapper.selectByPrimaryKey(id);
@@ -127,14 +95,38 @@ public class SongListServiceImpl implements SongListService {
         return songList;
     }
 
+
+    @Override
+    public IPage<SongList> likeStyle(Integer pageNum, Integer pageSize, String style) {
+        IPage<SongList> page = new Page<>(pageNum, pageSize);
+        IPage<SongList> getTitleList = songListMapper.likeStyle(page,style);
+        if(getTitleList == null){
+            throw new SongException(SongConsumerType.SONGLIST_STYLE_EXIST.getMessage());
+        }
+        return getTitleList;
+    }
+
+    @Override
+    public IPage<SongList> songListOfTitle(Integer pageNum, Integer pageSize, String title) {
+        IPage<SongList> page = new Page<>(pageNum, pageSize);
+        IPage<SongList> getTitleList = songListMapper.songListOfTitle(page,title);
+        if(getTitleList == null){
+            throw new SongException(SongConsumerType.SONGLIST_TITLE_EXIST.getMessage());
+        }
+        return getTitleList;
+    }
+
+
+
     /**
      * 根据用户的Id查询用户创建的歌单信息
      * @param userId
      * @return
      */
     @Override
-    public List<SongList> findMySongList(Long userId) {
-        List<SongList> mySongList = songListMapper.findMySongList(userId);
+    public IPage<SongList> findMySongList(Integer pageNum, Integer pageSize,Long userId) {
+        IPage<SongList> page = new Page<>(pageNum, pageSize);
+        IPage<SongList> mySongList = songListMapper.findMySongList(page,userId);
         return mySongList;
     }
 }

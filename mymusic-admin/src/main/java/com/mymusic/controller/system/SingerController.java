@@ -2,6 +2,7 @@ package com.mymusic.controller.system;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.common.enums.ResultCodeEnum;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.Constants;
@@ -47,18 +48,17 @@ public class SingerController {
 
     /**
      * 添加歌手
+     * todo  这个上传的问题没有解决
      * @param singers 歌手的信息
      * @param file 歌手的头像
      * @return 添加的结果
      */
     @ResponseBody
-    @RequestMapping(value = "/addsinger", method = RequestMethod.POST)
+    @RequestMapping(value = "/addSinger", method = RequestMethod.POST)
     public AjaxResponse addSinger(@RequestParam(value = "singer",required = false) String singers, @RequestParam(value = "file",required = false)
                             MultipartFile file){
 
-        JSONObject jsonObject = new JSONObject();
         Singer singer = JSON.parseObject(singers, Singer.class);
-
         /*将歌手的头像上传至七牛云，将歌手的头像地址存储到数据库*/
         String fileName = System.currentTimeMillis()+file.getOriginalFilename();
         String fileKey = Constants.SINGER_PIC+fileName;
@@ -74,52 +74,6 @@ public class SingerController {
     }
 
     /**
-     * //TODO  这个接口还没有授权
-     * 歌手中添加歌曲
-     * @param req  传递的参数
-     * @param file 歌曲的文件
-     * @return 插入成功的信息
-     */
-    @RequestMapping(value = "/song/addsong",method = RequestMethod.POST)
-    public AjaxResponse addSingerSong(HttpServletRequest req, @RequestParam(value = "file", required = false)
-            MultipartFile file){
-        // 设置歌曲的信息
-        String singer_id = req.getParameter("singerId").trim();
-        String songName = req.getParameter("name").trim();
-        String introduction = req.getParameter("introduction").trim();
-        String lyric = req.getParameter("lyric").trim();
-        String pic = Constants.DEFAULT_PIC;    // 默认的图片的地址的信息
-
-        // 将歌曲文件上传至七牛云
-        String SongKey = Constants.SONG_FILE + System.currentTimeMillis() + file.getOriginalFilename();  // 上传歌手文件的key的值
-        String songUrl = FileUtils.getAvatarPic(file, Access_Key, Secret_Key, SongKey);  // 返回歌曲的播放地址信息
-
-        /*完成歌手的信息的插入操作*/
-        Song songDb = new Song();
-        songDb.setSingerId(Integer.parseInt(singer_id));
-
-        songDb.setName(songName);
-        songDb.setIntroduction(introduction);
-        songDb.setCreateTime(new Date());
-        songDb.setUpdateTime(new Date());
-        songDb.setPic(pic);
-        songDb.setLyric(lyric);
-        songDb.setUrl(songUrl);
-
-        boolean res = songService.insertSong(songDb);
-
-        if (res) {
-             // 将歌手和歌曲进行关联
-            Long songId = songService.selectSongByUrl(songUrl);
-            singerService.addSingerIdSongId(Integer.parseInt(singer_id),songId);
-            return AjaxResponse.success("添加成功");
-        } else {
-            return AjaxResponse.error("添加失败");
-        }
-
-    }
-
-    /**
      * 更新歌手的信息
      * @param request 请求的实体信息
      * @return   //TODO 这里需要优化更新
@@ -127,14 +81,6 @@ public class SingerController {
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public AjaxResponse updateSingerMsg(HttpServletRequest request){
-//        params.append('id', this.form.id)
-//        params.append('name', this.form.name)
-//        params.append('sex', this.form.sex)
-//        params.append('pic', this.form.pic)
-//        params.append('birth', datetime)
-//        params.append('location', this.form.location)
-//        params.append('introduction', this.form.introduction)
-
         String id = request.getParameter("id");
         String name = request.getParameter("name");
         String sex = request.getParameter("sex");
@@ -197,7 +143,11 @@ public class SingerController {
         }
     }
 
-    /*删除歌手的信息*/
+    /**
+     * 删除需要判断一下
+     * @param req
+     * @return
+     */
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public AjaxResponse deleteSinger(HttpServletRequest req){
         String id = req.getParameter("id");
@@ -209,22 +159,14 @@ public class SingerController {
         }
     }
 
-    /**
-     * // TODO 这个后期需要分页
-     * @return 所有的的歌手
-     */
-    @RequestMapping(value = "/allsinger", method = RequestMethod.GET)
-    public List<Singer> allSinger(){
-        List<Singer> singerList =  singerService.findAllSinger();
-        return singerList;
-    }
 
     /*根据歌手的名字查询歌手*/
-    @RequestMapping(value = "/name/detail", method = RequestMethod.GET)
-    public Object singerOfName(HttpServletRequest req){
-        String name = req.getParameter("name").trim();
-        List<Singer> singer = singerService.singerOfName(name);
-        return singer;
+    @RequestMapping(value = "/singerName", method = RequestMethod.GET)
+    public AjaxResponse getSingerName(@RequestParam("pageNum") Integer pageNum,
+                                      @RequestParam("pageSize") Integer pageSize,
+                                      @RequestParam("singerName") String singerName){
+        IPage<Singer> singer = singerService.singerOfName(pageNum,pageSize,singerName);
+        return AjaxResponse.success(singer);
     }
 
     /*根据歌手的性别查询歌手*/
@@ -234,26 +176,5 @@ public class SingerController {
         List<Singer> singerSex = singerService.singerOfSex(Integer.parseInt(sex));
         return singerSex;
     }
-
-    /**
-     * 根据歌手的id返回属于他的歌曲的信息
-     * @param request 查询的歌手的id
-     * @return 返回这个数据
-     */
-    @GetMapping("/song/detail")
-    public Object songOfSingerId(HttpServletRequest request) {
-        String singerId = request.getParameter("singerId");
-        if (singerId == null) {
-            return AjaxResponse.setResult(ResultCodeEnum.SINGERID_NOT_NULL);
-        }
-        List<Song> songList = songService.selectSongBySingerId(Integer.parseInt(singerId));
-        return songList;
-    }
-
-
-
-
-
-
 
 }

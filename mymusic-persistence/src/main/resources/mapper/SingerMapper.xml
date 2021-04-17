@@ -101,12 +101,6 @@
         <include refid="Base_Column_List" />
         from singer where id = #{id, jdbcType=INTEGER}
     </select>
-    <!--查询所有的歌手-->
-    <select id="findAllSinger" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List" />
-        from singer
-    </select>
 
     <!--根据名字来查询歌手的信息-->
     <select id="singerOfName" parameterType="java.lang.String" resultMap="BaseResultMap">
