@@ -38,4 +38,7 @@ public interface SongListMapper {
 
     /*根据用户的id查询用户的创建的歌单信息*/
     IPage<SongList> findMySongList(IPage<SongList> page,@Param("userId") Long userId);
+
+    /*分页查询歌单信息*/
+    IPage<SongList> getSongListByPage(IPage<SongList> page);
 }

@@ -464,8 +464,7 @@
     }
   
   },
-
-    beforeRouteEnter(to, from, next) {
+  beforeRouteEnter(to, from, next) {
       axios.all([
         getUsers(
           {avator:'',sex:'',introduction:'',birth:'',location:'',username:"",phone:"",enabled:"",email:"",orgId:null,timeRange: ["",""]}

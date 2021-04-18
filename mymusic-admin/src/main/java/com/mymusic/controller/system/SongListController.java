@@ -31,9 +31,6 @@ public class SongListController {
     @Resource
     private SongListService songListService;
 
-    @Resource
-    private SongService songService;
-
     @Value("${file.Access_Key}")
     private String Access_Key;
 
@@ -45,7 +42,7 @@ public class SongListController {
      * @param req 前台传入的数据信息
      * @return  歌单是否添加成功的信息
      */
-    @PostMapping("/addsonglist")
+    @PostMapping("/addSongList")
     public AjaxResponse addSongList(HttpServletRequest req){
         String title = req.getParameter("title").trim();
         String pic = req.getParameter("pic").trim();
@@ -150,17 +147,27 @@ public class SongListController {
     // =======================================查询的接口
     /**
      * 根据id查询单个歌单的信息
-     * @param request 请求的方法
+     * @param songListId 歌单中id
      * @return 歌单中的信息
      */
     @Deprecated
-    @GetMapping("/songListInfo/detail")
-    public AjaxResponse songListOfId(HttpServletRequest request){
-        String songListId = request.getParameter("id");
+    @GetMapping("/songListInfoById")
+    public AjaxResponse songListOfId(@RequestParam("songListId")String songListId){
         SongList songList = songListService.songListById(Integer.parseInt(songListId));
         return AjaxResponse.success(songList);
     }
 
+
+    /**
+     * 分页查询歌单的信息
+     * @return
+     */
+    @GetMapping("/getSongListByPage")
+    public AjaxResponse getSongListByPage(@RequestParam("pageNum") Integer pageNum,
+                                      @RequestParam("pageSize") Integer pageSize) {
+        IPage<SongList> iPage = songListService.getSongListByPage(pageNum,pageSize);
+        return  AjaxResponse.success(iPage) ;
+    }
     /**
      * 查询用户自己创建的歌单信息
      * @return
@@ -183,13 +190,11 @@ public class SongListController {
         return AjaxResponse.success(iPage);
     }
 
-
     /*返回指定类型的歌单信息*/
     @RequestMapping(value = "/getStyleByPage", method = RequestMethod.GET)
     public AjaxResponse songListOfStyle(@RequestParam("pageNum") Integer pageNum,
                                           @RequestParam("pageSize") Integer pageSize,
                                           @RequestParam("style") String style){
-
         IPage<SongList> iPage  = songListService.likeStyle(pageNum,pageSize,style);
         return AjaxResponse.success(iPage);
     }

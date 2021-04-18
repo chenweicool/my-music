@@ -1,5 +1,7 @@
 package com.mymusic.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.mymusic.domain.Singer;
 import com.mymusic.domain.SongList;
 import com.mymusic.service.SongListService;
 import org.junit.Assert;
@@ -15,7 +17,7 @@ public class SongListServiceImplTest extends BaseTest {
     private SongListService songListService;
     @Test
     public void findMySongList() {
-        List<SongList> mySongList = songListService.findMySongList(1297873308628307970l);
+        IPage<SongList> mySongList = songListService.findMySongList(1,20,1297873308628307970l);
         Assert.assertNotNull(mySongList);
     }
 
@@ -27,7 +29,8 @@ public class SongListServiceImplTest extends BaseTest {
         songList.setIntroduction("这又是一个测试的歌单信息");
         songList.setTitle("忧郁的歌单信息");
         songList.setStyle("运动风格");
-        Long userId = 1l;
+        songList.setType(1);
+        Long userId = 1297873308628307970l;
         boolean result = songListService.addSongList(songList, userId);
         Assert.assertEquals(true, result);
     }
@@ -37,5 +40,19 @@ public class SongListServiceImplTest extends BaseTest {
     public void deleteSongList(){
         boolean flag = songListService.deleteSongList(9);
         Assert.assertEquals(true, flag);
+    }
+
+    @Test
+    public void testSongListName(){
+        IPage<SongList> page = songListService.likeStyle(1, 20, "华语");
+        System.out.println(page.getTotal());
+        Assert.assertNotNull(page.getRecords());
+    }
+
+    @Test
+    public void testSongListTitle(){
+        IPage<SongList> page = songListService.songListOfTitle(1, 20, "肾上腺素飙升");
+        System.out.println(page.getTotal());
+        Assert.assertNotNull(page.getRecords());
     }
 }

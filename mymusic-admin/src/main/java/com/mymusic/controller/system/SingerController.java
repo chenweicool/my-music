@@ -144,7 +144,7 @@ public class SingerController {
     }
 
     /**
-     * 删除需要判断一下
+     * todo 删除需要判断一下
      * @param req
      * @return
      */
@@ -159,9 +159,16 @@ public class SingerController {
         }
     }
 
+    /*根据歌手的名字查询歌手*/
+    @RequestMapping(value = "/getSingerByPage", method = RequestMethod.GET)
+    public AjaxResponse getSingerByPage(@RequestParam("pageNum") Integer pageNum,
+                                      @RequestParam("pageSize") Integer pageSize){
+        IPage<Singer> singer = singerService.getSingerByPage(pageNum,pageSize);
+        return AjaxResponse.success(singer);
+    }
 
     /*根据歌手的名字查询歌手*/
-    @RequestMapping(value = "/singerName", method = RequestMethod.GET)
+    @RequestMapping(value = "/getSingerBySingerName", method = RequestMethod.GET)
     public AjaxResponse getSingerName(@RequestParam("pageNum") Integer pageNum,
                                       @RequestParam("pageSize") Integer pageSize,
                                       @RequestParam("singerName") String singerName){
@@ -169,12 +176,31 @@ public class SingerController {
         return AjaxResponse.success(singer);
     }
 
+    /*根据歌手地域查询歌手*/
+    @RequestMapping(value = "/getSingerByLocation", method = RequestMethod.GET)
+    public AjaxResponse getSingerByLocation(@RequestParam("pageNum") Integer pageNum,
+                                      @RequestParam("pageSize") Integer pageSize,
+                                      @RequestParam("location") String location){
+        IPage<Singer> singer = singerService.getSingerByLocation(pageNum,pageSize,location);
+        return AjaxResponse.success(singer);
+    }
+
+    /*根据歌手的年龄查询歌手*/
+    @RequestMapping(value = "/getSingerByAge", method = RequestMethod.GET)
+    public AjaxResponse getSingerByAge(@RequestParam("pageNum") Integer pageNum,
+                                      @RequestParam("pageSize") Integer pageSize,
+                                      @RequestParam("age") String age){
+        IPage<Singer> singer = singerService.getSingerByAge(pageNum,pageSize,Integer.parseInt(age));
+        return AjaxResponse.success(singer);
+    }
+
     /*根据歌手的性别查询歌手*/
-    @RequestMapping(value = "/sex/detail", method = RequestMethod.GET)
-    public List<Singer> singerOfSex(HttpServletRequest req){
-        String sex = req.getParameter("sex").trim();
-        List<Singer> singerSex = singerService.singerOfSex(Integer.parseInt(sex));
-        return singerSex;
+    @RequestMapping(value = "/getSingerBySex", method = RequestMethod.GET)
+    public AjaxResponse singerOfSex(@RequestParam("pageNum") Integer pageNum,
+                                    @RequestParam("pageSize") Integer pageSize,
+                                    @RequestParam("sex") String sex){
+        IPage<Singer> singer = singerService.singerOfSex(pageNum,pageSize,Integer.parseInt(sex));
+        return AjaxResponse.success(singer);
     }
 
 }

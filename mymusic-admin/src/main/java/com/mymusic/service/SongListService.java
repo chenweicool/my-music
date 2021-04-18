@@ -35,5 +35,6 @@ public interface SongListService {
     /*根据歌单的id查询单个歌单的信息*/
     SongList songListById(Integer parseInt);
 
-
+    /*分页查询歌单信息*/
+    IPage<SongList> getSongListByPage(Integer pageNum, Integer pageSize);
 }

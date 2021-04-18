@@ -24,7 +24,10 @@
               </el-form>
             </el-card>
       <el-card>
-      <el-table :data="tableData"  border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
+       <el-button type="primary" size="small" style="margin: 0 0 10px 20px"
+                     icon="el-icon-plus" @click="handleAdd('新增歌曲')">新增</el-button>
+
+       <el-table :data="tableData"  border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
         <!-- <el-table-column type="selection" width="40"></el-table-column> -->
         <el-table-column label="播放按钮" width="100" align="center">
           <template slot-scope="scope">
@@ -370,7 +373,7 @@ export default {
       this.$router.push({path: '/home/comment', query: {songId: id, type: 0}})
     },
 
-    // 保存编辑
+    // 保存编辑和增加的这需要判断一下
     saveEdit () {
       let params = new URLSearchParams()
       params.append('id', this.form.id)

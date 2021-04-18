@@ -95,6 +95,12 @@ public class SongListServiceImpl implements SongListService {
         return songList;
     }
 
+    @Override
+    public IPage<SongList> getSongListByPage(Integer pageNum, Integer pageSize) {
+        IPage<SongList> page = new Page<>(pageNum, pageSize);
+        return songListMapper.getSongListByPage(page);
+    }
+
 
     @Override
     public IPage<SongList> likeStyle(Integer pageNum, Integer pageSize, String style) {
@@ -115,8 +121,6 @@ public class SongListServiceImpl implements SongListService {
         }
         return getTitleList;
     }
-
-
 
     /**
      * 根据用户的Id查询用户创建的歌单信息
