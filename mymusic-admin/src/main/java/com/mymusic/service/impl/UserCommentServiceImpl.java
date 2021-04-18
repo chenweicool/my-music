@@ -67,8 +67,7 @@ public class UserCommentServiceImpl implements UserCommentService {
     @Override
     public Boolean updateComment(UserComment userComment) {
         ParameterCheckUtils.checkParamIsBlank(userComment);
-        ParameterCheckUtils.checkParamIsBlank(userComment.getContent(),userComment.getUserName(),
-                userComment.getUserId());
+        ParameterCheckUtils.checkParamIsBlank(userComment.getContent(),userComment.getUserName());
 
         if (userComment.getUpdateTime() == null) {
             userComment.setUpdateTime(new Date());

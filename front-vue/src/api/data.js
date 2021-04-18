@@ -39,3 +39,25 @@ export function changeSex(value){
           return value
         }
 }
+
+// 改变用户歌单类型
+export function changeSongListType(value){
+    if(value == 0){
+        return '系统生成'
+    }else if(value == 1){
+      return '用户自定义'
+    }else if(value == 2){
+      return '系统推送'
+    }
+}
+
+// 评论的状态信息
+export function changeCommit(value){
+    if(value == 0){
+        return '审核中'
+    }else if(value == 1){
+        return '审核通过'
+    }else if(value == 2){
+        return '审核不通过'
+    }
+}

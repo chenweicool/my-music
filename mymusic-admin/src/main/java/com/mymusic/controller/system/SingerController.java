@@ -49,21 +49,19 @@ public class SingerController {
     /**
      * 添加歌手
      * todo  这个上传的问题没有解决
-     * @param singers 歌手的信息
+     * @param singer 歌手的信息
      * @param file 歌手的头像
      * @return 添加的结果
      */
     @ResponseBody
     @RequestMapping(value = "/addSinger", method = RequestMethod.POST)
-    public AjaxResponse addSinger(@RequestParam(value = "singer",required = false) String singers, @RequestParam(value = "file",required = false)
+    public AjaxResponse addSinger(@RequestBody Singer singer, @RequestParam(value = "file",required = false)
                             MultipartFile file){
-
-        Singer singer = JSON.parseObject(singers, Singer.class);
         /*将歌手的头像上传至七牛云，将歌手的头像地址存储到数据库*/
-        String fileName = System.currentTimeMillis()+file.getOriginalFilename();
-        String fileKey = Constants.SINGER_PIC+fileName;
-        String storeAvatarPath = FileUtils.getAvatarPic(file, Access_Key, Secret_Key,fileKey);
-        singer.setPic(storeAvatarPath);
+//        String fileName = System.currentTimeMillis()+file.getOriginalFilename();
+//        String fileKey = Constants.SINGER_PIC+fileName;
+//        String storeAvatarPath = FileUtils.getAvatarPic(file, Access_Key, Secret_Key,fileKey);
+//        singer.setPic(storeAvatarPath);
         boolean res = singerService.addSinger(singer);
 
         if (res){
@@ -75,29 +73,11 @@ public class SingerController {
 
     /**
      * 更新歌手的信息
-     * @param request 请求的实体信息
      * @return   //TODO 这里需要优化更新
      */
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public AjaxResponse updateSingerMsg(HttpServletRequest request){
-        String id = request.getParameter("id");
-        String name = request.getParameter("name");
-        String sex = request.getParameter("sex");
-        String pic = request.getParameter("pic");
-        String birth = request.getParameter("birth");
-        String location = request.getParameter("location");
-        String introduction = request.getParameter("introduction");
-
-        Singer singer = new Singer();
-        singer.setId(Integer.parseInt(id));
-        singer.setSex(Integer.parseInt(sex));
-        singer.setPic(pic);
-        singer.setName(name);
-        singer.setLocation(location);
-        singer.setIntroduction(introduction);
-        Date birthDb = TimeUtils.stringConvertData(birth);
-        singer.setBirth(birthDb);
+    public AjaxResponse updateSingerMsg(@RequestBody Singer singer){
         boolean res = singerService.updateSinger(singer);
         if (res) {
             return AjaxResponse.success("更新成功");

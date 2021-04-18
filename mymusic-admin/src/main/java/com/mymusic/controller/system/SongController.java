@@ -45,29 +45,29 @@ public class SongController {
     /**
      * 添加歌曲
      * 这里的歌曲只是添加歌曲
-     * //TODO 需要判断一下重复的歌曲，不能重复的添加
+     * //TODO 歌曲的上传逻辑这里需要实现一下
      * @param file 歌曲文件
      * @return 添加的结果
      */
     @ResponseBody
     @RequestMapping(value = "/addSong", method = RequestMethod.POST)
-    public AjaxResponse addSong(HttpServletRequest req, @RequestParam(value = "file", required = false)
+    public AjaxResponse addSong(@RequestBody Song song, @RequestParam(value = "file", required = false)
             MultipartFile file) {
         // todo 对歌曲名字进行正则处理
-        String singer_id = req.getParameter("singerId").trim();
-        String songName = req.getParameter("name").trim();
-        String introduction = req.getParameter("introduction").trim();
-        String lyric = req.getParameter("lyric").trim();
-        String pic = Constants.DEFAULT_PIC;    // 默认的图片的地址的信息
-        // 将歌曲文件上传至七牛云 todo 这里有问题
-        String SongKey = Constants.SONG_FILE + System.currentTimeMillis() + file.getOriginalFilename();  // 上传歌手文件的key的值
-        String songUrl = FileUtils.getAvatarPic(file, Access_Key, Secret_Key, SongKey);  // 返回歌曲的播放地址信息
+//        String singer_id = req.getParameter("singerId").trim();
+//        String songName = req.getParameter("name").trim();
+//        String introduction = req.getParameter("introduction").trim();
+//        String lyric = req.getParameter("lyric").trim();
+//        String pic = Constants.DEFAULT_PIC;    // 默认的图片的地址的信息
+//        // 将歌曲文件上传至七牛云 todo 这里有问题
+//        String SongKey = Constants.SONG_FILE + System.currentTimeMillis() + file.getOriginalFilename();  // 上传歌手文件的key的值
+//        String songUrl = FileUtils.getAvatarPic(file, Access_Key, Secret_Key, SongKey);  // 返回歌曲的播放地址信息
 
-         Song song = new Song();
         song.setCreateTime(new Date());
         song.setUpdateTime(new Date());
-        song.setPic(pic);
-        song.setUrl(songUrl);
+        song.setUrl("www.pingtu");
+//        song.setPic(pic);
+//        song.setUrl(songUrl);
 
         boolean res = songService.insertSong(song);
 
@@ -81,25 +81,25 @@ public class SongController {
     /**
      * 更新歌曲的信息
      *
-     * @param  req
+     * @param
      * @return //TODo 需要优化
      */
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public AjaxResponse updateSingerMsg(HttpServletRequest req) {
+    public AjaxResponse updateSingerMsg(@RequestBody Song song) {
 
-       // JSONObject jsonObject = new JSONObject();
-        String id = req.getParameter("id").trim();
-        String singerId = req.getParameter("singerId").trim();
-        String name = req.getParameter("name").trim();
-        String introduction = req.getParameter("introduction").trim();
-        String lyric = req.getParameter("lyric").trim();
-
-        Song song = new Song();
-        song.setId(Long.parseLong(id));
-        song.setSingerId(Integer.parseInt(singerId));
-        song.setName(name);
-        song.setIntroduction(introduction);
+//       // JSONObject jsonObject = new JSONObject();
+//        String id = req.getParameter("id").trim();
+//        String singerId = req.getParameter("singerId").trim();
+//        String name = req.getParameter("name").trim();
+//        String introduction = req.getParameter("introduction").trim();
+//        String lyric = req.getParameter("lyric").trim();
+//
+//        Song song = new Song();
+//        song.setId(Long.parseLong(id));
+//        song.setSingerId(Integer.parseInt(singerId));
+//        song.setName(name);
+//        song.setIntroduction(introduction);
         song.setUpdateTime(new Date());
        // song.setLyric(lyric);
 
@@ -228,9 +228,6 @@ public class SongController {
             return AjaxResponse.setResult(ResultCodeEnum.SINGERID_NOT_NULL);
         }
         IPage<SongVo> songVoIpage = songService.selectSongBySingerId(pageNum,pageSize,Integer.parseInt(singerId));
-        if(songVoIpage.getRecords().isEmpty()){
-            return AjaxResponse.success("没有该歌曲的信息");
-        }
         return AjaxResponse.success(songVoIpage);
     }
 

@@ -98,7 +98,11 @@
             </el-table-column>
             <el-table-column prop="location" label="用户地区" width="130" align="center"/>
             <el-table-column prop="introduction" label="用户介绍" width="130" align="center"/>
-            <el-table-column label="个人中心" width="100" align="center" />
+            <el-table-column label="所属歌曲" width="130" align="center">
+              <template  slot-scope="scope">
+                  <el-button  @click="getCenter(scope.row.id)">用户详情</el-button>
+              </template>
+            </el-table-column>
             <el-table-column prop="enabled" label="用户状态" width="150" align="center">
               <template slot-scope="scope">
                 <el-switch
@@ -342,6 +346,7 @@
       }
     },
     methods: {
+      //得到数据信息
       getData(){
         getUsers(this.userQueryForm,this.pagination)
           .then(res => {
@@ -356,6 +361,8 @@
             this.handleCloseDialog();
           })
       },
+
+      // 增加数据
       addData(){
         addUser(this.dialogForm).then(res => {
           this.$message({message: res.data, type: 'success'});
@@ -363,6 +370,8 @@
           this.handleCloseDialog();
         })
       },
+
+      // 删除数据
       deleteData(row){
         this.$confirm("确定删除["+row.username+"]?")
           .then(_ => {
@@ -375,6 +384,7 @@
             })
           });
       },
+
       changeEnabled(index,row){
         changeEnabled(row.id,row.enabled).then(res => {
           if(res.isok){
@@ -382,6 +392,12 @@
           }
         })
       },
+     
+     //个人中心
+     getCenter(id){
+         this.$router.push({path: '/home/center', query: {userId: id}})
+     },
+      // 分页相关的数据信息
       handlePageSizeChange(val){
         this.pagination.pageSize = val;
         this.submitQueryForm()

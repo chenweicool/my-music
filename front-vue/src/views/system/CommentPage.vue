@@ -31,15 +31,12 @@
     </el-card>
 
     <el-card>
-      <!-- <el-button type="primary" size="small" style="margin: 0 0 10px 20px"
-                 icon="el-icon-plus" @click="handleAdd('新增全局参数')">新增</el-button> -->
-
       <el-table :data="tableData" border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
         <el-table-column prop="userName" label="用户名" width="150" align="center"/>
         <el-table-column prop="avatar" label="用户头象" width="100" align="center"/>
         <el-table-column prop="content" label="评论内容" width="300" align="center"/>
          <el-table-column  label="评论时间" width="150" align="center" >
-                <template slot-scope="scope">
+              <template slot-scope="scope">
                 <div>{{formData(scope.row.createTime)}}</div>
             </template>
             </el-table-column>
@@ -190,21 +187,12 @@
      
      // 这里判断一下，用户输入的是什么，支持按照歌曲来查询
       queryComment(){
-
-        // if(this.queryFormRefName.songName != null && this.queryFormRefName.userName == null){
-        // }
         getCommentBySongName(this.pagination.pageNum,this.pagination.pageSize,this.commentQueryForm.songName).then(res =>{   
              //console.log(res) 
             this.setData(res)
            }).catch(err => {
                 this.$message({message: err.message, type: 'error'});
-          })
-          // if(this.queryFormRefName.songName == null && this.queryFormRefName.userName != null){
-          //   getCommentByUserName(this.commentQueryForm.userName).then(res =>{
-          //      console.log(res);
-          //       this.tableData = res.data;
-          //  })
-          // }           
+          })    
      },
 
     // 根据歌曲id来查询他的评论信息
@@ -224,7 +212,7 @@
       updateData(){
         updateCommentMsg(this.dialogForm)
           .then(res => {
-            this.$message({message: res.data, type: 'success'});
+            this.$message({message: res, type: 'success'});
             this.submitQueryForm();//修改之后，重新查询table
             this.handleCloseDialog();
           })
@@ -237,14 +225,12 @@
               .then(res => {
                 this.submitQueryForm();//删除之后，重新查询table
                 
-                this.$message({message: res.data, type: 'success'});
+                this.$message({message: res, type: 'success'});
               }).catch(err => {
                 this.$message({message: err.message, type: 'error'});
               })
           });
       },
-
-    
 
       // 分页的设置
       handlePageSizeChange(val){
@@ -256,24 +242,12 @@
         this.submitQueryForm()
       },
 
-      resetQueryForm() {
-        this.$refs[this.queryFormRefName].resetFields();
-        this.getData()
-    }, 
-
-        // 日期的转换类
+    // 日期的转换类
      formData (val) {
       let date = new Date(val);
       return dateUtils.formatDate(date,'yyyy-MM-dd');
     },
   },
-
-//  beforeRouteEnter(to, from, next) {
-//       getCommentByPage().then(res => {
-//          console.log(res);
-//         next(vm => vm.setData(res))
-//       })
-//     }
   }
 </script>
 

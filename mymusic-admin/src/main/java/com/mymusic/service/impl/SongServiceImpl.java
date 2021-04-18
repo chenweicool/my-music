@@ -112,7 +112,6 @@ public class SongServiceImpl implements SongService
     @Override
     public IPage<SongVo> selectSongBySingerId(Integer pageNum, Integer pageSize, Integer singerId) {
         IPage<SongVo> page = new Page<>(pageNum, pageSize);
-        songMapper.selectSongBySingerId(page, singerId);
-        return null;
+        return  songMapper.selectSongBySingerId(page, singerId);
     }
 }

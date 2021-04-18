@@ -38,7 +38,7 @@ public class UserCommentController {
     public AjaxResponse  updateComment(@RequestBody UserComment userComment){
         Boolean result = userCommentService.updateComment(userComment);
         if (result) {
-            return AjaxResponse.success();
+            return AjaxResponse.success("更新歌曲成功");
         }else{
             return AjaxResponse.error("更新评论失败");
         }

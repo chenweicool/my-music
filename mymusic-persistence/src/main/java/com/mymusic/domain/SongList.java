@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /*歌单的实体类*/
 @Data
@@ -26,4 +27,14 @@ public class SongList implements Serializable {
     private Integer type;
 
     private String uuid;
+
+    //todo 待实现的功能
+//    private Date createTime;
+//
+//    private Date updateTime;
+//
+//    private Long userId;
+//
+//    private String userName;
+
 }

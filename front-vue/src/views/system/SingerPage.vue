@@ -54,10 +54,10 @@
         </el-table-column>
         <el-table-column label="操作" width="150" align="center" fixed="right">
           <template slot-scope="scope">
-            <el-button size="mini" type="primary" icon="el-icon-edit" circle
-                       @click="handleEdit(scope.row)"/>
-            <el-button size="mini" type="danger" icon="el-icon-delete" circle
-                       @click="handleDelete(scope.row)"/>
+                       <el-button size="mini" type="primary" icon="el-icon-edit" circle
+                           @click="handleEdit(scope.$index, scope.row,'修改歌手的信息')"/>
+                      <el-button size="mini" type="danger" icon="el-icon-delete" circle
+                           @click="handleDelete(scope.$index, scope.row)"/>
           </template>
         </el-table-column>
       </el-table>
@@ -81,32 +81,36 @@
 
         <el-row :gutter="20">
             <el-form-item label="歌手名" prop="name">
-              <el-input  :disabled="true" v-model="dialogForm.name" autocomplete="off"></el-input>
+              <el-input  v-model="dialogForm.name" autocomplete="off"></el-input>
             </el-form-item>
         </el-row>
-        <el-row :gutter="20">
-            <el-form-item label="用户性别" prop="sex">
-              <el-input v-model="dialogForm.sex" autocomplete="off"></el-input>
-            </el-form-item>
+         <el-row :span="12">
+                <el-form-item label="用户性别" prop="sex">
+                 <el-radio-group v-model="dialogForm.sex">
+                       <el-radio  :label="0">女</el-radio>
+                        <el-radio :label="1">男</el-radio>
+                        <el-radio :label="2">组合</el-radio>
+                 </el-radio-group>
+                </el-form-item>
         </el-row>
         <el-row :gutter="20">
             <el-form-item label="用户头像" prop="pic">
               <el-input v-model="dialogForm.pic" autocomplete="off" ></el-input>
             </el-form-item>
         </el-row>
-        <el-row :gutter="20">
-            <el-form-item label="出生日期" prop="birth">
-              <el-input v-model="dialogForm.birth" autocomplete="off" ></el-input>
-            </el-form-item>
-        </el-row>
+         <el-row :span="12">
+                <el-form-item label="用户生日" prop="birth">
+                  <el-date-picker type="date" placeholder="选择日期" v-model="dialogForm.birth" style="width: 100%;"></el-date-picker>
+                </el-form-item>
+          </el-row>
          <el-row :gutter="20">
             <el-form-item label="地域信息" prop="location">
               <el-input v-model="dialogForm.location" autocomplete="off" ></el-input>
             </el-form-item>
         </el-row>
          <el-row :gutter="20">
-            <el-form-item  label="歌曲的简介" prop="introduction">
-              <el-input :disabled="true" v-model="dialogForm.introduction" autocomplete="off" ></el-input>
+            <el-form-item  label="歌手简介" prop="introduction">
+              <el-input  v-model="dialogForm.introduction" autocomplete="off" ></el-input>
             </el-form-item>
         </el-row>
       </el-form>
@@ -125,7 +129,7 @@
   import * as dateUtils from "@/api/data";
   import MixinCUD from '@/components/MixinCUD'
   export default {
-    name: "SingerPage",
+   name: "SingerPage",
    mixins: [MixinCUD],
     data() {
       return {
@@ -175,11 +179,11 @@
       getData(){
         getSingerByPage(this.pagination.pageNum,this.pagination.pageSize)
           .then(res => {
-             console.log(res)
+           //  console.log(res)
              this.setData(res)
           })
       },
-       // 重新的设置数据,分页才能用到这个函数
+       // 设置数据信息
       setData(res) {
           this.tableData = res.records
           this.pagination.total = res.total;
@@ -188,6 +192,7 @@
      // 根据歌名查询歌手的信息
       querySinger(){
         getSingerBySingerName(this.pagination.pageNum,this.pagination.pageSize,this.singerQueryForm.singerName).then(res =>{   
+            console.log(res);
             this.setData(res)
            }).catch(err => {
                 this.$message({message: err.message, type: 'error'});
@@ -195,39 +200,16 @@
      },
 
     // 根据歌手id来查询他的歌曲信息
-     getSongBySingerId(){
-         getSongOfSingerId(this.pagination.pageNum,this.pagination.pageSize,this.id).then(res =>{
-            console.log(res)
-            //this .setData(res)
-         })
-     },
-
-      handleEdit (row) {
-      this.idx = row.id
-      this.dialogForm = {
-        id: row.id,
-        name: row.name,
-        pic: row.pic,
-        sex: row.sex,
-        birth: row.birth,
-        introduction: row.introduction,
-        location: row.location,
-      }
-      this.dialogFormVisible = true
+     getSongBySingerId(id){
+          this.$router.push({path: '/home/song', query: {singerId: id}})
      },
      
-     //保存编辑的信息 这里需要加个判断，是不是增加，使用id来判断
+     //编辑实现
      updateData(){
-            // let params = new URLSearchParams()
-            // params.append('id', this.dialogForm.id)
-            // params.append('title', this.dialogForm.title)
-            // params.append('pic', this.dialogForm.pic)
-            // params.append('introduction', this.dialogForm.introduction)
-            // params.append('style', this.dialogForm.style)
              updateSingerMsg(this.dialogForm)
               .then(res => {
-               this.$message({message: res.data, type: 'success'});
-               this.getData();
+               this.$message({message: res, type: 'success'});
+               this.submitQueryForm();
                this.handleCloseDialog();
             }).catch(err => {
           console.log(err)
@@ -236,8 +218,8 @@
 
      addData(){
          addSinger(this.dialogForm).then(res => {
-          this.$message({message: res.data, type: 'success'});
-          this.getData();
+          this.$message({message: res, type: 'success'});
+          this.submitQueryForm();
           this.handleCloseDialog();
         })
       },
@@ -259,20 +241,18 @@
           }
         });
      },
-     // 删除一条信息
-      handleDelete(row){
-        this.$confirm("确定删除用户"+row.name+"这条信息?")
+    deleteData(row){
+        this.$confirm("确定删除["+row.name+"]?")
           .then(_ => {
-            deleteSinger(row.id)
+            deleteUser(row.id)
               .then(res => {
-                this.getData();               
+                this.submitQueryForm();//删除之后，重新查询table
                 this.$message({message: res.data, type: 'success'});
-              }).catch(err => {
-                this.$message({message: err.message, type: 'error'});
-              })
+              }).catch(err => {S
+              this.$message({message: err.message, type: 'error'});
+            })
           });
       },
-
       // 分页的设置
       handlePageSizeChange(val){
         this.pagination.pageSize = val;
@@ -281,14 +261,9 @@
       handlePageNumChange(val){
         this.pagination.pageNum = val;
         this.submitQueryForm()
-      },
+      }, 
 
-    //   resetQueryForm() {
-    //     this.$refs[this.queryFormRefName].resetFields();
-    //     this.getData()
-    // }, 
-
-       // 日期的转换类
+      // 日期的转换类
      formData (val) {
       let date = new Date(val);
       return dateUtils.formatDate(date,'yyyy-MM-dd');
@@ -297,17 +272,6 @@
     changeSex (value) {
        return dateUtils.changeSex(value);
     },
-
-    // 删除数据的校验使用
-    handleCloseDialog(){
-        //resetFields就是一个坑，有两个作用
-        //1.重置的值不是空的，而是第一次被赋予的值。
-        //第一次dialogForm赋空值，后续才能重置为空值。
-        //这就是我们在新增修改打开弹出框操作的时候，调用resetDialogFrom清空数据的原因。
-        //2.清空校验结果
-        this.$refs[this.dialogRefName].resetFields();
-        this.dialogFormVisible = false;
-      },
   },
   }
 </script>

@@ -96,19 +96,19 @@ public class SongListController {
     /*更新歌单的信息*/
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public AjaxResponse updateSongListMsg(HttpServletRequest req){
-        String id = req.getParameter("id").trim();
-        String title = req.getParameter("title").trim();
-        String pic = req.getParameter("pic").trim();
-        String introduction = req.getParameter("introduction").trim();
-        String style = req.getParameter("style").trim();
-
-        SongList songList = new SongList();
-        songList.setId(Integer.parseInt(id));
-        songList.setTitle(title);
-        songList.setPic(pic);
-        songList.setIntroduction(introduction);
-        songList.setStyle(style);
+    public AjaxResponse updateSongListMsg(@RequestBody SongList songList){
+//        String id = req.getParameter("id").trim();
+//        String title = req.getParameter("title").trim();
+//        String pic = req.getParameter("pic").trim();
+//        String introduction = req.getParameter("introduction").trim();
+//        String style = req.getParameter("style").trim();
+//
+//        SongList songList = new SongList();
+//        songList.setId(Integer.parseInt(id));
+//        songList.setTitle(title);
+//        songList.setPic(pic);
+//        songList.setIntroduction(introduction);
+//        songList.setStyle(style);
 
         boolean res = songListService.updateSongListMsg(songList);
         if (res) {
