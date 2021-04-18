@@ -1,5 +1,9 @@
 package com.mymusic.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mymusic.common.domain.SongVo;
+import com.mymusic.common.utils.TimeUtils;
 import com.mymusic.mapper.SingerMapper;
 import com.mymusic.domain.Singer;
 import com.mymusic.common.enums.SingerConsumerType;
@@ -8,6 +12,7 @@ import com.mymusic.service.SingerService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -47,25 +52,60 @@ public class SingerServiceImpl implements SingerService{
         return singerMapper.findByPrimaryKey(id);
     }
 
-    @Override
-    public List<Singer> findAllSinger() {
-        return singerMapper.findAllSinger();
-    }
 
-    @Override
-    public List<Singer> singerOfName(String name) {
-        return singerMapper.singerOfName(name);
-    }
-
-    @Override
-    public List<Singer> singerOfSex(Integer sex) {
-        return singerMapper.singerOfSex(sex);
-    }
 
     @Override
     public boolean addSingerIdSongId(Integer singerId, Long songId) {
-
         return singerMapper.addSingerIdSongId(singerId,songId) > 0;
+    }
+
+    @Override
+    public IPage<Singer> singerOfSex(Integer pageNum, Integer pageSize,Integer sex) {
+        IPage<Singer> page = new Page<>(pageNum, pageSize);
+        return singerMapper.singerOfSex(page,sex);
+    }
+
+    @Override
+    public IPage<Singer> singerOfName(Integer pageNum, Integer pageSize, String name) {
+        IPage<Singer> page = new Page<>(pageNum, pageSize);
+        return singerMapper.singerOfName(page,name);
+    }
+
+    @Override
+    public IPage<Singer> getSingerByPage(Integer pageNum, Integer pageSize) {
+        IPage<Singer> page = new Page<>(pageNum, pageSize);
+        return  singerMapper.getSingerByPage(page);
+    }
+
+    @Override
+    public IPage<Singer> getSingerByLocation(Integer pageNum, Integer pageSize, String location) {
+        IPage<Singer> page = new Page<>(pageNum, pageSize);
+        return singerMapper.getSingerByLocation(page,location);
+    }
+
+    /**
+     * 获取60，70年代，80年代的歌曲，90年代（以歌手的出生日期来分）
+     * @param pageNum
+     * @param pageSize
+     * @param age 前端枚举这几个类型 60 70 80 90 00
+     * @return
+     */
+    @Override
+    public IPage<Singer> getSingerByAge(Integer pageNum, Integer pageSize, int age) {
+        IPage<Singer> page = new Page<>(pageNum, pageSize);
+        String startTime = TimeUtils.getLocalDateRange(age);
+        String endTime = TimeUtils.getLocalDateRange(age + 10);
+
+        page = singerMapper.getSingerByAge(page,startTime,endTime);
+        return page;
+    }
+
+    public static void main(String[] args) {
+
+        String localDate = TimeUtils.getLocalDateRange(70);
+        String localDate1 = TimeUtils.getLocalDateRange(80);
+        System.out.println(localDate);
+        System.out.println(localDate1);
     }
 
 }

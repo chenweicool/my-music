@@ -1,5 +1,6 @@
 package com.mymusic.controller.system;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.common.enums.ResultCodeEnum;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.Constants;
@@ -30,9 +31,6 @@ public class SongListController {
     @Resource
     private SongListService songListService;
 
-    @Resource
-    private SongService songService;
-
     @Value("${file.Access_Key}")
     private String Access_Key;
 
@@ -44,7 +42,7 @@ public class SongListController {
      * @param req 前台传入的数据信息
      * @return  歌单是否添加成功的信息
      */
-    @PostMapping("/addsonglist")
+    @PostMapping("/addSongList")
     public AjaxResponse addSongList(HttpServletRequest req){
         String title = req.getParameter("title").trim();
         String pic = req.getParameter("pic").trim();
@@ -78,7 +76,11 @@ public class SongListController {
     }
 
 
-    /*删除歌单的信息*/
+    /**
+     * 删除歌单需要判断一下，该歌单中歌曲是否存在
+     * @param req
+     * @return
+     */
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public AjaxResponse deleteSongList(HttpServletRequest req){
         String id = req.getParameter("id");
@@ -94,19 +96,19 @@ public class SongListController {
     /*更新歌单的信息*/
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public AjaxResponse updateSongListMsg(HttpServletRequest req){
-        String id = req.getParameter("id").trim();
-        String title = req.getParameter("title").trim();
-        String pic = req.getParameter("pic").trim();
-        String introduction = req.getParameter("introduction").trim();
-        String style = req.getParameter("style").trim();
-
-        SongList songList = new SongList();
-        songList.setId(Integer.parseInt(id));
-        songList.setTitle(title);
-        songList.setPic(pic);
-        songList.setIntroduction(introduction);
-        songList.setStyle(style);
+    public AjaxResponse updateSongListMsg(@RequestBody SongList songList){
+//        String id = req.getParameter("id").trim();
+//        String title = req.getParameter("title").trim();
+//        String pic = req.getParameter("pic").trim();
+//        String introduction = req.getParameter("introduction").trim();
+//        String style = req.getParameter("style").trim();
+//
+//        SongList songList = new SongList();
+//        songList.setId(Integer.parseInt(id));
+//        songList.setTitle(title);
+//        songList.setPic(pic);
+//        songList.setIntroduction(introduction);
+//        songList.setStyle(style);
 
         boolean res = songListService.updateSongListMsg(songList);
         if (res) {
@@ -142,72 +144,61 @@ public class SongListController {
         }
     }
 
-    /**
-     * 返回所有的歌单信息
-     * //TODO  后期也需要优化，肯定是后端进行分页的
-     * @return
-     */
-    @GetMapping("/allsinglist")
-    public List<SongList> allSongList(){
-        List<SongList> allSongList = songListService.allSongList();
-        //return AjaxResponse.ok().data("allSongList", allSongList);
-        return allSongList;
-    }
-
-    //  查询用户创建的歌单的信息
-    @GetMapping("/mysonglist")
-    public List<SongList> mySongList(HttpServletRequest request) {
-       Long userId = Long.parseLong(request.getParameter("userId"));
-        List<SongList> mySongList = songListService.findMySongList(userId);
-        return  mySongList;
-    }
-
-    /*根据歌单的标题信息查找具体的歌单*/
-    @RequestMapping(value = "/title/detail", method = RequestMethod.GET)
-    public List<SongList> songListOfTitle(HttpServletRequest req){
-        String title = req.getParameter("title").trim();
-        List<SongList> allSongList = songListService.songListOfTitle(title);
-        return allSongList;
-    }
-
-    /*返回指定标题的信息的歌单信息*/
-    @RequestMapping(value = "/likeTitle/detail", method = RequestMethod.GET)
-    public List<SongList> songListOfLikeTitle(HttpServletRequest req){
-        String title = req.getParameter("title").trim();
-        List<SongList> allSongList = songListService.likeTitle(title);
-        return allSongList;
-    }
-
-    /*返回指定类型的歌单信息*/
-    @RequestMapping(value = "/style/detail", method = RequestMethod.GET)
-    public List<SongList> songListOfStyle(HttpServletRequest req){
-        String style = req.getParameter("style").trim();
-        List<SongList> allSongList = songListService.likeStyle(style);
-        return  allSongList;
-    }
-
+    // =======================================查询的接口
     /**
      * 根据id查询单个歌单的信息
-     * @param request 请求的方法
+     * @param songListId 歌单中id
      * @return 歌单中的信息
      */
     @Deprecated
-    @GetMapping("/songListInfo/detail")
-    public AjaxResponse songListOfId(HttpServletRequest request){
-        String songListId = request.getParameter("id");
+    @GetMapping("/songListInfoById")
+    public AjaxResponse songListOfId(@RequestParam("songListId")String songListId){
         SongList songList = songListService.songListById(Integer.parseInt(songListId));
         return AjaxResponse.success(songList);
     }
 
+
     /**
-     * 根据歌单中id返回每个歌单中歌曲
-     * @param request 请求的信息。
+     * 分页查询歌单的信息
      * @return
      */
-    @RequestMapping(value = "/query/song",method = RequestMethod.GET)
-    public List<Song>  findSongListSong(HttpServletRequest request){
-         String songListId = request.getParameter("songListId");
-        return songService.selectSongBySongListId(Integer.parseInt(songListId));
+    @GetMapping("/getSongListByPage")
+    public AjaxResponse getSongListByPage(@RequestParam("pageNum") Integer pageNum,
+                                      @RequestParam("pageSize") Integer pageSize) {
+        IPage<SongList> iPage = songListService.getSongListByPage(pageNum,pageSize);
+        return  AjaxResponse.success(iPage) ;
     }
+    /**
+     * 查询用户自己创建的歌单信息
+     * @return
+     */
+    @GetMapping("/getMySongList")
+    public AjaxResponse getMySongList(@RequestParam("pageNum") Integer pageNum,
+                                        @RequestParam("pageSize") Integer pageSize,
+                                        @RequestParam("userId") String userId) {
+        Long userIdDb = Long.parseLong(userId);
+        IPage<SongList> iPage = songListService.findMySongList(pageNum,pageSize,userIdDb);
+        return  AjaxResponse.success(iPage) ;
+    }
+
+    /*根据歌单的标题信息查找具体的歌单*/
+    @RequestMapping(value = "/getTitleByPage", method = RequestMethod.GET)
+    public AjaxResponse songListOfTitle(@RequestParam("pageNum") Integer pageNum,
+                                        @RequestParam("pageSize") Integer pageSize,
+                                        @RequestParam("title") String title){
+        IPage<SongList> iPage = songListService.songListOfTitle(pageNum,pageSize,title);
+        return AjaxResponse.success(iPage);
+    }
+
+    /*返回指定类型的歌单信息*/
+    @RequestMapping(value = "/getStyleByPage", method = RequestMethod.GET)
+    public AjaxResponse songListOfStyle(@RequestParam("pageNum") Integer pageNum,
+                                          @RequestParam("pageSize") Integer pageSize,
+                                          @RequestParam("style") String style){
+        IPage<SongList> iPage  = songListService.likeStyle(pageNum,pageSize,style);
+        return AjaxResponse.success(iPage);
+    }
+
+
 
 }

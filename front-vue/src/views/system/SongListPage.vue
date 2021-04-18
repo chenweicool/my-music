@@ -1,291 +1,273 @@
 <template>
-  <div class="table">
-    <div class="container">
-      <div class="handle-box">
-        <el-button type="primary" size="mini" class="handle-del mr10" @click="delAll">批量删除</el-button>
-        <el-input v-model="select_word" size="mini" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-        <el-button type="primary" size="mini" @click="centerDialogVisible = true">添加歌单</el-button>
-      </div>
-      <el-table :data="data" border size="mini" style="width: 100%" height="550px" ref="multipleTable" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="40"></el-table-column>
-        <el-table-column label="歌单图片" width="100" align="center">
+  <div>
+    <el-card body-style="padding: 0">
+      <el-form ref="songListName" :model="songListName" label-width="80px">
+        <el-row :gutter="20">
+             <el-col :span="12">
+            <el-form-item label="歌曲名" prop="title">
+              <el-input v-model="songListName.title"
+                        placeholder="请输入歌曲名查询"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10" :offset="18">
+            <el-form-item>
+              <el-button type="primary" size="small"
+                         @click="songListQuery()" icon="el-icon-search">
+                查询</el-button>
+              <el-button type="primary" size="small" plain
+                         @click="resetQueryForm()" icon="el-icon-refresh">
+                重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-card>
+
+    <el-card>
+       <el-button type="primary" size="small" style="margin: 0 0 10px 20px"
+                     icon="el-icon-plus" @click="handleAdd('新增歌曲')">新增</el-button>
+      <el-table :data="tableData" border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
+        <el-table-column prop="title" label="歌单标题" width="150" align="center"/>
+        <el-table-column prop="pic" label="歌单头像" width="100" align="center"/>
+        <el-table-column prop="style" label="歌单风格" width="150" align="center"/>
+        <el-table-column  label="创建日期" width="150" align="center" >
+              <template slot-scope="scope">
+                <div>{{formData(scope.row.createTime)}}</div>
+              </template>
+        </el-table-column>
+        <el-table-column  label="歌单类型" width="100" align="center" >
+            <template slot-scope="scope">
+                <div>{{changeSongListType(scope.row.type)}}</div>
+            </template>
+        </el-table-column>
+        <el-table-column label="歌单简介"  width="350" align="center">
           <template slot-scope="scope">
-            <img :src="getUrl(scope.row.pic)" alt="" style="width: 80px;"/>
-              <el-upload
-                class="upload-demo"
-                :action="uploadUrl(scope.row.id)"
-                :show-file-list="false"
-                :on-success="handleAvatarSuccess"
-                :before-upload="beforeAvatarUpload"
-                >
-                <el-button size="mini">更新图片</el-button>
-              </el-upload>
+            <ul style="height: 50px; overflow: scroll">
+              <div>{{scope.row.introduction}}</div>
+            </ul>
           </template>
         </el-table-column>
-        <el-table-column prop="title" label="标题" width="200" align="center"></el-table-column>
-        <el-table-column label="简介">
+         <el-table-column label="所属歌曲" width="130" align="center">
+            <template  slot-scope="scope">
+                <el-button  @click="getSongBySongListId(scope.row.id)">所属歌曲</el-button>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作" width="150" align="center" fixed="right">
           <template slot-scope="scope">
-            <p style="height: 100px; overflow: scroll">{{ scope.row.introduction }}</p>
-          </template>
-        </el-table-column>
-        <el-table-column label="风格" width="100" align="center">
-          <template slot-scope="scope">
-            <div>{{ scope.row.style }}</div>
-          </template>
-        </el-table-column>
-        <el-table-column label="内容" width="80" align="center">
-          <template  slot-scope="scope">
-            <el-button size="mini" @click="getContent(data[scope.$index].id)">内容</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column label="评论" width="80" align="center">
-          <template  slot-scope="scope">
-            <el-button size="mini" @click="getComment(data[scope.$index].id)">评论</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="150" align="center">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              @click="handleEdit(scope.row)">编辑
-            </el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row.id)">删除
-            </el-button>
+                       <el-button size="mini" type="primary" icon="el-icon-edit" circle
+                           @click="handleEdit(scope.$index, scope.row,'修改歌手的信息')"/>
+                      <el-button size="mini" type="danger" icon="el-icon-delete" circle
+                           @click="handleDelete(scope.$index, scope.row)"/>
           </template>
         </el-table-column>
       </el-table>
-      <div class="pagination">
-        <el-pagination
-          @current-change="handleCurrentChange"
-          background
-          layout="total, prev, pager, next"
-          :current-page="currentPage"
-          :page-size="pageSize"
-          :total="tableData.length">
-        </el-pagination>
+       <el-pagination
+            :page-sizes="[20, 50, 100, 200]"
+            layout="total, sizes, prev, pager, next, jumper"
+            :current-page="pagination.pageNum"
+            :page-size="pagination.pageSize"
+            :total="pagination.total"
+            @size-change="handlePageSizeChange"
+            @current-change="handlePageNumChange"
+            background
+            style="float: right;margin-bottom: 10px">
+          </el-pagination>
+    </el-card>
+    
+    <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible"
+              >
+      <el-form :model="dialogForm" ref="dialogForm"
+               :rules="dialogFormRules" label-width="20%">
+
+        <el-row :gutter="20">
+            <el-form-item label="歌单标题" prop="title">
+              <el-input  v-model="dialogForm.title" autocomplete="off"></el-input>
+            </el-form-item>
+        </el-row>
+        <el-row :gutter="20">
+            <el-form-item label="歌单的海报" prop="pic">
+              <el-input v-model="dialogForm.pic" autocomplete="off" ></el-input>
+            </el-form-item>
+        </el-row>
+         <el-row :gutter="20">
+            <el-form-item label="歌单的风格" prop="style">
+              <el-input v-model="dialogForm.style" autocomplete="off" ></el-input>
+            </el-form-item>
+        </el-row>
+         <el-row :gutter="20">
+            <el-form-item  label="歌手简介" prop="introduction">
+              <el-input  v-model="dialogForm.introduction" autocomplete="off" ></el-input>
+            </el-form-item>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="submitDialogForm()" size="mini" type="primary">确 定</el-button>
+        <el-button @click="handleCloseDialog" size="mini">取 消</el-button>
       </div>
-    </div>
-
-    <!--添加歌单-->
-    <el-dialog title="添加歌单" :visible.sync="centerDialogVisible" width="400px" center>
-      <el-form :model="registerForm" status-icon ref="registerForm" label-width="70px" class="demo-ruleForm">
-          <el-form-item label="歌单名" prop="title" size="mini">
-            <el-input v-model="registerForm.title" placeholder="歌单名"></el-input>
-          </el-form-item>
-          <el-form-item label="歌单介绍" prop="introduction" size="mini">
-            <el-input v-model="registerForm.introduction" placeholder="歌单介绍"></el-input>
-          </el-form-item>
-          <el-form-item label="风格" prop="style" size="mini">
-            <el-input v-model="registerForm.style" placeholder="风格"></el-input>
-          </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="centerDialogVisible = false">取 消</el-button>
-        <el-button type="primary" size="mini" @click="addsongList">确 定</el-button>
-      </span>
     </el-dialog>
 
-    <!-- 编辑弹出框 -->
-    <el-dialog title="编辑" :visible.sync="editVisible" width="400px">
-      <el-form ref="form" :model="form" label-width="40px">
-        <el-form-item label="标题" size="mini">
-          <el-input v-model="form.title"></el-input>
-        </el-form-item>
-        <el-form-item label="简介" size="mini">
-          <el-input  type="textarea" v-model="form.introduction"></el-input>
-        </el-form-item>
-        <el-form-item label="风格" size="mini">
-          <el-input v-model="form.style"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" size="mini" @click="saveEdit">确 定</el-button>
-      </span>
-    </el-dialog>
-
-    <!-- 删除提示框 -->
-    <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
-      <div class="del-dialog-cnt" align="center">删除不可恢复，是否确定删除？</div>
-      <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="delVisible = false">取 消</el-button>
-        <el-button type="primary" size="mini" @click="deleteRow">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
+  import {getSongListByPage,getMySongList,getTitleByPage,getStyleByPage,addSongList,updateSongListMsg,deleteSongList} from '../../api/system/songlist'
+  import * as dateUtils from "@/api/data";
+  import MixinCUD from '@/components/MixinCUD'
+  export default {
+   name: "SongListPage",
+   mixins: [MixinCUD],
+    data() {
+      return {
+        tableData: [],
+        queryFormRefName:"songListName",
+        songListName:{
+          title: ""   // 歌单的标题
+        },
+        
+       pagination:{
+          pageNum: 1,
+          pageSize: 20,
+          total: null
+        },
 
-import { mixin } from '../../mixins'
-import { setSongList, getSongList, updateSongListMsg, deleteSongList } from '../../api/system/songlist'
-
-export default {
-  name: 'song-list-page',
-  mixins: [mixin],
-  data () {
-    return {
-      registerForm: {
-        title: '',
-        introduction: '',
-        style: ''
-      },
-      tableData: [],
-      tempDate: [],
-      multipleSelection: [], // 记录要删除的歌单
-      centerDialogVisible: false,
-      editVisible: false,
-      delVisible: false,
-      select_word: '',
-      form: {
-        id: '',
-        title: '',
-        pic: '',
-        introduction: '',
-        style: ''
-      },
-      pageSize: 5, // 页数
-      currentPage: 1, // 当前页
-      idx: -1
-    }
-  },
-  computed: {
-    // 计算当前表格中的数据
-    data () {
-      return this.tableData.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
-    }
-  },
-  watch: {
-    select_word: function () {
-      if (this.select_word === '') {
-        this.tableData = this.tempDate
-      } else {
-        this.tableData = []
-        for (let item of this.tempDate) {
-          if (item.title.includes(this.select_word)) {
-            this.tableData.push(item)
-          }
+        dialogFormVisible: false,
+        dialogTitle:"",
+        dialogRefName:"dialogForm",
+        dialogForm: {
+          id: null,
+          title: '',
+          pic: '',
+          style:'',
+          introduction:'',
+          type: '',  // 歌单的类型  0 是系统创建  1 是用户自己创建
+          createTime:'',
+          updateTime:'',
+          userName: '',
+          userId:'',
+        },
+        dialogFormRules: {
+          title: [
+            {required: true, message: '请输入歌单标题', trigger: 'blur'},
+          ],
+          style: [
+            {required: true, message: '输入歌单风格', trigger: 'blur'},
+          ],
+          introduction: [
+            {required: true, message: '输入歌单的介绍', trigger: 'blur'},
+          ]
         }
       }
-    }
-  },
+    },
+
   created () {
     this.getData()
   },
-  methods: {
-    uploadUrl (id) {
-      return `${this.$store.state.HOST}/songList/img/update?id=${id}`
-    },
-    // 获取歌单信息
-    getData () {
-      this.tableData = []
-      this.tempDate = []
-      getSongList().then((res) => {
-          console.log(res.data);
-        this.tableData = res.data
-        this.tempDate = res.data
-        this.currentPage = 1
-      })
-    },
-    // 获取当前页
-    handleCurrentChange (val) {
-      this.currentPage = val
-    },
-    getContent (id) {
-      this.$router.push({path: '/listSong', query: {id: id}})
-    },
-    getComment (id) {
-      this.$router.push({path: '/Comment', query: {id: id, type: 1}})
-    },
-    // 编辑啊
-    handleEdit (row) {
-      this.idx = row.id
-      this.form = {
-        id: row.id,
-        title: row.title,
-        pic: row.pic,
-        introduction: row.introduction,
-        style: row.style
-      }
-      this.editVisible = true
-    },
-    // 保存编辑
-    saveEdit () {
-      let params = new URLSearchParams()
-      params.append('id', this.form.id)
-      params.append('title', this.form.title)
-      params.append('pic', this.form.pic)
-      params.append('introduction', this.form.introduction)
-      params.append('style', this.form.style)
-      updateSongListMsg(params)
-        .then(res => {
-          if (res.code === 200) {
-              //console.log(res.data);
-            this.notify('编辑成功', 'success')
-            this.getData()
-          } else {
-            this.notify('编辑失败', 'error')
-          }
-        })
-        .catch(err => {
+
+    methods: {
+      getData(){
+        getSongListByPage(this.pagination.pageNum,this.pagination.pageSize)
+          .then(res => {
+           //  console.log(res)
+             this.setData(res)
+          })
+      },
+       // 设置数据信息
+      setData(res) {
+          this.tableData = res.records
+          this.pagination.total = res.total;
+      },
+     
+     // 根据歌名查询歌手的信息
+      songListQuery(){
+        getTitleByPage(this.pagination.pageNum,this.pagination.pageSize,this.songListName.title).then(res =>{   
+            console.log(res);
+            this.setData(res)
+           }).catch(err => {
+                this.$message({message: err.message, type: 'error'});
+          }) 
+     },
+
+    // 根据歌单id来查询所属歌曲信息
+     getSongBySongListId(id){
+          this.$router.push({path: '/home/song', query: {songListId: id}})
+     },
+     
+     //编辑实现
+     updateData(){
+             updateSongListMsg(this.dialogForm)
+              .then(res => {
+               this.$message({message: res, type: 'success'});
+               this.submitQueryForm();
+               this.handleCloseDialog();
+            }).catch(err => {
           console.log(err)
+            })
+     },
+
+     addData(){
+         addSongList(this.dialogForm).then(res => {
+          this.$message({message: res, type: 'success'});
+          this.submitQueryForm();
+          this.handleCloseDialog();
         })
-      this.editVisible = false
-    },
-    // 添加歌单
-    addsongList () {
-      let params = new URLSearchParams()
-      params.append('title', this.registerForm.title)
-      params.append('pic', '/img/songListPic/123.jpg')
-      params.append('introduction', this.registerForm.introduction)
-      params.append('style', this.registerForm.style)
-      setSongList(params).then(res => {
-        if (res.code === 1) {
-          this.getData()
-          this.registerForm = {}
-          this.notify('添加成功', 'success')
-        } else {
-          this.notify('添加失败', 'error')
-        }
-      }).catch(err => {
-        console.log(err)
-      })
-      this.centerDialogVisible = false
-    },
-    // 确定删除
-    deleteRow () {
-      deleteSongList(this.idx)
-        .then(res => {
-          if (res) {
-            this.getData()
-            this.notify('删除成功', 'success')
+      },
+
+     saveEdit(){
+        this.$refs[this.dialogRefName].validate((valid) => {
+          if (valid) {
+            this.$confirm("确定提交数据么?")
+              .then(_ => {
+                if(this.dialogForm.id){ //有id是更新数据，没有id是新增数据
+                  this.updateData();
+                }else {
+                  this.addData();
+                }
+                //取消新增或修改也要重置表单
+              }).catch(err => {this.handleCloseDialog();});
           } else {
-            this.notify('删除失败', 'error')
+            return false;
           }
-        })
-        .catch(err => {
-          console.log(err)
-        })
-      this.delVisible = false
-    }
+        });
+     },
+    deleteData(row){
+        this.$confirm("确定删除["+row.name+"]?")
+          .then(_ => {
+            deleteUser(row.id)
+              .then(res => {
+                this.submitQueryForm();//删除之后，重新查询table
+                this.$message({message: res.data, type: 'success'});
+              }).catch(err => {S
+              this.$message({message: err.message, type: 'error'});
+            })
+          });
+      },
+      // 分页的设置
+      handlePageSizeChange(val){
+        this.pagination.pageSize = val;
+        this.submitQueryForm()
+      },
+      handlePageNumChange(val){
+        this.pagination.pageNum = val;
+        this.submitQueryForm()
+      }, 
+
+      // 日期的转换类
+     formData (val) {
+      let date = new Date(val);
+      return dateUtils.formatDate(date,'yyyy-MM-dd');
+    },
+    // 用户的性别类的转换 
+    changeSongListType (value) {
+       return dateUtils.changeSongListType(value);
+    },
+    
+  },
   }
-}
 </script>
 
 <style scoped>
-.handle-box {
-    margin-bottom: 20px;
-}
-
-.handle-input {
-    width: 300px;
-    display: inline-block;
-}
-.pagination {
-    display: flex;
-    justify-content: center;
-}
+  .el-form {
+    margin-top: 20px;
+    margin-right: 40px;
+  }
 </style>

@@ -1,7 +1,7 @@
 package com.mymusic.service.impl;
 
+import com.mymusic.common.domain.UserCommentVo;
 import com.mymusic.domain.UserReplyComment;
-import com.mymusic.formvo.UserCommentVo;
 import com.mymusic.service.UserReplyCommentService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,8 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class UserReplyCommentServiceImplTest extends BaseTest {
 

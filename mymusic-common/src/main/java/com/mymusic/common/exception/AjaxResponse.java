@@ -58,8 +58,8 @@ public class AjaxResponse {
   public static AjaxResponse setResult(ResultCodeEnum resultCodeEnum){
     AjaxResponse responseBean = new AjaxResponse();
     responseBean.setCode(resultCodeEnum.getCode());
-    responseBean.setIsok(responseBean.getIsok());
-    responseBean.setMessage(responseBean.getMessage());
+    responseBean.setIsok(resultCodeEnum.getSuccess());
+    responseBean.setMessage(resultCodeEnum.getMessage());
     return  responseBean;
   }
 
@@ -93,6 +93,5 @@ public class AjaxResponse {
     ajaxResponse.setData(obj);
     return ajaxResponse;
   }
-
 
 }

@@ -78,6 +78,11 @@ const menuRouter = [
       path: 'songlist',
       component: () => import('@/views/system/SongListPage.vue')
     },
+    {
+      name: 'center',
+      path: 'center',
+      component: () => import('@/views/system/UserCenterPage.vue')
+    },
 ];
 
 export default [

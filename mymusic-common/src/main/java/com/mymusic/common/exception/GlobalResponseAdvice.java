@@ -30,17 +30,17 @@ public class GlobalResponseAdvice implements ResponseBodyAdvice<Object> {
     if(mediaType.equalsTypeAndSubtype(MediaType.APPLICATION_JSON)){
       if(body instanceof AjaxResponse){
         AjaxResponse ajaxResponse = (AjaxResponse)body;
-        serverHttpResponse.setStatusCode(HttpStatus.valueOf(
-                ajaxResponse.getCode()
-        ));
+//        serverHttpResponse.setStatusCode(HttpStatus.valueOf(
+//                ajaxResponse.getCode()
+//        ));
 
         return body;
       }else{
-        serverHttpResponse.setStatusCode(HttpStatus.OK);
+        //serverHttpResponse.setStatusCode(HttpStatus.OK);
         return AjaxResponse.success(body);
       }
-
-    }
+//
+     }
 
     return body;
 

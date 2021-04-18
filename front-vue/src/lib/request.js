@@ -35,7 +35,7 @@ class HttpRequest {
             // error.response = 后端的AjaxResponse
             error => {
                 if (error && error.response) {
-                    switch (error.response.status) {
+                    switch (error.response.code) {
                         case 400:
                             error.message = error.response.data.message;
                             break;

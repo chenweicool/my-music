@@ -2,6 +2,7 @@ package com.mymusic.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mymusic.common.domain.SongVo;
 import com.mymusic.common.enums.SongConsumerType;
 import com.mymusic.common.exception.CustomException;
 import com.mymusic.common.exception.SongException;
@@ -51,10 +52,6 @@ public class SongServiceImpl implements SongService
         return song;
     }
 
-    @Override
-    public List<Song> selectAll() {
-        return songMapper.selectAll();
-    }
 
     /**
      * 更新歌曲
@@ -71,54 +68,50 @@ public class SongServiceImpl implements SongService
         return songMapper.updateByPrimaryKey(record)>0;
     }
 
-    @Override
-    public List<Song> songOfName(String name) {
-        List<Song> song = songMapper.songOfName(name);
-        if (song == null) {
-            throw new SongException(SongConsumerType.SONG_NOT_EXIST.getMessage());
-        }
-        return song;
-    }
 
     @Override
     public boolean updateSongPic(Song song) {
         return songMapper.updateSongPic(song)>0;
     }
 
-    @Override
-    public List<Song> selectSongBySingerId(Integer singerId) {
-        return songMapper.selectSongBySingerId(singerId);
-    }
 
     /**
      * 分页查询歌曲的实现
-     * @param name  歌曲名
-     * @param introduction 歌曲的专辑
-     * @param lyric 歌词
      * @param pageNum 分页的数量
      * @param pageSize 分页的大小
      * @return
      */
     @Override
-    public IPage<Song>
-    querySong(String name, String introduction, String lyric, Integer pageNum, Integer pageSize) {
+    public IPage<SongVo>  selectSongByPage(Integer pageNum, Integer pageSize) {
         Page<Song> page = new Page<>(pageNum,pageSize); // 查询pagenum页，pagesize的数据
-        return songMapper.selectSong(page,name,introduction,lyric);
+        return songMapper.selectSongByPage(page);
     }
 
-    /**
-     * 根据歌曲的url返回歌曲的id
-     * @param songUrl 歌曲播放地址
-     * @return  返回歌曲的id
-     */
     @Override
     public Long selectSongByUrl(String songUrl) {
         return songMapper.selectSongByUrl(songUrl);
     }
 
     @Override
-    public List<Song> selectSongBySongListId(Integer songListId) {
-        List<Song> songs = songMapper.selectSongBySongListId(songListId);
-        return songs;
+    public IPage<SongVo> selectSongBySongListId(Integer pageNum, Integer pageSize,Integer songListId) {
+        IPage<SongVo> page = new Page<>(pageNum, pageSize);
+       return songMapper.selectSongBySongListId(page,songListId);
+    }
+
+    @Override
+    public List<Song> songOfName(String songName) {
+        return songMapper.songName(songName);
+    }
+
+    @Override
+    public IPage<SongVo> querySongBySongNameOrSingerName(Integer pageNum, Integer pageSize, String queryName) {
+        IPage<SongVo> page = new Page<>(pageNum, pageSize);
+        return songMapper.querySongBySongNameOrSingerName(page,queryName);
+    }
+
+    @Override
+    public IPage<SongVo> selectSongBySingerId(Integer pageNum, Integer pageSize, Integer singerId) {
+        IPage<SongVo> page = new Page<>(pageNum, pageSize);
+        return  songMapper.selectSongBySingerId(page, singerId);
     }
 }

@@ -101,13 +101,13 @@
         <include refid="Base_Column_List" />
         from singer where id = #{id, jdbcType=INTEGER}
     </select>
-    <!--查询所有的歌手-->
-    <select id="findAllSinger" resultMap="BaseResultMap">
+
+    <!--分页查询歌手的信息-->
+    <select id="getSingerByPage" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from singer
     </select>
-
     <!--根据名字来查询歌手的信息-->
     <select id="singerOfName" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
@@ -117,8 +117,28 @@
 
     <!--根据歌手的性别进行查询-->
     <select id="singerOfSex" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-        select *
+        select
+        <include refid="Base_Column_List"/>
         from singer
         where sex = #{sex, jdbcType=INTEGER}
   </select>
+
+    <!--根据歌手的地域信息来模糊查询-->
+    <select id="getSingerByLocation" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from singer where location like concat('%',#{location},'%')
+    </select>
+    <!--根据歌手的出生日期来模糊查询-->
+    <select id="getSingerByAge" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from singer where
+        <if test="startTime!=null and startTime.trim() neq ''">
+         date_format(birth,'%Y-%m-%d %H:%i:%s') &gt;= str_to_date(#{startTime},'%Y-%m-%d %H:%i:%s')
+       </if>
+        <if test="endTime!=null and endTime.trim() neq ''">
+            and date_format(birth,'%Y-%m-%d %H:%i:%s') &lt;= str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+        </if>
+    </select>
 </mapper>

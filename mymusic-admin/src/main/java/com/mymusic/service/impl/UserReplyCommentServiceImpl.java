@@ -1,9 +1,9 @@
 package com.mymusic.service.impl;
 
 import com.mymusic.ConvertService;
+import com.mymusic.common.domain.UserCommentVo;
 import com.mymusic.common.utils.ParameterCheckUtils;
 import com.mymusic.domain.UserReplyComment;
-import com.mymusic.formvo.UserCommentVo;
 import com.mymusic.mapper.UserReplyCommentMapper;
 import com.mymusic.service.UserReplyCommentService;
 import org.springframework.stereotype.Service;

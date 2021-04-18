@@ -1,8 +1,8 @@
 package com.mymusic.controller.system;
 
+import com.mymusic.common.domain.UserCommentVo;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.domain.UserReplyComment;
-import com.mymusic.formvo.UserCommentVo;
 import com.mymusic.service.UserReplyCommentService;
 import org.springframework.web.bind.annotation.*;
 

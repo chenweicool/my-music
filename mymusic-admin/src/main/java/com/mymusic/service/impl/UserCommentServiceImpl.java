@@ -3,14 +3,13 @@ package com.mymusic.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mymusic.ConvertService;
+import com.mymusic.common.domain.UserCommentVo;
 import com.mymusic.common.exception.UserException;
 import com.mymusic.common.utils.ParameterCheckUtils;
 import com.mymusic.domain.*;
 import com.mymusic.formvo.UserCommentSongRequest;
-import com.mymusic.formvo.UserCommentVo;
-import com.mymusic.mapper.SongCommentMapper;
+
 import com.mymusic.mapper.UserCommentMapper;
-import com.mymusic.service.SysUserService;
 import com.mymusic.service.UserCommentService;
 import org.springframework.stereotype.Service;
 
@@ -68,8 +67,7 @@ public class UserCommentServiceImpl implements UserCommentService {
     @Override
     public Boolean updateComment(UserComment userComment) {
         ParameterCheckUtils.checkParamIsBlank(userComment);
-        ParameterCheckUtils.checkParamIsBlank(userComment.getContent(),userComment.getUserName(),
-                userComment.getUserId());
+        ParameterCheckUtils.checkParamIsBlank(userComment.getContent(),userComment.getUserName());
 
         if (userComment.getUpdateTime() == null) {
             userComment.setUpdateTime(new Date());
@@ -96,20 +94,10 @@ public class UserCommentServiceImpl implements UserCommentService {
     }
 
     @Override
-    public IPage<UserCommentVo> getUserCommentByPage(Page<UserCommentConsumer> page) {
+    public IPage<UserCommentVo> getUserCommentByPage(Page<UserCommentVo> page) {
         ParameterCheckUtils.checkParamIsBlank(page);
-
-        IPage<UserCommentVo> page1 = new Page<>();
-        List<UserCommentVo> userCommentVoList = new ArrayList<>();
-
-        IPage<UserCommentConsumer> userCommentByPage = userCommentMapper.getUserCommentByPage(page);
-        List<UserCommentConsumer> records = userCommentByPage.getRecords();
-        for (UserCommentConsumer record : records) {
-           UserCommentVo userCommentVo =  convertService.convertUserCommentVo(record);
-            userCommentVoList.add(userCommentVo);
-        }
-        page1.setRecords(userCommentVoList);
-        return  page1;
+        IPage<UserCommentVo> userCommentByPage = userCommentMapper.getUserCommentByPage(page);
+        return  userCommentByPage;
     }
 
     @Override
@@ -121,16 +109,16 @@ public class UserCommentServiceImpl implements UserCommentService {
         if (userByUserName == null) {
             throw new UserException("该用户不存在");
         }
-        List<UserCommentConsumer> commentConsumerList = userCommentMapper.getCommentByUserName(userName);
+        List<UserCommentVo> commentConsumerList = userCommentMapper.getCommentByUserName(userName);
         if (commentConsumerList.isEmpty()) {
             throw new UserException("没有该用户的评论信息");
         }
-        List<UserCommentVo> commentVoList = convertService.convertUserCommentVOList(commentConsumerList);
-        return  commentVoList;
+
+        return  commentConsumerList;
     }
 
     @Override
-    public IPage<UserCommentVo> getCommentBySongName(Page<UserCommentConsumer> page,String songName) {
+    public IPage<UserCommentVo> getCommentBySongName(Page<UserCommentVo> page,String songName) {
         ParameterCheckUtils.checkParamIsBlank(songName);
         List<Song> songList = songService.songOfName(songName);
         List<Long> songIds = new ArrayList<>();
@@ -143,32 +131,23 @@ public class UserCommentServiceImpl implements UserCommentService {
             Long songId = song.getId();
             songIds.add(songId);
         }
-        IPage<UserCommentConsumer> ipage = userCommentMapper.getCommentBySongName(page,songIds);
-        IPage<UserCommentVo> resultPage = new Page<>();
+        IPage<UserCommentVo> ipage = userCommentMapper.getCommentBySongName(page,songIds);
 
-        List<UserCommentVo> userCommentVoList = convertService.convertUserCommentVOList(ipage.getRecords());
-
-        resultPage.setRecords(userCommentVoList);
-        return resultPage;
+        return ipage;
     }
 
     @Override
-    public IPage<UserCommentVo> getCommentBySongId(Page<UserCommentConsumer> page,Long songId) {
+    public IPage<UserCommentVo> getCommentBySongId(Page<UserCommentVo> page,Long songId) {
         ParameterCheckUtils.checkParamIsBlank(songId);
         Song song = songService.selectSong(songId);
         if (song == null) {
             throw new RuntimeException("该歌曲的信息不存在");
         }
 
-        IPage<UserCommentConsumer> ipage = userCommentMapper.getCommentBySongId(page,songId);
-        IPage<UserCommentVo> resultPage = new Page<>();
-
-        List<UserCommentVo> userCommentVoList = convertService.convertUserCommentVOList(ipage.getRecords());
-        resultPage.setRecords(userCommentVoList);
-        return resultPage;
+        IPage<UserCommentVo> ipage = userCommentMapper.getCommentBySongId(page,songId);
+        return ipage;
 
     }
-
 
 }
 

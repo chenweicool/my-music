@@ -2,12 +2,10 @@ package com.mymusic.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mymusic.common.domain.UserCommentVo;
 import com.mymusic.domain.UserComment;
-import com.mymusic.domain.UserCommentConsumer;
 import com.mymusic.formvo.UserCommentSongRequest;
-import com.mymusic.formvo.UserCommentVo;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -43,12 +41,13 @@ public interface UserCommentService {
      */
 
     UserComment selectByCommentId(Long id);
+
     /**
-     * 分页查询评论内瓤
+     * 分页查询评论内容
      * @param page 具体分页对象
      * @return
      */
-    IPage<UserCommentVo> getUserCommentByPage(Page<UserCommentConsumer> page);
+    IPage<UserCommentVo> getUserCommentByPage(Page<UserCommentVo> page);
 
     /**
      * 根据用户名查询用户的评论内容
@@ -58,16 +57,16 @@ public interface UserCommentService {
     List<UserCommentVo> getCommentByUserName(String userName);
 
     /**
-     * 根据歌曲名查询所有的评论信息
+     * 根据歌曲名或者歌手名查询所有的评论信息
      * @param songName 歌曲名
      * @return
      */
-    IPage<UserCommentVo> getCommentBySongName(Page<UserCommentConsumer> page,String songName);
+    IPage<UserCommentVo> getCommentBySongName(Page<UserCommentVo> page,String songName);
 
     /**
      * 根据歌曲的id查询所有的评论的内容
      * @param songId  歌曲的id的信息
      * @return {@link UserCommentVo}
      */
-    IPage<UserCommentVo> getCommentBySongId(Page<UserCommentConsumer> page,Long  songId);
+    IPage<UserCommentVo> getCommentBySongId(Page<UserCommentVo> page,Long  songId);
 }

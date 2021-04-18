@@ -1,16 +1,13 @@
-package com.mymusic.formvo;
+package com.mymusic.common.domain;
 
 import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * 评论的vo类
- */
 @Data
 public class UserCommentVo implements Serializable {
-    private static final long serialVersionUID = -6174840767808988655L;
-
+    private static final long serialVersionUID = 4532700104039845791L;
     /**
      * 评论的id
      */
@@ -20,11 +17,11 @@ public class UserCommentVo implements Serializable {
      */
     private  String userName;
 
-   /*用户的头像*/
+    /*用户的头像*/
     private String avatar;
 
     /*评论创建时间*/
-    private Date  createTime;
+    private Date createTime;
 
     /*评论的内容*/
     private String content;

@@ -1,6 +1,8 @@
 package com.mymusic.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.domain.Singer;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -33,21 +35,31 @@ public interface SingerMapper {
      */
     Singer findByPrimaryKey(Integer id);
 
-    /**
-     * 查询全部的歌手
-     */
-    List<Singer> findAllSinger();
+    /*插入歌手时，增加关联表中的记录的值*/
+    int addSingerIdSongId(Integer singerId, Long songId);
 
+    /*根据歌手的性别来进行模糊查询*/
+    IPage<Singer>  singerOfSex(IPage<Singer> page,@Param("sex") Integer sex);
     /**
      * 根据歌手名进行模糊查询
      * @param name 歌手名
      * @return 返回查询的结果
      */
-    List<Singer> singerOfName(String name);
+    IPage<Singer> singerOfName(IPage<Singer> page,@Param("name") String name);
 
-    /*根据歌手的性别来进行模糊查询*/
-    List<Singer>  singerOfSex(Integer sex);
 
-    /*插入歌手和歌曲的关联表*/
-    int addSingerIdSongId(Integer singerId, Long songId);
+    /*根据歌手的地域来查询*/
+    IPage<Singer> getSingerByLocation(IPage<Singer> page, @Param("location") String location);
+
+    /**
+     * 根据歌手的年龄返回歌手的信息
+     * @param page 具体的分页的大小
+     * @param startTime 开始的时间范围
+     * @param endTime 结束的时间范围
+     * @return
+     */
+    IPage<Singer> getSingerByAge(IPage<Singer> page, @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+    /*分页获取歌手信息*/
+    IPage<Singer> getSingerByPage(IPage<Singer> page);
 }

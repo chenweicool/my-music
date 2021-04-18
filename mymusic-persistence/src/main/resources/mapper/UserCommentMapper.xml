@@ -4,26 +4,26 @@
 <mapper namespace="com.mymusic.mapper.UserCommentMapper">
 
     <!--分页查询评论的内容-->
-    <select id="getUserCommentByPage" resultType="com.mymusic.domain.UserCommentConsumer">
+    <select id="getUserCommentByPage" resultType="com.mymusic.common.domain.UserCommentVo">
           select
-         c.id,c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status,s.name
+         c.id,c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status,s.name as songName
          from  user_comment c left join song s on c.song_id = s.id
               ORDER BY c.like_num desc
     </select>
 
     <!--根据用户名查询他的所有评论内容-->
-    <select id="getCommentByUserName" parameterType="java.lang.String" resultType="com.mymusic.domain.UserCommentConsumer">
+    <select id="getCommentByUserName" parameterType="java.lang.String" resultType="com.mymusic.common.domain.UserCommentVo">
          select
-              c.id,c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status,s.name
+              c.id,c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status,s.name as songName
             from  user_comment c left join song s on c.song_id = s.id
             where user_name = #{userName}
             ORDER BY c.like_num desc
     </select>
 
     <!--根据歌曲名查询歌曲应有的评论-->
-   <select id="getCommentBySongName" resultType="com.mymusic.domain.UserCommentConsumer">
+   <select id="getCommentBySongName" resultType="com.mymusic.common.domain.UserCommentVo">
        select
-       c.id,c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status,s.name
+       c.id,c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status,s.name songName
        from  user_comment c left join song s on c.song_id = s.id
        where
        <if test="songIds != null and songIds.size() >0">
@@ -35,9 +35,9 @@
        ORDER BY c.like_num desc
    </select>
 
-    <select id="getCommentBySongId" parameterType="java.lang.Long" resultType="com.mymusic.domain.UserCommentConsumer">
+    <select id="getCommentBySongId" parameterType="java.lang.Long" resultType="com.mymusic.common.domain.UserCommentVo">
          select
-            c.id, c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status,s.name
+            c.id, c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status,s.name songName
              from  user_comment c left join song s on c.song_id = s.id
             where song_id = #{songId}
             ORDER BY c.like_num desc

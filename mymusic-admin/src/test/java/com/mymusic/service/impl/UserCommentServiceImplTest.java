@@ -3,10 +3,10 @@ package com.mymusic.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mymusic.ConvertService;
+import com.mymusic.common.domain.UserCommentVo;
 import com.mymusic.domain.UserComment;
 import com.mymusic.domain.UserCommentConsumer;
 import com.mymusic.formvo.UserCommentSongRequest;
-import com.mymusic.formvo.UserCommentVo;
 import com.mymusic.service.UserCommentService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,10 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
-import java.util.HashMap;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class UserCommentServiceImplTest extends BaseTest {
 
@@ -26,7 +23,7 @@ public class UserCommentServiceImplTest extends BaseTest {
 
     @Resource
     private ConvertService convertService;
-    Page<UserCommentConsumer> iPage ;
+    Page<UserCommentVo> iPage ;
 
     @Test
     public void addComment() {

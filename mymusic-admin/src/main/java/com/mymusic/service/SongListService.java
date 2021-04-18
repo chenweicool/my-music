@@ -1,5 +1,6 @@
 package com.mymusic.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.domain.SongList;
 
 import java.util.List;
@@ -22,20 +23,18 @@ public interface SongListService {
     /*根据id删除歌单的信息*/
     boolean deleteSongList(Integer id);
 
-    /*查询所有的歌单信息*/
-    List<SongList> allSongList();
-
-    /*根据歌单的标模糊查询歌单信息*/
-    List<SongList> likeTitle(String title);
-
     /*根据歌单的风格来查询歌单的信息*/
-    List<SongList> likeStyle(String style);
+    IPage<SongList> likeStyle(Integer pageNum, Integer pageSize,String style);
 
     /*精确的查找歌单的信息*/
-    List<SongList> songListOfTitle(String title);
+    IPage<SongList> songListOfTitle(Integer pageNum, Integer pageSize,String title);
+
+    /*查询我的歌单信息*/
+    IPage<SongList> findMySongList(Integer pageNum, Integer pageSize,Long userId);
 
     /*根据歌单的id查询单个歌单的信息*/
     SongList songListById(Integer parseInt);
 
-    List<SongList> findMySongList(Long userId);
+    /*分页查询歌单信息*/
+    IPage<SongList> getSongListByPage(Integer pageNum, Integer pageSize);
 }
