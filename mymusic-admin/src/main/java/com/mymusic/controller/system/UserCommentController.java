@@ -10,9 +10,9 @@ import com.mymusic.service.UserCommentService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import java.util.List;
+
 
 @Api(tags = "评论的接口")
 @RestController
@@ -69,7 +69,7 @@ public class UserCommentController {
     }
 
     /**
-     * 根据用户名查询的接口信息
+     * 根据用户名查询用户的评论的信息
      * @param userName  用户名
      * @return {@link List}
      */
@@ -78,6 +78,7 @@ public class UserCommentController {
         List<UserCommentVo> userCommentVos = userCommentService.getCommentByUserName(userName);
         return  AjaxResponse.success(userCommentVos);
     }
+
 
     /**
      * 根据歌曲名查询该歌曲的评论内容
@@ -97,6 +98,23 @@ public class UserCommentController {
     }
 
     /**
+     * 根据用户的id来查询用户的评论信息
+     * @param pageNum 分页的大小
+     * @param pageSize 分页的具体数量
+     * @param userId 用户id
+     * @return {@link AjaxResponse}
+     */
+    @GetMapping("/getCommentByUserId")
+    public AjaxResponse getCommentByUserId(@RequestParam(value = "pageNum",defaultValue = "1") Integer pageNum,
+                                           @RequestParam(value = "pageSize",defaultValue = "20") Integer pageSize,
+                                           @RequestParam("userId") String userId) {
+        Page<UserCommentVo> page = new Page<>(pageNum, pageSize);
+        Long userIdDb = Long.parseLong(userId);
+        IPage<UserCommentVo> page1 = userCommentService.getUserCommentByUserId(page,userIdDb);
+        return AjaxResponse.success(page1);
+    }
+
+    /**
      * 根据歌曲的id查询
      * @param pageNum 当前页
      * @param pageSize 当前页数据量的大小
@@ -111,5 +129,7 @@ public class UserCommentController {
         IPage<UserCommentVo> commentBySongId = userCommentService.getCommentBySongId(page, songId);
         return AjaxResponse.success(commentBySongId);
     }
+
+
 
 }

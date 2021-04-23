@@ -149,5 +149,12 @@ public class UserCommentServiceImpl implements UserCommentService {
 
     }
 
+
+    @Override
+    public IPage<UserCommentVo> getUserCommentByUserId(Page<UserCommentVo> page, Long userIdDb) {
+        ParameterCheckUtils.checkParamIsBlank(userIdDb);
+        return userCommentMapper.getUserCommentByUserId(page,userIdDb);
+    }
+
 }
 

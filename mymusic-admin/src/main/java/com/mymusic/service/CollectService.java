@@ -1,5 +1,8 @@
 package com.mymusic.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.mymusic.common.domain.SongListCollectVo;
+import com.mymusic.common.request.AddCollectSongListRequest;
 import com.mymusic.domain.Collect;
 
 import java.util.List;
@@ -9,15 +12,15 @@ import java.util.List;
 * */
 public interface CollectService {
 
-    boolean addCollection(Collect collect);
+    /*添加收藏*/
+    boolean addCollectionSongList(AddCollectSongListRequest collect);
 
-    boolean existSongId(Integer userId, Integer songId);
+    /*取消收藏的实现*/
+    boolean deleteCollectBySongListId(Integer collectSongListId);
 
-    boolean updateCollectMsg(Collect collect);
+    /*查询用户的收藏歌单信息*/
+    IPage<SongListCollectVo> getCollectsByUserId(Integer pageNum, Integer pageSize, Long userIdDB);
 
-    boolean deleteCollect(Integer userId, Integer songId);
-
-    List<Collect> allCollect();
-
-    List<Collect> collectionOfUser(Integer userId);
+    /*返回歌单被收藏的数量*/
+    Integer getCount(Integer songListCollectID);
 }

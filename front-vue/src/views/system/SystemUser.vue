@@ -98,7 +98,7 @@
             </el-table-column>
             <el-table-column prop="location" label="用户地区" width="130" align="center"/>
             <el-table-column prop="introduction" label="用户介绍" width="130" align="center"/>
-            <el-table-column label="所属歌曲" width="130" align="center">
+            <el-table-column label="用户详情" width="130" align="center">
               <template  slot-scope="scope">
                   <el-button  @click="getCenter(scope.row.id)">用户详情</el-button>
               </template>

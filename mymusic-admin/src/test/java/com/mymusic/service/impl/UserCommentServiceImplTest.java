@@ -117,4 +117,14 @@ public class UserCommentServiceImplTest extends BaseTest {
         Assert.assertNotNull(records);
     }
 
+    /**
+     * 测试通过
+     */
+    @Test
+    public void getCommentByUserId(){
+        Page<UserCommentVo> page = new Page<>(1, 20);
+        IPage<UserCommentVo> userCommentByUserId = userCommentService.getUserCommentByUserId(page, 1297873308628307970l);
+        System.out.println(userCommentByUserId.getTotal());
+    }
+
 }
