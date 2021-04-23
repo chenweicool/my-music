@@ -69,4 +69,12 @@ public interface UserCommentService {
      * @return {@link UserCommentVo}
      */
     IPage<UserCommentVo> getCommentBySongId(Page<UserCommentVo> page,Long  songId);
+
+    /**
+     * 根据用户名查询用户的信息
+     * @param page 页数的大小
+     * @param userIdDb 用户的id信息
+     * @return {@link IPage}
+     */
+    IPage<UserCommentVo> getUserCommentByUserId(Page<UserCommentVo> page, Long userIdDb);
 }

@@ -83,6 +83,43 @@ const menuRouter = [
       path: 'center',
       component: () => import('@/views/system/UserCenterPage.vue')
     },
+
+    // ==============================个人中心的页面路由信息
+    // 个人收藏信息
+    {
+      name: 'myCollection',
+      path: 'myCollection',
+      component: () => import('@/views/system/MyCollection.vue')
+    },
+
+    // 我创建的歌单信息
+    {
+      name: 'myCreateSongList',
+      path: 'myCreateSongList',
+      component: () => import('@/views/system/MyCreateSongList.vue')
+    },
+
+    // 我的评论
+    {
+      name: 'myComment',
+      path: 'myComment',
+      component: () => import('@/views/system/MyComment.vue')
+    },
+
+    // 我的浏览历史
+    {
+      name: 'myHistory',
+      path: 'myHistory',
+      component: () => import('@/views/system/MyHistory.vue')
+    },
+
+    // 我的听歌统计信息
+    {
+      name: 'myListenStatistic',
+      path: 'myListenStatistic',
+      component: () => import('@/views/system/MyListenStatistic.vue')
+    },
+
 ];
 
 export default [

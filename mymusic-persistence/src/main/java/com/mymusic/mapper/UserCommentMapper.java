@@ -44,4 +44,12 @@ public interface UserCommentMapper extends BaseMapper<UserComment> {
      * @return 评论的内容
      */
     IPage<UserCommentVo> getCommentBySongId(Page<UserCommentVo> page,@Param("songId") Long songId);
+
+    /**
+     * 根据用户id，来查询用户的评论信息
+     * @param page 当前页
+     * @param userId 具体页数的大小
+     * @return {@link IPage}
+     */
+    IPage<UserCommentVo> getUserCommentByUserId(Page<UserCommentVo> page, @Param("userId") Long userId);
 }

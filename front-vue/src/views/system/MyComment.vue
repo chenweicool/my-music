@@ -120,7 +120,7 @@
 </template>
 
 <script>
-  import {getCommentByPage,getCommentBySongName,getCommentByUserId,addComment,deleteComment,updateCommentMsg,getCommentByUserName,getCommentOfSongId}
+  import {getCommentByPage,getCommentBySongName,addComment,deleteComment,updateCommentMsg,getCommentByUserName,getCommentOfSongId,getCommentByUserId}
   from '../../api/system/comment'
    import * as dateUtils from "@/api/data";
   import MixinCUD from '@/components/MixinCUD'
@@ -137,8 +137,8 @@
           userName: ""   // 用户名
         },
         
-       songId: '',  // 歌曲的Id的信息，根据这个来查询歌曲的评论信息
-       userId:'',  //  用户的id的信息，根据他来确定用户创建的评论信息
+    // songId: '',  // 歌曲的Id的信息，根据这个来查询歌曲的评论信息
+       userId: '',  //用户的id的信息
        pagination:{
           pageNum: 1,
           pageSize: 20,
@@ -174,22 +174,22 @@
     },
 
   created () {
-    this.songId = this.$route.query.songId  // 获取歌曲的评论信息
+    this.userId = this.$route.query.userId
     this.getData()
   },
 
     methods: {
       getData(){
-        if(this.songId != null){
-            this.getCommentBySongId()
-        }
-        else{
-           getCommentByPage(this.pagination.pageNum,this.pagination.pageSize)
+        if(this.userId != null){
+            this.getCommentByUserComment()
+        }else{
+          getCommentByPage(this.pagination.pageNum,this.pagination.pageSize)
           .then(res => {
              //console.log(res)
              this.setData(res)
-          })}
-       
+          })
+        }
+        
       },
      
      // 这里判断一下，用户输入的是什么，支持按照歌曲来查询
@@ -202,10 +202,10 @@
           })    
      },
 
-    // 根据歌曲id来查询他的评论信息
-     getCommentBySongId(){
-         getCommentOfSongId(this.pagination.pageNum,this.pagination.pageSize,this.songId).then(res =>{
-           console.log(res)
+    // 根据用户id来查询他的评论信息
+     getCommentByUserComment(){
+         getCommentByUserId(this.pagination.pageNum,this.pagination.pageSize,this.userId).then(res =>{
+            console.log(res)
             this.setData(res)
          })
      },

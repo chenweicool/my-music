@@ -14,6 +14,10 @@ export const getCommentBySongName = (pageNum,pageSize,songName) => get(`comment/
 // 根据用户名查询所有的评论内容
 export const getCommentByUserName = (userName) => get(`comment/getCommentByUserName?userName=${userName}`)
 
+// 获得用户id的获得评论的内容
+export const getCommentByUserId = (pageNum,pageSize,userId) => get(`comment/getCommentByUserId?userId=${userId}&pageNum=${pageNum}&pageSize=${pageSize}`)
+
+
 // 添加一个评论
 export const addComment = (params) => post(`comment/addComment`, params)
 

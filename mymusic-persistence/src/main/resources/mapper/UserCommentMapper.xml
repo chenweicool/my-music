@@ -42,6 +42,14 @@
             where song_id = #{songId}
             ORDER BY c.like_num desc
     </select>
+
+    <select id="getUserCommentByUserId" parameterType="java.lang.Long" resultType="com.mymusic.common.domain.UserCommentVo">
+         select
+              c.id,c.user_name,c.avatar,c.content,c.create_time,c.like_num,c.comment_status,s.name as songName
+            from  user_comment c left join song s on c.song_id = s.id
+            where user_id = #{userId}
+            ORDER BY c.like_num desc
+    </select>
     <select id="selectByUUID" parameterType="java.lang.String" resultType="com.mymusic.domain.UserComment">
        select * from user_comment where uuid = #{commentUUID}
     </select>
