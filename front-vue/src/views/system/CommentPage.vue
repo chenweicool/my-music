@@ -33,7 +33,14 @@
     <el-card>
       <el-table :data="tableData" border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
         <el-table-column prop="userName" label="用户名" width="150" align="center"/>
-        <el-table-column prop="avatar" label="用户头象" width="100" align="center"/>
+       <el-table-column  label="用户头像" width="100" align="center">
+        <template slot-scope="scope">
+            <div>
+              <img :src="getUrl(scope.row.avatar)" alt="" style="width: 100%;"/>
+            </div>
+        </template>
+      </el-table-column>
+      
         <el-table-column prop="content" label="评论内容" width="300" align="center"/>
          <el-table-column  label="评论时间" width="150" align="center" >
               <template slot-scope="scope">
@@ -79,11 +86,13 @@
               <el-input  :disabled="true" v-model="dialogForm.userName" autocomplete="off"></el-input>
             </el-form-item>
         </el-row>
-        <el-row :gutter="20">
-            <el-form-item label="用户头像" prop="avatar">
-              <el-input v-model="dialogForm.avatar" autocomplete="off"></el-input>
-            </el-form-item>
-        </el-row>
+       <el-row :gutter="20">
+         <template slot-scope="scope">
+            <div>
+              <img :src="getUrl(scope.row.avatar)" alt="" style="width: 100%;"/>
+            </div>
+        </template>
+       </el-row>
         <el-row :gutter="20">
             <el-form-item label="评论时间" prop="createTime">
               <el-input v-model="dialogForm.createTime" autocomplete="off" ></el-input>
@@ -238,7 +247,10 @@
               })
           });
       },
-
+          // 得到图片地址信息
+     getUrl (url) {
+      return `${this.$store.state.ONHOST}/${url}`
+     },
       // 分页的设置
       handlePageSizeChange(val){
         this.pagination.pageSize = val;

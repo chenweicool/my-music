@@ -28,7 +28,23 @@
                      icon="el-icon-plus" @click="handleAdd('新增歌曲')">新增</el-button>
       <el-table :data="tableData" border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
         <el-table-column prop="title" label="歌单标题" width="150" align="center"/>
-        <el-table-column prop="pic" label="歌单头像" width="100" align="center"/>
+    <el-table-column  label="歌单海报" width="100" align="center">
+        <template slot-scope="scope">
+            <div>
+              <img :src="getUrl(scope.row.pic)" alt="" style="width: 100%;"/>
+            </div>
+            <el-upload
+              class="upload-demo"
+              :action="uploadUrl(scope.row.id)"
+              :headers="myHeaders"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+              >
+              <el-button size="mini">更新图片</el-button>
+            </el-upload>
+        </template>
+      </el-table-column>
         <el-table-column prop="style" label="歌单风格" width="150" align="center"/>
         <el-table-column  label="创建日期" width="150" align="center" >
               <template slot-scope="scope">
@@ -113,6 +129,7 @@
   import {getSongListByPage,getMySongList,getTitleByPage,getStyleByPage,addSongList,updateSongListMsg,deleteSongList} from '../../api/system/songlist'
   import * as dateUtils from "@/api/data";
   import MixinCUD from '@/components/MixinCUD'
+  var token = localStorage.getItem("JWTHeaderName");
   export default {
    name: "SongListPage",
    mixins: [MixinCUD],
@@ -123,7 +140,7 @@
         songListName:{
           title: ""   // 歌单的标题
         },
-        
+       myHeaders:{JWTHeaderName: token},
        pagination:{
           pageNum: 1,
           pageSize: 20,
@@ -259,6 +276,41 @@
     // 用户的性别类的转换 
     changeSongListType (value) {
        return dateUtils.changeSongListType(value);
+    },
+     // 得到图片地址信息
+    getUrl (url) {
+      return `${this.$store.state.ONHOST}/${url}`
+    },
+
+    // 歌单图片的上传
+    uploadUrl (id) {
+      return `${this.$store.state.HOST}/songList/updatePicture?id=${id}`
+    },
+    
+    // 更新图片
+    handleAvatarSuccess (res, file) {
+      let _this = this
+      console.log(res)
+      if (res.isok) {
+        _this.imageUrl = URL.createObjectURL(file.raw)
+        this.$message({message: res.data, type: 'success'});
+        this.submitQueryForm();
+      } else {
+          this.$message({message: res.data, type: 'error'});
+      }
+    },
+
+    // 上传前的图片的校验
+    beforeAvatarUpload (file) {
+      const isJPG = (file.type === 'image/jpeg') || (file.type === 'image/png')
+      const isLt2M = file.size / 1024 / 1024 < 20
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 20MB!')
+      }
+      return isJPG && isLt2M
     },
     
   },

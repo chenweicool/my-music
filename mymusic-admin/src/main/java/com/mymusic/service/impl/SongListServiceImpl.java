@@ -101,6 +101,11 @@ public class SongListServiceImpl implements SongListService {
         return songListMapper.getSongListByPage(page);
     }
 
+    @Override
+    public List<SongList> getSongListHot() {
+        return songListMapper.getSongListHot();
+    }
+
 
     @Override
     public IPage<SongList> likeStyle(Integer pageNum, Integer pageSize, String style) {

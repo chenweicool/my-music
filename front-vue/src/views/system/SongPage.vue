@@ -29,12 +29,9 @@
 
        <el-table :data="tableData"  border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
         <!-- <el-table-column type="selection" width="40"></el-table-column> -->
-        <el-table-column label="播放按钮" width="100" align="center">
-          <!-- <template slot-scope="scope">
-            <div style="width: 80px; height: 10px; overflow: hidden">
-              <img :src="getUrl(scope.row.pic)" alt="" style="width: 100%;"/>
-            </div>
-            <div class="play" @click="setSongUrl(scope.row.url, scope.row.songName)">
+        <el-table-column label="播放按钮" width="110" align="center">
+          <template slot-scope="scope" style="background-color:black">
+            <div style="background-color:black" class="play" @click="setSongUrl(scope.row.url, scope.row.songName)">
               <div v-if="toggle !== scope.row.songName">
                 <svg class="icon" aria-hidden="true">
                   <use xlink:href="#icon-bofanganniu"></use>
@@ -46,7 +43,7 @@
                 </svg>
               </div>
             </div>
-          </template> -->
+          </template>
         </el-table-column>
         <el-table-column label="歌名" prop="songName" width="100" align="center"></el-table-column>
         <el-table-column label="歌手名" prop="singerName" width="100" align="center"></el-table-column>
@@ -60,28 +57,23 @@
             </ul>
           </template>
         </el-table-column>
-        <el-table-column label="歌曲海报" width="150" align="center">
-          <!-- <template slot-scope="scope">
+        <el-table-column  label="歌曲海报" width="100" align="center">
+        <template slot-scope="scope">
+            <div>
+              <img :src="getUrl(scope.row.pic)" alt="" style="width: 100%;"/>
+            </div>
             <el-upload
               class="upload-demo"
               :action="uploadUrl(scope.row.id)"
+              :headers="myHeaders"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
               >
-                <el-button >更新图片</el-button>
+              <el-button size="mini">更新图片</el-button>
             </el-upload>
-            <br>
-            <el-upload
-              class="upload-demo change"
-              :action="uploadSongUrl(scope.row.id)"
-              :show-file-list="false"
-              :on-success="handleSongSuccess"
-              :before-upload="beforeSongUpload">
-              <el-button >更新歌曲</el-button>
-            </el-upload>
-          </template> -->
-        </el-table-column>
+        </template>
+      </el-table-column>
         <el-table-column label="歌曲评论" width="130" align="center">
             <template  slot-scope="scope">
                 <el-button  @click="getComment(scope.row.id)">歌曲评论</el-button>
@@ -162,6 +154,7 @@ import { getSongsByPage,getSongOfSongListId,getSongOfSingerId,updateSongMsg, del
 import MixinCUD from '../../components/MixinCUD'
  import * as dateUtils from "@/api/data";
 
+var token = localStorage.getItem("JWTHeaderName");
 export default {
   name: 'song-page',
   mixins:[MixinCUD],
@@ -177,7 +170,8 @@ export default {
       singerName: '',
       tableData: [],
       delVisible: false,
-      // select_word: '',
+      myHeaders:{JWTHeaderName: token},
+
       dialogFormVisible: false,
       dialogTitle:"",
       dialogRefName:"dialogForm",
@@ -344,9 +338,11 @@ export default {
           });
     },
 
-
+    // 播放歌曲实现
     setSongUrl (url, name) {
-      this.$store.commit('setUrl', this.$store.state.HOST + url)
+      console.log("歌曲的url"+url)
+     // this.$store.commit('setUrl', this.$store.state.ONHOST+url)
+        return this.$store.state.ONHOST +'/'+ url;
       this.toggle = name
       if (this.isPlay) {
         this.$store.commit('setIsPlay', false)
@@ -356,14 +352,42 @@ export default {
     },
 
 
-    // 更新歌曲图片
+    // 得到图片地址信息
+    getUrl (url) {
+      return `${this.$store.state.ONHOST}/${url}`
+    },
+
+    // 歌曲图片的上传
     uploadUrl (id) {
-      return `${this.$store.state.HOST}/song/img/update?id=${id}`
+      return `${this.$store.state.HOST}/song/updatePicture?id=${id}`
     },
-    // 更新歌曲url
-    uploadSongUrl (id) {
-      return `${this.$store.state.HOST}/song/url/update?id=${id}`
+    
+    // 更新图片
+    handleAvatarSuccess (res, file) {
+      let _this = this
+      console.log(res)
+      if (res.isok) {
+        _this.imageUrl = URL.createObjectURL(file.raw)
+        this.$message({message: res.data, type: 'success'});
+        this.submitQueryForm();
+      } else {
+          this.$message({message: res.data, type: 'error'});
+      }
     },
+
+    // 上传前的图片的校验
+    beforeAvatarUpload (file) {
+      const isJPG = (file.type === 'image/jpeg') || (file.type === 'image/png')
+      const isLt2M = file.size / 1024 / 1024 < 20
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 20MB!')
+      }
+      return isJPG && isLt2M
+    },
+
     beforeSongUpload (file) {
       var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
       const extension = testmsg === 'mp3'

@@ -12,21 +12,17 @@ import com.mymusic.domain.Song;
 import com.mymusic.jwt.utils.TimeUtils;
 import com.mymusic.service.SingerService;
 import com.mymusic.service.SongService;
+import com.mymusic.service.UpdatePictureOrFileService;
 import io.swagger.annotations.Api;
 import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
-import org.omg.PortableInterceptor.INACTIVE;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.commons.lang3.StringUtils;
+import org.aspectj.weaver.loadtime.Aj;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
 
 @Api(tags = "歌手的接口")
 @RestController
@@ -38,32 +34,18 @@ public class SingerController {
     private SingerService singerService;
 
     @Resource
-    private SongService songService;
+    private UpdatePictureOrFileService pictureOrFileService;
 
-    @Value("${file.Access_Key}")
-    private String Access_Key;
-
-    @Value("${file.Secret_Key}")
-    private String Secret_Key;
 
     /**
      * 添加歌手
-     * todo  这个上传的问题没有解决
      * @param singer 歌手的信息
-     * @param file 歌手的头像
      * @return 添加的结果
      */
     @ResponseBody
     @RequestMapping(value = "/addSinger", method = RequestMethod.POST)
-    public AjaxResponse addSinger(@RequestBody Singer singer, @RequestParam(value = "file",required = false)
-                            MultipartFile file){
-        /*将歌手的头像上传至七牛云，将歌手的头像地址存储到数据库*/
-//        String fileName = System.currentTimeMillis()+file.getOriginalFilename();
-//        String fileKey = Constants.SINGER_PIC+fileName;
-//        String storeAvatarPath = FileUtils.getAvatarPic(file, Access_Key, Secret_Key,fileKey);
-//        singer.setPic(storeAvatarPath);
+    public AjaxResponse addSinger(@RequestBody Singer singer){
         boolean res = singerService.addSinger(singer);
-
         if (res){
             return AjaxResponse.success("添加歌手成功");
         }else {
@@ -90,37 +72,27 @@ public class SingerController {
      * 更新歌手的头像信息
      * @return 返回用户的信息sh
      */
-    @PostMapping("/updateSingerPic")
-    public AjaxResponse updateSingerPic(@Param("file") MultipartFile avatarFile, @Param("id") Integer id){
-
-        JSONObject jsonObject = new JSONObject();
+    @PostMapping("/updatePicture")
+    public AjaxResponse updateSingerPic(@RequestParam("file") MultipartFile avatarFile, @RequestParam("id") Integer id){
         if (avatarFile.isEmpty()) {
             return AjaxResponse.error("上传的文件信息不能为空");
         }
-
         String fileName = System.currentTimeMillis() + avatarFile.getOriginalFilename();
-        String filePath = System.getProperty("use.dir")+System.getProperty("file.separator")+"img";
-        File file1 = new File(filePath);
-        if (!file1.exists()) {
-            file1.mkdir();
-        }
-        File dest = new File(filePath + System.getProperty("file.separator") + fileName);
-        String storeAvatorPath = "/img/"+fileName;
-
-        try {
-            avatarFile.transferTo(dest);
-            Singer singer = new Singer();
-            singer.setId(id);
-            singer.setPic(storeAvatorPath);
-            boolean res = singerService.updateSinger(singer);
-            if (res){
-                return AjaxResponse.success("上传成功");
-            }else {
-                return AjaxResponse.error("上传失败");
+        String fileKey = Constants.PICTURE_FILE+fileName;
+        String result = pictureOrFileService.updatePictureOrFile(avatarFile, fileKey);
+        if(!StringUtils.isEmpty(result)){
+            Singer singer = singerService.findSinger(id);
+            singer.setPic(fileKey);
+            boolean updateResult = singerService.updateSinger(singer);
+            if(updateResult){
+                return AjaxResponse.success("更新图片信息成功");
+            }else{
+                return AjaxResponse.error("更新图片失败");
             }
-        }catch (IOException e){
-            return AjaxResponse.error("上传失败");
+        }else{
+            return AjaxResponse.error("上传图片失败");
         }
+
     }
 
     /**

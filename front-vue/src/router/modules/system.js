@@ -117,7 +117,7 @@ const menuRouter = [
     {
       name: 'myListenStatistic',
       path: 'myListenStatistic',
-      component: () => import('@/views/system/MyListenStatistic.vue')
+      component: () => import('@/views/system/PlayMusic.vue')
     },
 
 ];

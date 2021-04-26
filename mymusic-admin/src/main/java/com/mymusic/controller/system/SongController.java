@@ -6,9 +6,11 @@ import com.mymusic.common.enums.ResultCodeEnum;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.Constants;
 import com.mymusic.common.utils.FileUtils;
+import com.mymusic.domain.Singer;
 import com.mymusic.domain.Song;
 import com.mymusic.domain.SongList;
 import com.mymusic.service.SongService;
+import com.mymusic.service.UpdatePictureOrFileService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -36,15 +38,12 @@ public class SongController {
     @Resource
     private SongService songService;
 
-    @Value("${file.Access_Key}")
-    private String Access_Key;
-
-    @Value("${file.Secret_Key}")
-    private String Secret_Key;
+    @Resource
+    private UpdatePictureOrFileService pictureOrFileService;
 
     /**
      * 添加歌曲
-     * 这里的歌曲只是添加歌曲
+     * 这里的歌曲只是添加歌曲,同时还要添加歌曲的文件
      * //TODO 歌曲的上传逻辑这里需要实现一下
      * @param file 歌曲文件
      * @return 添加的结果
@@ -53,56 +52,22 @@ public class SongController {
     @RequestMapping(value = "/addSong", method = RequestMethod.POST)
     public AjaxResponse addSong(@RequestBody Song song, @RequestParam(value = "file", required = false)
             MultipartFile file) {
-        // todo 对歌曲名字进行正则处理
-//        String singer_id = req.getParameter("singerId").trim();
-//        String songName = req.getParameter("name").trim();
-//        String introduction = req.getParameter("introduction").trim();
-//        String lyric = req.getParameter("lyric").trim();
-//        String pic = Constants.DEFAULT_PIC;    // 默认的图片的地址的信息
-//        // 将歌曲文件上传至七牛云 todo 这里有问题
-//        String SongKey = Constants.SONG_FILE + System.currentTimeMillis() + file.getOriginalFilename();  // 上传歌手文件的key的值
-//        String songUrl = FileUtils.getAvatarPic(file, Access_Key, Secret_Key, SongKey);  // 返回歌曲的播放地址信息
-
-        song.setCreateTime(new Date());
-        song.setUpdateTime(new Date());
-        song.setUrl("www.pingtu");
-//        song.setPic(pic);
-//        song.setUrl(songUrl);
-
-        boolean res = songService.insertSong(song);
-
+        boolean res = songService.insertSong(song,file);
         if (res) {
-            return AjaxResponse.success("添加成功");
+            return AjaxResponse.success("添加歌曲成功");
         } else {
-            return AjaxResponse.error("添加失败");
+            return AjaxResponse.error("添加歌曲失败");
         }
     }
 
     /**
-     * 更新歌曲的信息
-     *
-     * @param
-     * @return //TODo 需要优化
+     * 更新歌手的信息
+     * @param song {@link Song}
+     * @return
      */
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public AjaxResponse updateSingerMsg(@RequestBody Song song) {
-
-//       // JSONObject jsonObject = new JSONObject();
-//        String id = req.getParameter("id").trim();
-//        String singerId = req.getParameter("singerId").trim();
-//        String name = req.getParameter("name").trim();
-//        String introduction = req.getParameter("introduction").trim();
-//        String lyric = req.getParameter("lyric").trim();
-//
-//        Song song = new Song();
-//        song.setId(Long.parseLong(id));
-//        song.setSingerId(Integer.parseInt(singerId));
-//        song.setName(name);
-//        song.setIntroduction(introduction);
-        song.setUpdateTime(new Date());
-       // song.setLyric(lyric);
-
         boolean res = songService.updateSong(song);
         if (res) {
             return AjaxResponse.success("更新成功");
@@ -112,36 +77,30 @@ public class SongController {
     }
 
     /**
-     * 更新歌曲的头像的信息
-     *
-     * @param picFile 歌曲的头像信息
-     * @param id      歌曲的id
-     * @return 是否更新成功的信息
+     * 更新歌曲的海报信息
+     * @return 返回歌曲的海报信息
      */
-    @ResponseBody
-    @RequestMapping(value = "/img/update", method = RequestMethod.POST)
-    public AjaxResponse updateSongPic(@RequestParam("file") MultipartFile picFile, @RequestParam("id") Long id) {
-        HashMap<String, Object> res = new HashMap<>();
-        if (picFile.isEmpty()) {
-            res.put("文件夹不能为空", ResultCodeEnum.FILE_NOT_NULL);
-            return AjaxResponse.error("上传的文件不能为空");
+    @PostMapping("/updatePicture")
+    public AjaxResponse updateSingerPic(@RequestParam("file") MultipartFile avatarFile, @RequestParam("id") Long id){
+        if (avatarFile.isEmpty()) {
+            return AjaxResponse.error("上传的文件信息不能为空");
         }
-
-        String songPic = Constants.SONG_PIC + System.currentTimeMillis() + picFile.getOriginalFilename();
-        String picPath = FileUtils.getAvatarPic(picFile, Access_Key, Secret_Key, songPic);
-
-        Song song = new Song();
-        song.setId(id);
-        song.setPic(picPath);
-        boolean flag = songService.updateSongPic(song);
-        if (flag) {
-            res.put("avator", picPath);
-            return AjaxResponse.success(res);
-        } else {
-            return AjaxResponse.setResult(ResultCodeEnum.UNKNOWN_ERROR);
+        String fileName = System.currentTimeMillis() + avatarFile.getOriginalFilename();
+        String fileKey = Constants.PICTURE_FILE+fileName;
+        String result = pictureOrFileService.updatePictureOrFile(avatarFile, fileKey);
+        if(!StringUtils.isEmpty(result)){
+            Song song  = songService.selectSong(id);
+            song.setPic(fileKey);
+            boolean updateResult = songService.updateSong(song);
+            if(updateResult){
+                return AjaxResponse.success("更新图片信息成功");
+            }else{
+                return AjaxResponse.error("更新图片失败");
+            }
+        }else{
+            return AjaxResponse.error("上传图片失败");
         }
     }
-
     /*删除歌曲的信息*/
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public AjaxResponse deleteSongBySongId(HttpServletRequest request) {

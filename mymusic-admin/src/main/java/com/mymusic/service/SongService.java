@@ -2,6 +2,8 @@ package com.mymusic.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.common.domain.SongVo;
 import com.mymusic.domain.Song;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 public interface SongService {
@@ -10,18 +12,13 @@ public interface SongService {
     boolean deleteSong(Long id);
 
     /*插入歌曲的信息*/
-    boolean insertSong(Song record);
+    boolean insertSong(Song record, MultipartFile file);
 
     /*根据歌曲的id进行查询*/
     Song selectSong(Long id);
 
     /*更新歌曲的信息*/
     boolean updateSong(Song record);
-
-
-    /*更新歌曲的图片的信息*/
-    boolean updateSongPic(Song song);
-
 
     /*分页查询的实现*/
     IPage<SongVo> selectSongByPage(Integer pageNum, Integer pageSize);

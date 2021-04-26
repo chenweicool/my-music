@@ -37,4 +37,7 @@ public interface SongListService {
 
     /*分页查询歌单信息*/
     IPage<SongList> getSongListByPage(Integer pageNum, Integer pageSize);
+
+    /*获取10个热门的歌单信息*/
+    List<SongList> getSongListHot();
 }

@@ -2,6 +2,7 @@ package com.mymusic.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.domain.Singer;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
 public interface SingerService {
     /**
      * 增加歌手
+     * 并添加歌手的头像
      * @param singer 歌手
      * @return 插入结果
      */

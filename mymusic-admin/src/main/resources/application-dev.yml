@@ -50,13 +50,9 @@ mymusic:
       - DELETE
     devOpeningURI:
     permitAllURI:
-      - /songList/allSingList
+      - /songList/getSongListByPage
+      - /songList/getSongListHot
       - /songList/update
-      - /singer/name/detail
-      - /song/querysong
-      - /song/SongOfSingerName
-      - /song/singer/detail
-      - /song/detail
       - /sysuser/add
       - /comment/getCommentByPage
       - /rank
@@ -64,6 +60,7 @@ mymusic:
       - /sysuser/allUser
       - /user/alluser
       - /monitor/server
+      - /test/gethost
 mybatis:
   mapper-locations: classpath*:/mapper/*.xml
   type-aliases-package: com.mymusic.domain
@@ -73,6 +70,15 @@ file:
   Access_Key:  Ud6hdmRtoRw2A0sO8V2j8MAX3E7SM-VvXdhHHX_g
   Secret_Key:  =SP9eu88pWSAvUjseKuyEPEbCL8vAY04a_vhJ3NBF
 
+# 配置腾讯对象存储的密钥信息
+cos:
+  hostName: https://music-1305663279.cos.ap-nanjing.myqcloud.com
+  bucketName: music-1305663279
+  region:  ap-nanjing
+  secretId:  AKIDX3SaV9wlgO4XjhNrBGA5rdCxUmqflBaP
+  secretKey: oNhNjusjPs8LfldFjNq6ArTu8DE2asoX
+
+# 日志的配置信息
 logging:
   config: classpath:logback-spring.xml
   file:

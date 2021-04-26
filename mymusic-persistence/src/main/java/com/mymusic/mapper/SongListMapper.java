@@ -41,4 +41,7 @@ public interface SongListMapper {
 
     /*分页查询歌单信息*/
     IPage<SongList> getSongListByPage(IPage<SongList> page);
+
+    /*获取10个歌单信息*/
+    List<SongList> getSongListHot();
 }

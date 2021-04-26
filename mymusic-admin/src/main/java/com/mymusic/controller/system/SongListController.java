@@ -9,7 +9,9 @@ import com.mymusic.domain.Song;
 import com.mymusic.domain.SongList;
 import com.mymusic.service.SongListService;
 import com.mymusic.service.SongService;
+import com.mymusic.service.UpdatePictureOrFileService;
 import io.swagger.annotations.Api;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,11 +33,8 @@ public class SongListController {
     @Resource
     private SongListService songListService;
 
-    @Value("${file.Access_Key}")
-    private String Access_Key;
-
-    @Value("${file.Secret_Key}")
-    private String Secret_Key;
+    @Resource
+    private UpdatePictureOrFileService pictureOrFileService;
 
     /**
      * 添加歌单的信息
@@ -98,18 +97,6 @@ public class SongListController {
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public AjaxResponse updateSongListMsg(@RequestBody SongList songList){
-//        String id = req.getParameter("id").trim();
-//        String title = req.getParameter("title").trim();
-//        String pic = req.getParameter("pic").trim();
-//        String introduction = req.getParameter("introduction").trim();
-//        String style = req.getParameter("style").trim();
-//
-//        SongList songList = new SongList();
-//        songList.setId(Integer.parseInt(id));
-//        songList.setTitle(title);
-//        songList.setPic(pic);
-//        songList.setIntroduction(introduction);
-//        songList.setStyle(style);
 
         boolean res = songListService.updateSongListMsg(songList);
         if (res) {
@@ -119,29 +106,29 @@ public class SongListController {
         }
     }
 
-    /*更新歌单的图片*/
-    @ResponseBody
-    @RequestMapping(value = "/img/update", method = RequestMethod.POST)
-    public Map<String, Object> updateSongListPic(@RequestParam("file") MultipartFile picFile, @RequestParam("id")int id){
-
-        HashMap<String, Object> res = new HashMap<>();
-        if (picFile.isEmpty()) {
-            res.put("文件夹不能为空", ResultCodeEnum.FILE_NOT_NULL);
-            return res;
+    /**
+     * 更新歌歌单的海报信息
+     * @return 返回歌曲的海报信息
+     */
+    @PostMapping("/updatePicture")
+    public AjaxResponse updateSingerPic(@RequestParam("file") MultipartFile avatarFile, @RequestParam("id") Integer id){
+        if (avatarFile.isEmpty()) {
+            return AjaxResponse.error("上传的文件信息不能为空");
         }
-        String songPic = Constants.SONGLIST_PIC + System.currentTimeMillis() + picFile.getOriginalFilename();
-        String picPath = FileUtils.getAvatarPic(picFile, Access_Key, Secret_Key, songPic);
-
-            SongList songList = new SongList();
-            songList.setId(id);
-            songList.setPic(picPath);
-            boolean flag = songListService.updateSongListImg(songList);
-        if (flag) {
-            res.put("avator", picPath);
-            return res;
-        } else {
-            res.put("error", ResultCodeEnum.UNKNOWN_ERROR);
-            return res;
+        String fileName = System.currentTimeMillis() + avatarFile.getOriginalFilename();
+        String fileKey = Constants.PICTURE_FILE+fileName;
+        String result = pictureOrFileService.updatePictureOrFile(avatarFile, fileKey);
+        if(!StringUtils.isEmpty(result)){
+            SongList songList = songListService.songListById(id);
+            songList.setPic(fileKey);
+            boolean updateResult = songListService.updateSongListMsg(songList);
+            if(updateResult){
+                return AjaxResponse.success("更新图片信息成功");
+            }else{
+                return AjaxResponse.error("更新图片失败");
+            }
+        }else{
+            return AjaxResponse.error("上传图片失败");
         }
     }
 
@@ -200,6 +187,15 @@ public class SongListController {
         return AjaxResponse.success(iPage);
     }
 
+    /**
+     * 这个获取热门的10个歌单信息
+     * @return
+     */
+    @RequestMapping(value = "/getSongListHot",method = RequestMethod.GET)
+    public AjaxResponse songListByHot(){
+        List<SongList> songLists =  songListService.getSongListHot();
+        return AjaxResponse.success(songLists);
+    }
 
 
 }

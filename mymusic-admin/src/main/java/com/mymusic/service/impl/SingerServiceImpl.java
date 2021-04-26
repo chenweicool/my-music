@@ -2,18 +2,20 @@ package com.mymusic.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.mymusic.common.domain.SongVo;
+import com.mymusic.common.utils.Constants;
+import com.mymusic.common.utils.FileUtils;
 import com.mymusic.common.utils.TimeUtils;
+import com.mymusic.common.config.CosProperties;
 import com.mymusic.mapper.SingerMapper;
 import com.mymusic.domain.Singer;
 import com.mymusic.common.enums.SingerConsumerType;
 import com.mymusic.common.exception.SingerException;
 import com.mymusic.service.SingerService;
+import org.aspectj.apache.bcel.classfile.Constant;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class SingerServiceImpl implements SingerService{
@@ -21,9 +23,20 @@ public class SingerServiceImpl implements SingerService{
     @Resource
     private SingerMapper singerMapper;
 
+    @Resource
+    private CosProperties cosProperties;
+
+    /**
+     * 添加歌手，默认添加图片的信息
+     * @param singer 歌手
+     * @return
+     */
     @Override
-    public boolean addSinger(Singer singer) {
-        return singerMapper.insert(singer)>0;
+    public boolean addSinger( Singer singer) {
+        String hostName = cosProperties.getHostName();
+        String defaultPic = Constants.DEFAULT_PIC;
+        singer.setPic(defaultPic);
+        return singerMapper.insert(singer) > 0;
     }
 
     @Override

@@ -29,6 +29,9 @@ axios.interceptors.request.use(function (config) {
   if (config.url !== "/authentication") {
     // 让每个请求携带token
     config.headers['JWTHeaderName'] = getJwtToken();
+
+    //将token的值存储起来
+    localStorage.setItem("JWTHeaderName",getJwtToken());
     }
   return config;
 }, function (error) {

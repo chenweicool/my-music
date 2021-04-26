@@ -88,4 +88,7 @@
   <select id="findSongListByUUID" parameterType="java.lang.String" resultMap="BaseResultMap">
       select  sl.id, sl.title, sl.pic, sl.style, sl.introduction ,sl.type from song_list sl where sl.uuid = #{uuid}
   </select>
+  <select id="getSongListHot" resultMap="BaseResultMap">
+      select  sl.id, sl.title, sl.pic, sl.style, sl.introduction ,sl.type from song_list sl limit 10;
+  </select>
 </mapper>

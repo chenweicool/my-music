@@ -5,7 +5,6 @@ import com.mymusic.common.utils.FileUtils;
 import com.mymusic.common.utils.ParameterCheckUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.annotation.Resource;
 
 /**

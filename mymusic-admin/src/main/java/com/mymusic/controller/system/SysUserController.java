@@ -3,14 +3,19 @@ package com.mymusic.controller.system;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.common.exception.AjaxResponse;
+import com.mymusic.common.utils.Constants;
+import com.mymusic.domain.SongList;
 import com.mymusic.domain.SysUser;
 import com.mymusic.domain.SysUserOrg;
 import com.mymusic.formvo.SysUserVo;
 import com.mymusic.service.SongListService;
 import com.mymusic.service.SysUserSonglistService;
+import com.mymusic.service.UpdatePictureOrFileService;
 import com.mymusic.service.impl.SysUserServiceImpl;
 import io.swagger.annotations.Api;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -32,10 +37,7 @@ public class SysUserController {
     private SysUserServiceImpl sysuserService;
 
     @Resource
-    private SysUserSonglistService sysUserSonglistService;
-
-    @Resource
-    private SongListService songListService;
+    private UpdatePictureOrFileService pictureOrFileService;
 
     //根据登录用户名查询用户信息
     @GetMapping(value = "/info")
@@ -67,16 +69,7 @@ public class SysUserController {
                 createStartTime, createEndTime,
                 pageNum,pageSize);
     }
-    /**
-     * 查询所有的用户的信息
-     * 没有分页，已经废弃了
-     * @return 用户的信息
-     */
-    @Deprecated
-    @GetMapping("/allUser")
-    public List<SysUserVo> getAllUser(){
-        return sysuserService.getAllUser();
-    }
+
     /**
      * 用户更新的操作
      * @param sysUser 用户的信息
@@ -131,9 +124,33 @@ public class SysUserController {
         return AjaxResponse.success("用户状态更新成功！");
     }
 
-    // ======================================个人中心==============================
+    /**
+     * 更新用户的头像信息
+     * @return 返回歌曲的海报信息
+     */
+    @PostMapping("/updatePicture")
+    public AjaxResponse updateSingerPic(@RequestParam("file") MultipartFile avatarFile, @RequestParam("id") Long id){
+        if (avatarFile.isEmpty()) {
+            return AjaxResponse.error("上传的文件信息不能为空");
+        }
+        String fileName = System.currentTimeMillis() + avatarFile.getOriginalFilename();
+        String fileKey = Constants.PICTURE_FILE+fileName;
+        String result = pictureOrFileService.updatePictureOrFile(avatarFile, fileKey);
+        if(!StringUtils.isEmpty(result)){
+            SysUser sysUser = sysuserService.getUserById(id);
+            sysUser.setAvator(fileKey);
+            boolean updateResult = sysuserService.updateUser(sysUser);
+            if(updateResult){
+                return AjaxResponse.success("更新图片信息成功");
+            }else{
+                return AjaxResponse.error("更新图片失败");
+            }
+        }else{
+            return AjaxResponse.error("上传图片失败");
+        }
+    }
 
-    //=================================我的歌单模块在歌单中进行实现了=============
+
 
 
 

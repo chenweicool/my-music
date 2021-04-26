@@ -79,6 +79,23 @@
 
           <el-table :data="tableData" border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
             <el-table-column prop="username" label="用户名称" width="100" align="center"/>
+            <el-table-column  label="用户头像" width="100" align="center">
+              <template slot-scope="scope">
+                  <div>
+                    <img :src="getUrl(scope.row.avator)" alt="" style="width: 100%;"/>
+                  </div>
+                  <el-upload
+                    class="upload-demo"
+                    :action="uploadUrl(scope.row.id)"
+                    :headers="myHeaders"
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :before-upload="beforeAvatarUpload"
+                    >
+                    <el-button size="mini">更新图片</el-button>
+                  </el-upload>
+              </template>
+            </el-table-column>
             <el-table-column prop="phone" label="联系电话" width="120" align="center"/>
             <el-table-column prop="email" label="用户邮箱" width="150" align="center"/>
             <el-table-column  label="创建时间" width="200" align="center" >
@@ -254,6 +271,7 @@
   import ElTreeSelect from "@/components/TreeSelect";
   import DictSelect from "@/components/DictSelect";
   import * as dateUtils from "@/api/data";
+  var token = localStorage.getItem("JWTHeaderName");
   export default {
     name: "SystemUser",
     mixins: [MixinCUD],
@@ -261,6 +279,7 @@
     data() {
       return {
         tableData: [],
+        myHeaders:{JWTHeaderName: token},
         queryFormRefName:"userQueryForm",
         userQueryForm:{
           avator: '',
@@ -477,7 +496,44 @@
     // 用户的性别类的转换 
     changeSex (value) {
        return dateUtils.changeSex(value);
-    }
+    },
+  
+     // 得到图片地址信息
+    getUrl (url) {
+      return `${this.$store.state.ONHOST}/${url}`
+    },
+
+    // 歌曲图片的上传
+    uploadUrl (id) {
+      return `${this.$store.state.HOST}/sysuser/updatePicture?id=${id}`
+    },
+    
+    // 更新图片
+    handleAvatarSuccess (res, file) {
+      let _this = this
+      console.log(res)
+      if (res.isok) {
+        _this.imageUrl = URL.createObjectURL(file.raw)
+        this.$message({message: res.data, type: 'success'});
+        this.submitQueryForm();
+      } else {
+          this.$message({message: res.data, type: 'error'});
+      }
+    },
+
+    // 上传前的图片的校验
+    beforeAvatarUpload (file) {
+      const isJPG = (file.type === 'image/jpeg') || (file.type === 'image/png')
+      const isLt2M = file.size / 1024 / 1024 < 20
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 20MB!')
+      }
+      return isJPG && isLt2M
+    },
+
   
   },
   beforeRouteEnter(to, from, next) {

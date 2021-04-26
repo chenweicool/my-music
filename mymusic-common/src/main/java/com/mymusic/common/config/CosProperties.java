@@ -1,4 +1,4 @@
-package com.mymusic.config;
+package com.mymusic.common.config;
 
 import lombok.Data;
 import lombok.ToString;

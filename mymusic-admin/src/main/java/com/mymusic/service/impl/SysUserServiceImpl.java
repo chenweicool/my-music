@@ -96,11 +96,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      }
 
     //用户管理：修改
-    public void updateUser(SysUser sysuser){
+    public boolean updateUser(SysUser sysuser){
         Assert.isTrue(sysuser.getId() != null,
                 "修改操作必须带主键");
         sysuser.setUpdateTime(new Date());
-        sysUserMapper.updateById(sysuser);
+        int i = sysUserMapper.updateById(sysuser);
+        return i >0;
     }
 
     //用户管理：新增

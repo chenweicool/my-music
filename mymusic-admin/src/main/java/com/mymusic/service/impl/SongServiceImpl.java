@@ -1,19 +1,27 @@
 package com.mymusic.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mymusic.common.config.CosProperties;
 import com.mymusic.common.domain.SongVo;
 import com.mymusic.common.enums.SongConsumerType;
 import com.mymusic.common.exception.CustomException;
 import com.mymusic.common.exception.SongException;
+import com.mymusic.common.utils.Constants;
+import com.mymusic.common.utils.FileUtils;
 import com.mymusic.domain.Song;
 import com.mymusic.mapper.SongMapper;
 import com.mymusic.service.ListSongService;
 import com.mymusic.service.SongService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.sql.PreparedStatement;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -22,6 +30,9 @@ public class SongServiceImpl implements SongService
 
     @Resource
     private SongMapper songMapper;
+
+    @Resource
+    private CosProperties cosProperties;
 
     @Override
     public boolean deleteSong(Long id) {
@@ -34,13 +45,25 @@ public class SongServiceImpl implements SongService
 
     /**
      * 插入歌曲的实现
-     * @param record
+     * todo  这里需要实现歌手的插入
+     * @param record {@link Song}
      * @return
      */
     @Transactional
     @Override
-    public boolean insertSong(Song record) {
-        return songMapper.insert(record) > 0;
+    public boolean insertSong(Song record, MultipartFile file) {
+        record.setUpdateTime(new Date());
+        record.setCreateTime(new Date());
+        String fileName = System.currentTimeMillis() + file.getOriginalFilename();
+        String fileKey = Constants.SONG_FILE+fileName;
+        String uploadResult = FileUtils.upLoadPicture(file, cosProperties, fileKey);
+        if(StringUtils.isEmpty(uploadResult)){
+            throw new RuntimeException("上传歌曲信息失败");
+        }else{
+            record.setUrl(fileKey);
+            record.setPic(Constants.DEFAULT_PIC);
+            return songMapper.insert(record) > 0;
+        }
     }
 
     @Override
@@ -60,19 +83,10 @@ public class SongServiceImpl implements SongService
      */
     @Override
     public boolean updateSong(Song record) {
-        Long id = record.getId();
-        Song songDB = songMapper.selectByPrimaryKey(id);
-        if (songDB == null) {
-            throw new SongException(SongConsumerType.SONG_NOT_EXIST.getMessage());
-        }
+        record.setUpdateTime(new Date());
         return songMapper.updateByPrimaryKey(record)>0;
     }
 
-
-    @Override
-    public boolean updateSongPic(Song song) {
-        return songMapper.updateSongPic(song)>0;
-    }
 
 
     /**

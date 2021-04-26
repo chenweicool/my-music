@@ -10,7 +10,8 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    HOST: 'http://localhost:8888',
+    HOST: 'http://localhost:9999',
+    ONHOST: 'https://music-1305663279.cos.ap-nanjing.myqcloud.com',
     isPlay: false,
     url: '',
     id: ''

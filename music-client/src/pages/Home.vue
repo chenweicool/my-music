@@ -13,7 +13,8 @@
 <script>
 import Swiper from '../components/Swiper'
 import ContentList from '../components/ContentList'
-import { getSongList, getAllSinger } from '../api/index'
+import { getAllSinger } from '../api/index'
+import { getSongListByHot } from '../api/system/songlist'
 
 export default {
   name: 'home',
@@ -37,14 +38,16 @@ export default {
   },
   methods: {
     getSongList (path) {
-      getSongList()
+      getSongListByHot()
         .then(res => {
+          console.log(res)
           this.songsList[0].list = res.slice(0, 10)
         })
         .catch(err => {
           console.log(err)
         })
     },
+
     getSinger () {
       getAllSinger().then(res => {
         this.songsList[1].list = res.slice(0, 10)
