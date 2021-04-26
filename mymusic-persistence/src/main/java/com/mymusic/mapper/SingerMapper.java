@@ -62,4 +62,7 @@ public interface SingerMapper {
 
     /*分页获取歌手信息*/
     IPage<Singer> getSingerByPage(IPage<Singer> page);
+
+    /*获取前10的歌手信息*/
+    List<Singer> getSingerHot();
 }

@@ -13,9 +13,8 @@
 <script>
 import Swiper from '../components/Swiper'
 import ContentList from '../components/ContentList'
-import { getAllSinger } from '../api/index'
 import { getSongListByHot } from '../api/system/songlist'
-
+import { getSingerHot } from '../api/system/singer'
 export default {
   name: 'home',
   components: {
@@ -49,7 +48,7 @@ export default {
     },
 
     getSinger () {
-      getAllSinger().then(res => {
+      getSingerHot().then(res => {
         this.songsList[1].list = res.slice(0, 10)
       })
         .catch(err => {

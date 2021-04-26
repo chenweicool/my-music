@@ -14,6 +14,10 @@ const singerStyle = [
   {
     name: '组合歌手',
     type: '2'
+  },
+  {
+    name: '未知组合',
+    type: 3
   }
 ]
 

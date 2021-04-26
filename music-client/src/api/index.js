@@ -17,7 +17,7 @@ export const getUserOfId = (id) => get(`user/detail?id=${id}`)
 // 获取全部歌单
 //export const getSongList = () => get('songList')
 // 获取歌单类型
-export const getSongListOfStyle = (style) => get(`songList/style/detail?style=${style}`)
+// export const getSongListOfStyle = (style) => get(`songList/style/detail?style=${style}`)
 // 返回标题包含文字的歌单
 export const getSongListOfLikeTitle = (keywords) => get(`songList/likeTitle/detail?title=${keywords}`)
 // 返回歌单里指定歌单ID的歌曲

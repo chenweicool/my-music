@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 public class SingerServiceImpl implements SingerService{
@@ -111,6 +112,11 @@ public class SingerServiceImpl implements SingerService{
 
         page = singerMapper.getSingerByAge(page,startTime,endTime);
         return page;
+    }
+
+    @Override
+    public List<Singer> getSingerHot() {
+        return singerMapper.getSingerHot();
     }
 
     public static void main(String[] args) {

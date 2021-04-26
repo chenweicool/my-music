@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Api(tags = "歌手的接口")
 @RestController
@@ -153,6 +154,13 @@ public class SingerController {
                                     @RequestParam("sex") String sex){
         IPage<Singer> singer = singerService.singerOfSex(pageNum,pageSize,Integer.parseInt(sex));
         return AjaxResponse.success(singer);
+    }
+
+    /*根据歌手的热度来显示歌手 显示10个歌手*/
+    @RequestMapping(value = "/getSingerHot", method = RequestMethod.GET)
+    public  AjaxResponse getSingerHot(){
+       List<Singer> singerList =  singerService.getSingerHot();
+       return AjaxResponse.success(singerList);
     }
 
 }

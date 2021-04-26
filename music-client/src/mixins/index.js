@@ -40,8 +40,8 @@ export const mixin = {
       this.$store.commit('setListIndex', index)
       this.$store.commit('setUrl', this.$store.state.configure.HOST + url)
       this.$store.commit('setpicUrl', this.$store.state.configure.HOST + pic)
-      this.$store.commit('setTitle', this.replaceFName(name))
-      this.$store.commit('setArtist', this.replaceLName(name))
+      this.$store.commit('setTitle', this.replaceFName(songName))
+      this.$store.commit('setArtist', this.replaceLName(songName))
       this.$store.commit('setLyric', this.parseLyric(lyric))
       if (this.loginIn) {
         this.$store.commit('setIsActive', false)

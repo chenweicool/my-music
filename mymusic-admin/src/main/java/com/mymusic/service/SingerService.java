@@ -56,5 +56,7 @@ public interface SingerService {
     IPage<Singer> getSingerByAge(Integer pageNum, Integer pageSize, int age);
 
 
+    /*查询歌手热度最高的歌手信息*/
+    List<Singer> getSingerHot();
 }
 

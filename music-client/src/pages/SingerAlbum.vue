@@ -20,6 +20,17 @@
           <template slot="title">歌单</template>
         </album-content>
       </div>
+       <el-pagination
+            :page-sizes="[20, 50, 100, 200]"
+            layout="total, sizes, prev, pager, next, jumper"
+            :current-page="pagination.pageNum"
+            :page-size="pagination.pageSize"
+            :total="pagination.total"
+            @size-change="handlePageSizeChange"
+            @current-change="handlePageNumChange"
+            background
+            style="float: right;margin-bottom: 10px">
+        </el-pagination>
     </div>
   </div>
 </template>
@@ -28,7 +39,7 @@
 import { mixin } from '../mixins'
 import { mapGetters } from 'vuex'
 import AlbumContent from '../components/AlbumContent'
-import { getSongOfSingerId } from '../api/index'
+import { getSongOfSingerId} from '../api/system/song'
 
 export default {
   name: 'singer-album',
@@ -39,7 +50,12 @@ export default {
   data () {
     return {
       singerId: '',
-      singer: {}
+      singer: {},
+      pagination:{
+          pageNum: 1,
+          pageSize: 20,
+          total: null
+      },
     }
   },
   computed: {
@@ -55,14 +71,25 @@ export default {
   },
   methods: {
     getSongList () {
-      getSongOfSingerId(this.singerId)
+      getSongOfSingerId(this.pagination.pageNum,this.pagination.pageSize,this.singerId)
         .then(res => {
-          this.$store.commit('setListOfSongs', res)
+
+          this.$store.commit('setListOfSongs', res.records)
         })
         .catch(err => {
           console.log(err)
         })
     },
+     // 分页的设置
+    handlePageSizeChange(val){
+      this.pagination.pageSize = val;
+      this.getSongList();
+    },
+    handlePageNumChange(val){
+      this.pagination.pageNum = val;
+      this.getSongList();
+    }, 
+
     attachSex (value) {
       if (value === 0) {
         return '女'

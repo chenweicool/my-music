@@ -36,7 +36,18 @@
         <album-content :songList="listOfSongs">
           <template slot="title">歌单</template>
         </album-content>
-        <comment :playId="songListId" :type="1"></comment>
+        <el-pagination
+            :page-sizes="[20, 50, 100, 200]"
+            layout="total, sizes, prev, pager, next, jumper"
+            :current-page="pagination.pageNum"
+            :page-size="pagination.pageSize"
+            :total="pagination.total"
+            @size-change="handlePageSizeChange"
+            @current-change="handlePageNumChange"
+            background
+            style="float: right;margin-bottom: 10px">
+          </el-pagination>
+        <!-- <comment :playId="songListId" :type="1"></comment> -->
       </div>
     </div>
   </div>
@@ -46,8 +57,9 @@
 import { mixin } from '../mixins'
 import { mapGetters } from 'vuex'
 import AlbumContent from '../components/AlbumContent'
-import Comment from '../components/Comment'
-import { getRankOfSongListId, setRank, getSongOfId, getListSongOfSongId } from '../api/index'
+//import Comment from '../components/Comment'
+import { getRankOfSongListId, setRank, getSongOfId, } from '../api/index'
+import { getSongOfSongListId} from '../api/system/song'
 
 export default {
   name: 'song-list-album',
@@ -62,7 +74,12 @@ export default {
       count: 0, // 点赞数
       songListId: '', // 歌单ID
       value3: 0,
-      value5: 0
+      value5: 0,
+      pagination:{
+          pageNum: 1,
+          pageSize: 20,
+          total: null
+      },
     }
   },
   computed: {
@@ -75,37 +92,45 @@ export default {
     ])
   },
   created () {
-    this.songListId = this.tempList.id // 给歌单ID赋值
+    this.songListId = this.tempList.id // 将歌单的id传入到这里
     this.singers = this.tempList
-    this.getSongId() // 获取歌单里面的歌曲ID
+    this.getSongBySongList() // 获取歌单里面的歌曲ID
     this.getRank(this.songListId) // 获取评分
   },
   mixins: [mixin],
   methods: {
-    // 收集歌单里面的歌曲
-    getSongId () {
-      getListSongOfSongId(this.songListId)
-        .then(res => {
-          // 获取歌单里的歌曲信息
-          for (let item of res) {
-            this.getSongList(item.songId)
-          }
-          this.$store.commit('setListOfSongs', this.songLists)
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    },
+    // 歌单中的歌曲进行展示
+    // getSongId () {
+    //   getListSongOfSongId(this.songListId)
+    //     .then(res => {
+    //       // 获取歌单里的歌曲信息
+    //       for (let item of res) {
+    //         this.getSongList(item.songId)
+    //       }
+    //       this.$store.commit('setListOfSongs', this.songLists)
+    //     })
+    //     .catch(err => {
+    //       console.log(err)
+    //     })
+    // },
     // 获取单里的歌曲
-    getSongList (id) {
-      getSongOfId(id)
-        .then(res => {
-          this.songLists.push(res[0])
-        })
-        .catch(err => {
-          console.log(err)
-        })
+    getSongBySongList () {
+       // 查询歌单中具有的歌曲信息
+         getSongOfSongListId(this.pagination.pageNum,this.pagination.pageSize,this.songListId).then((res) => {
+            console.log('所属歌单信息', res.records)
+             this.setData(res)
+             this.$store.commit('setListOfSongs', this.songLists);
+            }).catch(err => {
+            console.log(err)
+          })
     },
+
+    // 设置数据信息
+    setData(res) {
+          this.songLists = res.records
+          this.pagination.total = res.total;
+    },
+
     // 获取评分
     getRank (id) {
       getRankOfSongListId(id)
@@ -116,6 +141,17 @@ export default {
           console.log(err)
         })
     },
+
+     // 分页的设置
+    handlePageSizeChange(val){
+      this.pagination.pageSize = val;
+      this.getData();
+    },
+    handlePageNumChange(val){
+      this.pagination.pageNum = val;
+    this.getData();
+    }, 
+
     // 提交评分
     pushValue () {
       if (this.loginIn) {

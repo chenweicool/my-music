@@ -10,7 +10,7 @@
       </li>
     </ul>
     <div class="song-content">
-      <content-list :contentList="albumDatas"></content-list>
+      <content-list :contentList="tableData"></content-list>
       <div class="pagination">
          <el-pagination
             :page-sizes="[20, 50, 100, 200]"
@@ -32,7 +32,7 @@
 import ContentList from '../components/ContentList'
 import { mapGetters } from 'vuex'
 import { songStyle } from '../assets/data/songList'
-import { getSongListByPage } from '../api/system/songlist'
+import { getSongListByPage,getStyleByPage } from '../api/system/songlist'
 
 export default {
   name: 'song-list',
@@ -43,7 +43,7 @@ export default {
     return {
       songStyle: [], // 歌单导航栏类别
       activeName: '全部歌单',
-      albumDatas: [], // 歌单
+      tableData: [], // 存储个歌单的数据
       pagination:{
           pageNum: 1,
           pageSize: 20,
@@ -55,30 +55,25 @@ export default {
     ...mapGetters([
       'songsList'
     ]),
-    // // 计算当前表格中的数据
-    // data () {
-    //   return this.albumDatas.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
-    // }
   },
   mounted () {
     this.songStyle = songStyle
     this.handleChangeView('全部歌单')
   },
   methods: {
-    // // 获取当前页
-    // handleCurrentChange (val) {
-    //   this.currentPage = val
-    // },
+    
     // 获取歌单
-    // handleChangeView: function (name) {
-    //   this.activeName = name
-    //   this.albumDatas = []
-    //   if (name === '全部歌单') {
-    //     this.getSongList(this.cur_page)
-    //   } else {
-    //     this.getSongListOfStyle(name)
-    //   }
-    // },
+    handleChangeView: function (name) {
+      this.activeName = name
+      this.tableData = []
+      if (name === '全部歌单') {
+        this.getData()
+      } else {
+        this.getSongListOfStyle(name)
+      }
+    },
+
+    // 获取所有歌单
      getData(){
         getSongListByPage(this.pagination.pageNum,this.pagination.pageSize)
           .then(res => {
@@ -88,7 +83,7 @@ export default {
       },
        // 设置数据信息
       setData(res) {
-          this.albumDatas = res.records
+          this.tableData = res.records
           this.pagination.total = res.total;
       },
 
@@ -101,12 +96,12 @@ export default {
         this.pagination.pageNum = val;
        this.getData();
       }, 
-    // 通过类别获取歌单
+
+    // 已完成
     getSongListOfStyle (style) {
-      getSongListOfStyle(style)
+      getStyleByPage(this.pagination.pageNum,this.pagination.pageSize,style)
         .then(res => {
-          this.currentPage = 1
-          this.albumDatas = res
+          this.setData(res)
         })
         .catch(err => {
           console.log(err)

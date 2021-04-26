@@ -52,15 +52,22 @@ mymusic:
     permitAllURI:
       - /songList/getSongListByPage
       - /songList/getSongListHot
+      - /songList/getStyleByPage
       - /songList/update
+      - /song/getSongOfSingerId
+      - /song/getSongOfSongListId
+      - /song/SongOfQuerySongNameOrSingerName
+      - /singer/getSingerByPage
+      - /singer/getSingerBySingerName
+      - /singer/getSingerBySex
+      - /singer/getSingerHot
       - /sysuser/add
       - /comment/getCommentByPage
       - /rank
       - /admin/login/status
-      - /sysuser/allUser
-      - /user/alluser
       - /monitor/server
       - /test/gethost
+
 mybatis:
   mapper-locations: classpath*:/mapper/*.xml
   type-aliases-package: com.mymusic.domain

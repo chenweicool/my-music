@@ -68,17 +68,6 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
 
-    <!--更新歌手的头像信息-->
-    <!--<update id="updateSingerPic" parameterType="com.mymusic.domain.Consumer" >
-        update singer
-        <set >
-            <if test="pic != null" >
-                pic = #{pic,jdbcType=VARCHAR},
-            </if>
-        </set>
-        where id = #{id,jdbcType=INTEGER}
-    </update>-->
-
     <!--根据用户的主键更新歌的信息-->
     <update id="updateByPrimaryKey" parameterType="com.mymusic.domain.Singer" >
         <!--
@@ -128,6 +117,11 @@
         select
         <include refid="Base_Column_List"/>
         from singer where location like concat('%',#{location},'%')
+    </select>
+    <select id="getSingerHot" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from singer limit 10;
     </select>
     <!--根据歌手的出生日期来模糊查询-->
     <select id="getSingerByAge" parameterType="java.lang.String" resultMap="BaseResultMap">
