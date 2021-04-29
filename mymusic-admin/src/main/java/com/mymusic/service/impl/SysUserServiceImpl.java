@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.mymusic.ConvertService;
+import com.mymusic.common.domain.SysUserVO;
+import com.mymusic.common.utils.Constants;
 import com.mymusic.config.DbLoadSysConfig;
 import com.mymusic.domain.SysUser;
 import com.mymusic.domain.SysUserOrg;
@@ -42,9 +45,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private PasswordEncoder passwordEncoder;
     @Resource
     private DbLoadSysConfig dbLoadSysConfig;
+    @Resource
+    private ConvertService convertService;
 
     //根据登录用户名查询用户信息
-    public SysUser getUserByUserName(String userName){
+    public SysUserVO getUserByUserName(String userName){
         Assert.isTrue(StringUtils.isNotEmpty(userName),
                 "查询参数用户名不存在");
 
@@ -53,7 +58,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if(sysUser != null){
             sysUser.setPassword("");  //清空密码信息
         }
-        return sysUser;
+        SysUserVO sysUserVO = convertService.convertSysUserVo(sysUser);
+        return sysUserVO;
     }
 
     //用户管理：查询
@@ -106,12 +112,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     //用户管理：新增
     public void addUser(SysUser sysuser){
-        sysuser.setPassword(passwordEncoder.encode(
-                dbLoadSysConfig.getConfigItem("user.init.password")
-        ));
+//        sysuser.setPassword(passwordEncoder.encode(
+//                dbLoadSysConfig.getConfigItem("user.init.password")
+//        ));
+        sysuser.setPassword(passwordEncoder.encode(sysuser.getPassword()));
         sysuser.setCreateTime(new Date());  //创建时间
         sysuser.setUpdateTime(new Date());  // 更新时间。默认是和创建的时间是一致的
         sysuser.setEnabled(true); //新增用户激活
+        sysuser.setAvator(Constants.DEFAULT_PIC);
         sysUserMapper.insert(sysuser);
     }
 

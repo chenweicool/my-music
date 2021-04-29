@@ -6,7 +6,7 @@ import {Message} from 'element-ui'
 axios.defaults.timeout = 5000;  //超时时间设置
 axios.defaults.withCredentials = true;  //true允许跨域
 //Content-Type 响应头
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;application/json;charset=UTF-8';
+axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
 
 // 设置环境
 if (process.env.NODE_ENV === 'production') {
@@ -23,21 +23,21 @@ if (process.env.NODE_ENV === 'production') {
   axios.defaults.baseURL = 'http://localhost:9999';
 }
 
-// 添加请求的token
-// axios.interceptors.request.use(function (config) {
-//   // 在发送请求之前做些什么
-//   if (config.url !== "/authentication") {
-//     // 让每个请求携带token
-//     config.headers['JWTHeaderName'] = getJwtToken();
+//添加请求的token
+axios.interceptors.request.use(function (config) {
+  // 在发送请求之前做些什么
+  if (config.url !== "/authentication") {
+    // 让每个请求携带token
+    config.headers['JWTHeaderName'] = getJwtToken();
 
-//     //将token的值存储起来
-//     localStorage.setItem("JWTHeaderName",getJwtToken());
-//     }
-//   return config;
-// }, function (error) {
-//   // 对请求错误做些什么
-//   return Promise.reject(error);
-// })
+    //将token的值存储起来
+    localStorage.setItem("JWTHeaderName",getJwtToken());
+    }
+  return config;
+}, function (error) {
+  // 对请求错误做些什么
+  return Promise.reject(error);
+})
 
 // 响应拦截器
 axios.interceptors.response.use(

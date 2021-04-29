@@ -2,6 +2,7 @@ package com.mymusic.controller.system;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.mymusic.common.domain.SysUserVO;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.Constants;
 import com.mymusic.domain.SongList;
@@ -41,7 +42,7 @@ public class SysUserController {
 
     //根据登录用户名查询用户信息
     @GetMapping(value = "/info")
-    public SysUser info(@RequestParam("username") String username) {
+    public SysUserVO info(@RequestParam("username") String username) {
         return sysuserService.getUserByUserName(username);
     }
 
@@ -78,13 +79,13 @@ public class SysUserController {
     @PostMapping(value = "/update")
     public AjaxResponse update(@RequestBody SysUser sysUser) {
         sysuserService.updateUser(sysUser);
-        return AjaxResponse.success("更新用户成功！");
+        return AjaxResponse.success("更新用户成功");
     }
     //用户管理：新增
     @PostMapping(value = "/add")
     public AjaxResponse add(@RequestBody SysUser sysUser) {
         sysuserService.addUser(sysUser);
-        return AjaxResponse.success("新增用户成功！");
+        return AjaxResponse.success("新增用户成功");
     }
 
     //用户管理：删除

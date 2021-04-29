@@ -8,7 +8,17 @@ const navMsg = [{
 }, {
   name: '歌手',
   path: '/singer'
-}, {
+},
+{
+  name: '热门歌曲',
+  path: '/hotSinger'
+},
+{
+    name: '每日推荐',
+    path: '/todayRecommander'
+},
+
+{
   name: '我的音乐',
   path: '/my-music'
 }]

@@ -3,6 +3,7 @@ package com.mymusic.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mymusic.ConvertService;
+import com.mymusic.common.domain.SysUserVO;
 import com.mymusic.common.domain.UserCommentVo;
 import com.mymusic.common.exception.UserException;
 import com.mymusic.common.utils.ParameterCheckUtils;
@@ -105,7 +106,7 @@ public class UserCommentServiceImpl implements UserCommentService {
         ParameterCheckUtils.checkParamIsBlank(userName);
 
         // 查询该用户是否存在
-        SysUser userByUserName = sysUserService.getUserByUserName(userName);
+        SysUserVO userByUserName = sysUserService.getUserByUserName(userName);
         if (userByUserName == null) {
             throw new UserException("该用户不存在");
         }

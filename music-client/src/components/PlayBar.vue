@@ -311,7 +311,7 @@ export default {
     toPlay (url) {
       if (url && url !== this.url) {
         this.$store.commit('setId', this.listOfSongs[this.listIndex].id)
-        this.$store.commit('setUrl', this.$store.state.configure.HOST + url)
+        this.$store.commit('setUrl', this.$store.state.configure. HOST + url)
         this.$store.commit('setpicUrl', this.$store.state.configure.HOST + this.listOfSongs[this.listIndex].pic)
         this.$store.commit('setTitle', this.replaceFName(this.listOfSongs[this.listIndex].songName))
         this.$store.commit('setArtist', this.replaceLName(this.listOfSongs[this.listIndex].songName))

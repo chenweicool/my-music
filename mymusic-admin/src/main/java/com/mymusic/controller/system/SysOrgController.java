@@ -1,6 +1,7 @@
 package com.mymusic.controller.system;
 
 
+import com.mymusic.common.domain.SysUserVO;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.domain.SysOrg;
 import com.mymusic.domain.SysUser;
@@ -32,13 +33,13 @@ public class SysOrgController {
     private SysUserServiceImpl sysuserService;
 
     // TODO 用户类需要单独实现
-    @PostMapping(value = "/tree")
-    public List<SysOrgNode> tree(@RequestParam("username") String username,
-                                 @RequestParam("orgNameLike") String orgNameLike,
-                                 @RequestParam("orgStatus") Boolean orgStatus) {
-        SysUser sysUser = sysuserService.getUserByUserName(username);
-        return sysorgService.getOrgTreeById(sysUser.getOrgId(), orgNameLike, orgStatus);
-    }
+//    @PostMapping(value = "/tree")
+//    public List<SysOrgNode> tree(@RequestParam("username") String username,
+//                                 @RequestParam("orgNameLike") String orgNameLike,
+//                                 @RequestParam("orgStatus") Boolean orgStatus) {
+//        SysUserVO sysUser = sysuserService.getUserByUserName(username);
+//        return sysorgService.getOrgTreeById(sysUser.getOrgId(), orgNameLike, orgStatus);
+  //  }
 
     @PostMapping(value = "/update")
     public AjaxResponse update(@RequestBody SysOrg sysOrg) {

@@ -6,6 +6,8 @@
       <span>帐号登录</span>
     </div>
     <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" class="demo-ruleForm" >
+      <el-alert :title="loginForm.errorMsg" type="error" v-show="loginForm.errorVisible">
+      </el-alert>
       <el-form-item prop="username">
         <el-input placeholder="用户名" v-model="loginForm.username"></el-input>
       </el-form-item>
@@ -24,7 +26,8 @@
 <script>
 import { mixin } from '../mixins'
 import LoginLogo from '../components/LoginLogo'
-import { loginIn } from '../api/index'
+import { loginIn } from '../api/system/sysuser'
+import {setJwtToken}from '../lib/utils'
 
 export default {
   name: 'login-in',
@@ -50,7 +53,9 @@ export default {
     return {
       loginForm: { // 登录用户名密码
         username: '',
-        password: ''
+        password: '',
+        errorMsg:"",
+        errorVisible: false
       },
       rules: {
         username: [
@@ -69,37 +74,25 @@ export default {
     changeIndex (value) {
       this.$store.commit('setActiveName', value)
     },
+
+    //实现用户登录    
     handleleLoginIn () {
       let _this = this
-      let params = new URLSearchParams()
-      params.append('username', this.loginForm.username)
-      params.append('password', this.loginForm.password)
-      loginIn(params)
+      loginIn(this.loginForm.username,this.loginForm.password)
         .then(res => {
-          // console.log('-----------获取登录信息---------------')
-          if (res.code === 1) {
-            _this.$message({
-              message: '登录成功',
-              type: 'success'
-            })
-            _this.setUserMsg(res.userMsg[0])
+             setJwtToken(res.data)
+           // _this.setUserMsg(res)
             _this.$store.commit('setLoginIn', true)
-            setTimeout(function () {
-              _this.changeIndex('首页')
-              _this.$router.push({path: '/'})
-              _this.$router.go(0)
-            }, 2000)
-          } else {
-            _this.notify('用户名或密码错误', 'error')
-          }
-        })
-        .catch(failResponse => {})
+            localStorage.setItem("username",this.loginForm.username);
+            this.changeIndex('首页')
+             _this.$router.push({path: '/'})
+             _this.$router.go(0)
+        }).catch(err => {
+                    this.loginForm.errorMsg = err.message;
+                    this.loginForm.errorVisible = true;
+                });
     },
-    setUserMsg (item) {
-      this.$store.commit('setUserId', item.id)
-      this.$store.commit('setUsername', item.username)
-      this.$store.commit('setAvator', item.avator)
-    },
+   
     goSignUp () {
       this.$router.push({path: '/sign-up'})
     }

@@ -7,9 +7,9 @@
         <el-form-item prop="username" label="用户名">
           <el-input v-model="registerForm.username" placeholder="用户名"></el-input>
         </el-form-item>
-        <el-form-item prop="password" label="密码">
+        <!-- <el-form-item prop="password" label="密码">
           <el-input type="password" placeholder="密码" v-model="registerForm.password"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="性别">
           <el-radio-group v-model="registerForm.sex">
             <el-radio :label="0">女</el-radio>
@@ -51,12 +51,14 @@
 import { mapGetters } from 'vuex'
 import { cities } from '../assets/data/form'
 import { updateUserMsg, getUserOfId } from '../api/index'
+import { getUserInfo,updateUser } from '../api/system/sysuser'
 
 export default {
   name: 'info',
   data: function () {
     return {
       registerForm: { // 注册
+        id:'',
         username: '',
         password: '',
         sex: '',
@@ -64,81 +66,58 @@ export default {
         email: '',
         birth: '',
         introduction: '',
-        location: ''
+        location: '',
+        avator:'',  // 用户头像
       },
       cities: []
     }
   },
   computed: {
-    ...mapGetters([
-      'userId'
-    ])
+    // ...mapGetters([
+    //   'userId'
+    // ])
   },
   created () {
     this.cities = cities
+     this.getUser()
   },
   mounted () {
-    this.getMsg(this.userId)
   },
   methods: {
-    getMsg (id) {
-      getUserOfId(id)
-        .then(res => {
-          this.registerForm.username = res[0].username
-          this.registerForm.password = res[0].password
-          this.registerForm.sex = res[0].sex
-          this.registerForm.phoneNum = res[0].phoneNum
-          this.registerForm.email = res[0].email
-          this.registerForm.birth = res[0].birth
-          this.registerForm.introduction = res[0].introduction
-          this.registerForm.location = res[0].location
-          this.registerForm.avator = res[0].avator
-        })
-        .catch(err => {
-          console.log(err)
-        })
+    getUser(){
+      getUserInfo().then(res =>{
+        this.setdata(res) 
+      })
     },
+
+    // 设置数据的值的信息
+    setdata(res){
+         console.log(res)
+       if(res.isok){
+         this.registerForm.id = res.data.id
+         this.registerForm.username = res.data.username;
+         this.registerForm.sex = res.data.sex
+         this.registerForm.phoneNum = res.data.phone
+         this.registerForm.email = res.data.email
+         this.registerForm.location = res.data.location
+         this.registerForm.birth = res.data.birth
+         this.registerForm.introduction = res.data.introduction
+        // this.registerForm.introduction = res.data.avator
+
+          // 存储用户的头像信息和id
+         localStorage.setItem("avator",res.data.avator)
+         localStorage.setItem("userId",res.data.id)
+       }
+    },
+
     goback () {
       this.$router.go(-1)
     },
     saveMsg () {
-      let d = new Date(this.registerForm.birth)
-      let datetime = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
-      let params = new URLSearchParams()
-      params.append('id', this.userId)
-      params.append('username', this.registerForm.username)
-      params.append('password', this.registerForm.password)
-      params.append('sex', this.registerForm.sex)
-      params.append('phone_num', this.registerForm.phoneNum)
-      params.append('email', this.registerForm.email)
-      params.append('birth', datetime)
-      params.append('introduction', this.registerForm.introduction)
-      params.append('location', this.registerForm.location)
-      updateUserMsg(params)
-        .then(res => {
-          if (res.code === 1) {
-            this.showError = false
-            this.showSuccess = true
-            this.$store.commit('setUsername', this.registerForm.username)
-            this.$notify.success({
-              title: '编辑成功',
-              showClose: true
-            })
-            setTimeout(function () {
-              this.$router.go(-1)
-            }, 2000)
-          } else {
-            this.showSuccess = false
-            this.showError = true
-            this.$notify.error({
-              title: '编辑失败',
-              showClose: true
-            })
-          }
-        })
-        .catch(err => {
-          console.log(err)
-        })
+        updateUser(this.registerForm)
+          .then(res => {
+            this.$message({message: res.data, type: 'success'});
+          })
     }
   }
 }

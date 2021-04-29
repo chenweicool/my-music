@@ -18,8 +18,8 @@
           <el-radio :label="1">男</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item prop="phoneNum" label="手机" >
-        <el-input  placeholder="手机" v-model="registerForm.phoneNum"></el-input>
+      <el-form-item prop="phone" label="手机" >
+        <el-input  placeholder="手机" v-model="registerForm.phone"></el-input>
       </el-form-item>
       <el-form-item prop="email" label="邮箱">
         <el-input v-model="registerForm.email" placeholder="邮箱"></el-input>
@@ -49,6 +49,7 @@ import loginLogo from '../components/LoginLogo'
 import { mixin } from '../mixins'
 import { rules, cities } from '../assets/data/form'
 import { SignUp } from '../api/index'
+import {addUser} from '../api/system/sysuser'
 
 export default {
   name: 'SignUp-page',
@@ -62,7 +63,7 @@ export default {
         username: '',
         password: '',
         sex: '',
-        phoneNum: '',
+        phone: '',
         email: '',
         birth: '',
         introduction: '',
@@ -78,30 +79,14 @@ export default {
   },
   methods: {
     SignUp () {
-      let _this = this
-      let d = this.registerForm.birth
-      let datetime = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
-      let params = new URLSearchParams()
-      params.append('username', this.registerForm.username)
-      params.append('password', this.registerForm.password)
-      params.append('sex', this.registerForm.sex)
-      params.append('phone_num', this.registerForm.phoneNum)
-      params.append('email', this.registerForm.email)
-      params.append('birth', datetime)
-      params.append('introduction', this.registerForm.introduction)
-      params.append('location', this.registerForm.location)
-      params.append('avator', '/img/user.jpg')
-      SignUp(params)
+         let _this = this
+      addUser(this.registerForm)
         .then(res => {
           console.log(res)
-          if (res.code === 1) {
-            _this.notify('注册成功', 'success')
-            setTimeout(function () {
-              _this.$router.push({path: '/'})
+          this.$message({message: res, type: 'success'});
+          setTimeout(function () {
+              _this.$router.push({path: '/login-in'})
             }, 2000)
-          } else {
-            _this.notify('注册失败', 'error')
-          }
         })
         .catch(err => {
           console.log(err)

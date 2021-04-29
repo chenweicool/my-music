@@ -1,15 +1,8 @@
 package com.mymusic.controller.system;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.mymusic.common.enums.ResultCodeEnum;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.Constants;
-import com.mymusic.common.utils.FileUtils;
 import com.mymusic.domain.Singer;
-import com.mymusic.domain.Song;
-import com.mymusic.jwt.utils.TimeUtils;
 import com.mymusic.service.SingerService;
 import com.mymusic.service.SongService;
 import com.mymusic.service.UpdatePictureOrFileService;

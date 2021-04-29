@@ -6,6 +6,7 @@
       <el-upload
         drag
         :action="uploadUrl()"
+        :headers="myHeaders"
         :show-file-list="false"
         :on-success="handleAvatarSuccess"
         :before-upload="beforeAvatarUpload">
@@ -20,30 +21,32 @@
 <script>
 import { mapGetters } from 'vuex'
 import { mixin } from '../mixins'
-
+var token = localStorage.getItem("JWTHeaderName");
 export default {
   name: 'upload',
   mixins: [mixin],
   data () {
     return {
-      imageUrl: ''
+      imageUrl: '',
+      userId:'',
+      myHeaders:{JWTHeaderName: token},
     }
   },
-  computed: {
-    ...mapGetters([
-      'userId'
-    ])
+  created(){
+     this.userId = localStorage.getItem("userId")
   },
+
   methods: {
     uploadUrl () {
-      return `${this.$store.state.configure.HOST}/user/avatar/update?id=${this.userId}`
+      return `${this.$store.state.configure.HOST}/sysuser/updatePicture?id=${this.userId}`
     },
     handleAvatarSuccess (res, file) {
-      if (res.code === 1) {
+      console.log(res)
+      if (res.isok) {
         this.imageUrl = URL.createObjectURL(file.raw)
         this.$store.commit('setAvator', res.avator)
         this.$message({
-          message: '修改成功',
+          message: res.data,
           type: 'success'
         })
       } else {

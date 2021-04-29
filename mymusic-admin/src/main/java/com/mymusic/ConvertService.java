@@ -1,6 +1,8 @@
 package com.mymusic;
 
+import com.mymusic.common.domain.SysUserVO;
 import com.mymusic.common.domain.UserCommentVo;
+import com.mymusic.domain.SysUser;
 import com.mymusic.domain.UserComment;
 import com.mymusic.domain.UserCommentConsumer;
 import com.mymusic.domain.UserReplyComment;
@@ -66,5 +68,23 @@ public class ConvertService {
             commentVoList.add(userCommentVo);
         }
         return commentVoList;
+    }
+
+    public SysUserVO convertSysUserVo(SysUser sysUser) {
+        SysUserVO sysUserVO = new SysUserVO();
+
+        sysUserVO.setId(sysUser.getId());
+        sysUserVO.setUsername(sysUser.getUsername());
+        sysUserVO.setAvator(sysUser.getAvator());
+        sysUserVO.setEnabled(sysUser.getEnabled());
+        sysUserVO.setEmail(sysUser.getEmail());
+        sysUserVO.setPhone(sysUser.getPhone());
+        sysUserVO.setUpdateTime(sysUser.getUpdateTime());
+        sysUserVO.setCreateTime(sysUserVO.getCreateTime());
+        sysUserVO.setBirth(sysUser.getBirth());
+        sysUserVO.setLocation(sysUser.getLocation());
+        sysUserVO.setIntroduction(sysUser.getIntroduction());
+        sysUserVO.setSex(sysUser.getSex());
+        return sysUserVO;
     }
 }

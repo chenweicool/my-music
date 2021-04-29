@@ -1,13 +1,13 @@
 const configure = {
   state: {
-    HOST: 'http://localhost:8888',
+    HOST: 'http://localhost:9999',
     ONHOST: 'https://music-1305663279.cos.ap-nanjing.myqcloud.com',
     loginIn: false, // 用户是否登录
-    searchword: '', // 搜索关键词
+    searchword: '',  // 搜索关键词
     showAside: false, // 是否显示侧边栏
     activeName: '', // 歌单类型名
     index: 0, // 列表中的序号
-    isActive: false
+    isActive: false   // 是否播放
   },
   getters: {
     isActive: state => {

@@ -1,6 +1,9 @@
 /* eslint-disable*/
 import axios from 'axios'
 import { get, post } from './http'
+import HttpRequest from '@/lib/request'
+
+export const jwtServerInstance = new HttpRequest("http://localhost:9999")
 
 // =======================> 用户 API
 // 登录
@@ -13,11 +16,6 @@ export const updateUserMsg = (params) => post(`user/update`, params)
 export const getUserOfId = (id) => get(`user/detail?id=${id}`)
 
 
-// =======================> 歌单 API
-// 获取全部歌单
-//export const getSongList = () => get('songList')
-// 获取歌单类型
-// export const getSongListOfStyle = (style) => get(`songList/style/detail?style=${style}`)
 // 返回标题包含文字的歌单
 export const getSongListOfLikeTitle = (keywords) => get(`songList/likeTitle/detail?title=${keywords}`)
 // 返回歌单里指定歌单ID的歌曲

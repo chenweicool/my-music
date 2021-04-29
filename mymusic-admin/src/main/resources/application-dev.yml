@@ -62,6 +62,7 @@ mymusic:
       - /singer/getSingerBySex
       - /singer/getSingerHot
       - /sysuser/add
+      - /user/login/status
       - /comment/getCommentByPage
       - /rank
       - /admin/login/status
