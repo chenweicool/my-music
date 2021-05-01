@@ -23,7 +23,7 @@
       </li>
       <li v-if="!loginIn" :class="{active: item.name === activeName}" v-for="item in loginMsg" :key="item.type" @click="goPage(item.path, item.name)">{{item.name}}</li>
     </ul>
-    <!--设置-->
+    <!--设置--> 
     <div class="header-right" v-show="loginIn">
       <div id="user">
         <img :src="attachImageUrl(avator)" alt="">

@@ -67,4 +67,6 @@ public class SysUserVO implements Serializable {
      * 用户的状态
      */
     private Boolean enabled;
+
+    private Long orgId;
 }

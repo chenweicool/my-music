@@ -311,8 +311,9 @@ export default {
     toPlay (url) {
       if (url && url !== this.url) {
         this.$store.commit('setId', this.listOfSongs[this.listIndex].id)
-        this.$store.commit('setUrl', this.$store.state.configure. HOST + url)
-        this.$store.commit('setpicUrl', this.$store.state.configure.HOST + this.listOfSongs[this.listIndex].pic)
+        this.$store.commit('setUrl', this.$store.state.configure.ONHOST+url)
+        console.log(this.$store.state.configure.ONHOST+url)
+        this.$store.commit('setpicUrl', this.$store.state.configure.ONHOST+this.listOfSongs[this.listIndex].pic)
         this.$store.commit('setTitle', this.replaceFName(this.listOfSongs[this.listIndex].songName))
         this.$store.commit('setArtist', this.replaceLName(this.listOfSongs[this.listIndex].songName))
         this.$store.commit('setLyric', this.parseLyric(this.listOfSongs[this.listIndex].lyric))
@@ -322,31 +323,31 @@ export default {
       this.$router.push({path: `/lyric/${this.id}`})
     },
     collection () {
-      if (this.loginIn) {
-        var params = new URLSearchParams()
-        params.append('userId', this.userId)
-        params.append('type', 0) // 0 代表歌曲， 1 代表歌单
-        params.append('songId', this.id)
-        setCollection(params)
-          .then(res => {
-            if (res.code === 1) {
-              this.$store.commit('setIsActive', true)
-              this.notify('收藏成功', 'success')
-            } else if (res.code === 2) {
-              this.notify('已收藏', 'warning')
-            } else {
-              this.$notify.error({
-                title: '收藏失败',
-                showClose: false
-              })
-            }
-          })
-          .catch(err => {
-            console.log(err)
-          })
-      } else {
-        this.notify('请先登录', 'warning')
-      }
+      // if (this.loginIn) {
+      //   var params = new URLSearchParams()
+      //   params.append('userId', this.userId)
+      //   params.append('type', 0) // 0 代表歌曲， 1 代表歌单
+      //   params.append('songId', this.id)
+      //   setCollection(params)
+      //     .then(res => {
+      //       if (res.code === 1) {
+      //         this.$store.commit('setIsActive', true)
+      //         this.notify('收藏成功', 'success')
+      //       } else if (res.code === 2) {
+      //         this.notify('已收藏', 'warning')
+      //       } else {
+      //         this.$notify.error({
+      //           title: '收藏失败',
+      //           showClose: false
+      //         })
+      //       }
+      //     })
+      //     .catch(err => {
+      //       console.log(err)
+      //     })
+      // } else {
+      //   this.notify('请先登录', 'warning')
+      // }
     }
   }
 }

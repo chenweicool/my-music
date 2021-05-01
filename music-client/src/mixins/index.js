@@ -35,29 +35,29 @@ export const mixin = {
       return arr[0]
     },
     // 播放
-    toplay: function (id, url, pic, index, name, lyric) {
+    toplay: function (id, url, pic, index,songName, lyric) {
       this.$store.commit('setId', id)
       this.$store.commit('setListIndex', index)
-      this.$store.commit('setUrl', this.$store.state.configure.HOST + url)
-      this.$store.commit('setpicUrl', this.$store.state.configure.HOST + pic)
+      this.$store.commit('setUrl', this.$store.state.configure.ONHOST+url)
+      this.$store.commit('setpicUrl', this.$store.state.configure.ONHOST+pic)
       this.$store.commit('setTitle', this.replaceFName(songName))
       this.$store.commit('setArtist', this.replaceLName(songName))
       this.$store.commit('setLyric', this.parseLyric(lyric))
-      if (this.loginIn) {
-        this.$store.commit('setIsActive', false)
-        getCollectionOfUser(this.userId)
-          .then(res => {
-            for (let item of res) {
-              if (item.songId === id) {
-                this.$store.commit('setIsActive', true)
-                break
-              }
-            }
-          })
-          .catch(err => {
-            console.log(err)
-          })
-      }
+      // if (this.loginIn) {
+      //   this.$store.commit('setIsActive', false)
+      //   getCollectionOfUser(this.userId)
+      //     .then(res => {
+      //       for (let item of res) {
+      //         if (item.songId === id) {
+      //           this.$store.commit('setIsActive', true)
+      //           break
+      //         }
+      //       }
+      //     })
+      //     .catch(err => {
+      //       console.log(err)
+      //     })
+      // }
     },
     // 解析歌词
     parseLyric (text) {

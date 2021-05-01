@@ -34,6 +34,7 @@ export default {
     togglePlay () {
       let player = document.querySelector('#player')
       if (this.isPlay) {
+        console.log("歌曲播放的Url"+player)
         player.play()
       } else {
         player.pause()

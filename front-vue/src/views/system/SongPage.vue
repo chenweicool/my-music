@@ -340,9 +340,10 @@ export default {
 
     // 播放歌曲实现
     setSongUrl (url, name) {
-      console.log("歌曲的url"+url)
-     // this.$store.commit('setUrl', this.$store.state.ONHOST+url)
-        return this.$store.state.ONHOST +'/'+ url;
+      //console.log("歌曲的url"+url)
+      this.$store.commit('setUrl', this.$store.state.ONHOST+url)
+      console.log("歌曲的Url:"+this.$store.state.ONHOST+url)
+        //return this.$store.state.ONHOST+url;
       this.toggle = name
       if (this.isPlay) {
         this.$store.commit('setIsPlay', false)

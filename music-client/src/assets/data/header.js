@@ -34,10 +34,10 @@ const loginMsg = [{
 
 // 用户下拉菜单项
 const menuList = [{
-  name: '设置',
+  name: '个人中心',
   path: '/setting'
 }, {
-  name: '退出',
+  name: '退出登录',
   path: 0
 }]
 

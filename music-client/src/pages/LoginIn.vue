@@ -26,7 +26,7 @@
 <script>
 import { mixin } from '../mixins'
 import LoginLogo from '../components/LoginLogo'
-import { loginIn } from '../api/system/sysuser'
+import { loginIn,getUserInfo } from '../api/system/sysuser'
 import {setJwtToken}from '../lib/utils'
 
 export default {
@@ -81,8 +81,8 @@ export default {
       loginIn(this.loginForm.username,this.loginForm.password)
         .then(res => {
              setJwtToken(res.data)
-           // _this.setUserMsg(res)
             _this.$store.commit('setLoginIn', true)
+            _this.getUser()
             localStorage.setItem("username",this.loginForm.username);
             this.changeIndex('首页')
              _this.$router.push({path: '/'})
@@ -92,7 +92,22 @@ export default {
                     this.loginForm.errorVisible = true;
                 });
     },
+
+    // 根据用户名反查用户的详细信息并存储。
+     getUser(){
+      getUserInfo().then(res =>{
+         console.log(res);
+        this.setdata(res) 
+      })
+    },
    
+   setdata(item){
+      this.$store.commit('setUserId', item.id)
+      this.$store.commit('setUsername', item.username)
+      this.$store.commit('setAvator', item.avator)
+   },
+
+   // 注册的页面
     goSignUp () {
       this.$router.push({path: '/sign-up'})
     }

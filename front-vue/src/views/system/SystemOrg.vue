@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <!-- <div>
     <el-card body-style="padding: 0">
       <el-form ref="orgQueryForm" :model="orgQueryForm" label-width="80px">
         <el-row :gutter="20">
@@ -27,9 +27,9 @@
           </el-col>
         </el-row>
       </el-form>
-    </el-card>
+    </el-card> -->
 
-    <el-card>
+    <!-- <el-card>
       <el-button type="primary" size="small" style="margin: 0 0 10px 20px"
                  icon="el-icon-plus" @click="handleAdd()">新增</el-button>
 
@@ -109,9 +109,9 @@
       </div>
     </el-dialog>
   </div>
-</template>
+</template> -->
 
-<script>
+<!-- <script>
   import {getOrgTree,updateOrg,addOrg,deleteOrg,changeOrgStatus} from '../../api/system/sys_org'
   import ElTreeSelect from "@/components/TreeSelect";
   import DictSelect from "@/components/DictSelect"
@@ -276,10 +276,10 @@
       })
     }
   }
-</script>
+</script> -->
 
-<style scoped>
+<!-- <style scoped>
   .el-form {
     margin-top: 20px;
   }
-</style>
+</style> -->

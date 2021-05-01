@@ -47,6 +47,7 @@ export default {
     togglePlay () {
       let player = this.$refs.player
       if (this.isPlay) {
+        console.log(player)
         player.play()
       } else {
         player.pause()
