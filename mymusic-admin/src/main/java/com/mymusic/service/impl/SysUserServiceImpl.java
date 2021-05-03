@@ -6,14 +6,19 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mymusic.ConvertService;
 import com.mymusic.common.domain.SysUserVO;
+import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.Constants;
+import com.mymusic.common.utils.ParameterCheckUtils;
 import com.mymusic.config.DbLoadSysConfig;
+import com.mymusic.domain.SysRole;
 import com.mymusic.domain.SysUser;
 import com.mymusic.domain.SysUserOrg;
 import com.mymusic.domain.server.Sys;
 import com.mymusic.formvo.SysUserVo;
 import com.mymusic.mapper.MySystemMapper;
+import com.mymusic.mapper.SysRoleMapper;
 import com.mymusic.mapper.SysUserMapper;
+import com.mymusic.service.SysRoleService;
 import com.mymusic.service.SysUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +29,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -47,6 +53,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private DbLoadSysConfig dbLoadSysConfig;
     @Resource
     private ConvertService convertService;
+    @Resource
+    private SysRoleServiceImpl sysRoleService;
 
     //根据登录用户名查询用户信息
     public SysUserVO getUserByUserName(String userName){
@@ -79,27 +87,27 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 createEndTime);
     }
 
-     public List<SysUserVo> getAllUser(){
-         List<SysUser> sysUserList = sysUserMapper.selectList(null);
-
-         List<SysUserVo> sysUserVos = new ArrayList<>();
-         SysUserVo userVo = null;
-         for (SysUser sysUser : sysUserList) {
-             userVo = new SysUserVo();
-             userVo.setAvator(sysUser.getAvator());
-             userVo.setBirth(sysUser.getBirth());
-             userVo.setCreateTime(sysUser.getCreateTime());
-             userVo.setEmail(sysUser.getEmail());
-             userVo.setEnabled(sysUser.getEnabled());
-             userVo.setIntroduction(sysUser.getIntroduction());
-             userVo.setLocation(sysUser.getLocation());
-             userVo.setPhone(sysUser.getPhone());
-             userVo.setSex(sysUser.getSex());
-             userVo.setUsername(sysUser.getUsername());
-             sysUserVos.add(userVo);
-         }
-         return sysUserVos;
-     }
+//     public List<SysUserVo> getAllUser(){
+//         List<SysUser> sysUserList = sysUserMapper.selectList(null);
+//
+//         List<SysUserVo> sysUserVos = new ArrayList<>();
+//         SysUserVo userVo = null;
+//         for (SysUser sysUser : sysUserList) {
+//             userVo = new SysUserVo();
+//             userVo.setAvator(sysUser.getAvator());
+//             userVo.setBirth(sysUser.getBirth());
+//             userVo.setCreateTime(sysUser.getCreateTime());
+//             userVo.setEmail(sysUser.getEmail());
+//             userVo.setEnabled(sysUser.getEnabled());
+//             userVo.setIntroduction(sysUser.getIntroduction());
+//             userVo.setLocation(sysUser.getLocation());
+//             userVo.setPhone(sysUser.getPhone());
+//             userVo.setSex(sysUser.getSex());
+//             userVo.setUsername(sysUser.getUsername());
+//             sysUserVos.add(userVo);
+//         }
+//         return sysUserVos;
+//     }
 
     //用户管理：修改
     public boolean updateUser(SysUser sysuser){
@@ -110,17 +118,42 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return i >0;
     }
 
-    //用户管理：新增
-    public void addUser(SysUser sysuser){
-//        sysuser.setPassword(passwordEncoder.encode(
-//                dbLoadSysConfig.getConfigItem("user.init.password")
-//        ));
-        sysuser.setPassword(passwordEncoder.encode(sysuser.getPassword()));
-        sysuser.setCreateTime(new Date());  //创建时间
-        sysuser.setUpdateTime(new Date());  // 更新时间。默认是和创建的时间是一致的
-        sysuser.setEnabled(true); //新增用户激活
-        sysuser.setAvator(Constants.DEFAULT_PIC);
-        sysUserMapper.insert(sysuser);
+    /**
+     * todo 这里实现的非常的不好
+     * @param sysUser {@link SysUser}
+     */
+    public AjaxResponse addUser(SysUser sysUser){
+        ParameterCheckUtils.checkParamIsBlank(sysUser);
+        ParameterCheckUtils.checkParamIsBlank(sysUser.getUsername());
+        SysUserVO sysUserVO = new SysUserVO();
+        SysUser sysUserDb = sysUserMapper.selectOne(
+                new QueryWrapper<SysUser>().eq("username",sysUser.getUsername()));
+
+        if (sysUserDb != null) {
+            return AjaxResponse.success("该用户名已经存在");
+        }
+
+        sysUser.setPassword(passwordEncoder.encode(sysUser.getPassword()));
+        sysUser.setCreateTime(new Date());  //创建时间
+        sysUser.setUpdateTime(new Date());  // 更新时间。默认是和创建的时间是一致的
+        sysUser.setEnabled(true); //新增用户激活
+        sysUser.setAvator(Constants.DEFAULT_PIC);
+
+        //用户注册成功之后，在反查一下，完成普通角色的授权
+        int result= sysUserMapper.insert(sysUser);
+        if(result > 0){
+            SysRole sysRole = sysRoleService.queryRoleByRoleCode(Constants.ROLE_COMMON);
+            Long roleId = sysRole.getId();
+             sysUserVO= getUserByUserName(sysUser.getUsername());
+             if(Objects.isNull(sysUserVO)){
+                 return AjaxResponse.error("插入用户信息异常");
+             }
+            Long userVOId = sysUserVO.getId();
+            sysRoleService.updateUserRoleByUserId(userVOId,roleId);
+            return AjaxResponse.success("注册信息成功");
+        }else{
+            return AjaxResponse.error("添加用户信息异常");
+        }
     }
 
     //用户管理：删除
@@ -179,4 +212,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public SysUser getUserById(Long userId) {
         return sysUserMapper.selectById(userId);
     }
+
+//    public SysUserVO getUserByUserName(String userName) {
+//        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("username", userName);
+//        SysUser sysUser = sysUserMapper.selectOne(queryWrapper);
+//        SysUserVO sysUserVO = convertService.convertSysUserVo(sysUser);
+//        return sysUserVO;
+//    }
 }

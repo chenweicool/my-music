@@ -3,6 +3,7 @@ package com.mymusic.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mymusic.common.domain.UserCommentVo;
+import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.domain.UserComment;
 import com.mymusic.formvo.UserCommentSongRequest;
 
@@ -77,4 +78,6 @@ public interface UserCommentService {
      * @return {@link IPage}
      */
     IPage<UserCommentVo> getUserCommentByUserId(Page<UserCommentVo> page, Long userIdDb);
+
+    AjaxResponse updateCommentLikeNum(Long commentId, Integer likeNum);
 }

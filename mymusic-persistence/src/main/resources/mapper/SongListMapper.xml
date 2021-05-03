@@ -82,7 +82,7 @@
       select sl.id, sl.title, sl.pic, sl.style, sl.introduction ,sl.type from song_list sl
       left join sys_user_songlist su on su.songlist_id = sl.id
       left join sys_user u on u.id = su.user_id
-      where u.id = #{userId}
+      where u.id = #{userId} and sl.type=1
   </select>
 
   <select id="findSongListByUUID" parameterType="java.lang.String" resultMap="BaseResultMap">

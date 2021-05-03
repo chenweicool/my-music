@@ -38,41 +38,17 @@ public class SongListController {
 
     /**
      * 添加歌单的信息
-     * todo
-     * @param req 前台传入的数据信息
+     * @param songList
      * @return  歌单是否添加成功的信息
      */
     @PostMapping("/addSongList")
-    public AjaxResponse addSongList(HttpServletRequest req){
-        String title = req.getParameter("title").trim();
-        String pic = req.getParameter("pic").trim();
-        String introduction = req.getParameter("introduction").trim();
-        String style = req.getParameter("style").trim();
-        String userIdStr = req.getParameter("userId");
-
-        SongList songList = new SongList();
-        songList.setTitle(title);
-        songList.setPic(pic);
-        songList.setIntroduction(introduction);
-        songList.setStyle(style);
-
-        // TODO 这里写的不好，需要优化一下。
-        if(userIdStr != null){
-            Long userId = Long.parseLong(userIdStr);
-            boolean res = songListService.addSongList(songList,userId);
-            if (res){
-                return AjaxResponse.success("添加成功");
-            }else {
-                return AjaxResponse.error("添加失败");
-            }
-        }else{
+    public AjaxResponse addSongList(@RequestBody SongList songList){
             boolean res = songListService.addSongList(songList);
             if (res){
                 return AjaxResponse.success("添加成功");
             }else {
                 return AjaxResponse.error("添加失败");
             }
-        }
     }
 
 

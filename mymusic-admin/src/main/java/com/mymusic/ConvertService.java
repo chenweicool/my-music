@@ -41,7 +41,7 @@ public class ConvertService {
             userComment1.setUserId(userComment.getUserId());
             userComment1.setUserName(userComment.getUserName());
             userComment1.setAvatar(userComment.getAvatar());
-            userComment1.setContent(userComment.getContent());
+            userComment1.setContent(userComment.getCommentContent());
             userComment1.setSongId(userComment.getSongId());
             return userComment1;
     }

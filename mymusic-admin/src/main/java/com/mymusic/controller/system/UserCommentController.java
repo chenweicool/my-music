@@ -28,7 +28,7 @@ public class UserCommentController {
     public AjaxResponse  addComment(@RequestBody UserCommentSongRequest userComment){
         Boolean result = userCommentService.addComment(userComment);
         if (result) {
-            return AjaxResponse.success();
+            return AjaxResponse.success("评论成功");
         }else{
             return AjaxResponse.error("添加评论失败");
         }
@@ -38,7 +38,7 @@ public class UserCommentController {
     public AjaxResponse  updateComment(@RequestBody UserComment userComment){
         Boolean result = userCommentService.updateComment(userComment);
         if (result) {
-            return AjaxResponse.success("更新歌曲成功");
+            return AjaxResponse.success("更新评论成功");
         }else{
             return AjaxResponse.error("更新评论失败");
         }
@@ -131,5 +131,9 @@ public class UserCommentController {
     }
 
 
+    @PostMapping("/updateCommentLikeNum")
+    public AjaxResponse updateCommentLikeNum(@RequestParam("id") Long commentId, @RequestParam("likeNum") Integer likeNum) {
+        return userCommentService.updateCommentLikeNum(commentId, likeNum);
+    }
 
 }

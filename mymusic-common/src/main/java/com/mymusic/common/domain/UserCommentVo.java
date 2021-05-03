@@ -36,4 +36,9 @@ public class UserCommentVo implements Serializable {
      * 评论的状态 0 待审核  1 审核通过 2  审核未通过
      */
     private Integer commentStatus;
+
+    /**
+     * 是否点赞，默认是没有点赞
+     */
+    private Boolean  flag = true;
 }

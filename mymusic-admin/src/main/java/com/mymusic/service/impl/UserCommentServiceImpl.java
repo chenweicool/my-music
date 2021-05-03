@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mymusic.ConvertService;
 import com.mymusic.common.domain.SysUserVO;
 import com.mymusic.common.domain.UserCommentVo;
+import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.exception.UserException;
 import com.mymusic.common.utils.ParameterCheckUtils;
 import com.mymusic.domain.*;
@@ -39,7 +40,7 @@ public class UserCommentServiceImpl implements UserCommentService {
     @Override
     public Boolean addComment(UserCommentSongRequest request) {
         ParameterCheckUtils.checkParamIsBlank(request);
-        ParameterCheckUtils.checkParamIsBlank(request.getContent(),request.getUserName(),
+        ParameterCheckUtils.checkParamIsBlank(request.getCommentContent(),request.getUserName(),
                 request.getUserId(),request.getSongId());
 
         UserComment userComment = convertService.convertUserComment(request);
@@ -49,13 +50,15 @@ public class UserCommentServiceImpl implements UserCommentService {
         if (userComment.getCreateTime() == null) {
             userComment.setCreateTime(new Date());
         }
+        if (userComment.getSongId() != null) {
+            userComment.setType(1);
+        }
 
         String commentUUID = UUID.randomUUID().toString();
         userComment.setUuid(commentUUID);
         userComment.setLikeNum(0);  // 点赞数默认是0
         userComment.setCommentStatus(0);  // 默认是审核中
         //todo 这里需要添加一个评论过滤的接口
-
       return userCommentMapper.insert(userComment)> 0;
     }
 
@@ -155,6 +158,16 @@ public class UserCommentServiceImpl implements UserCommentService {
     public IPage<UserCommentVo> getUserCommentByUserId(Page<UserCommentVo> page, Long userIdDb) {
         ParameterCheckUtils.checkParamIsBlank(userIdDb);
         return userCommentMapper.getUserCommentByUserId(page,userIdDb);
+    }
+
+    @Override
+    public AjaxResponse updateCommentLikeNum(Long commentId, Integer likeNum) {
+        ParameterCheckUtils.checkParamIsBlank(commentId,likeNum);
+        int result = userCommentMapper.updateCommentLikeNum(commentId, likeNum);
+        if (result > 0) {
+            return AjaxResponse.success("点赞成功");
+        }
+        return null;
     }
 
 }

@@ -13,7 +13,6 @@ public class UserCommentSongRequest implements Serializable {
 
     private static final long serialVersionUID = 7048748593424289770L;
 
-
     /**
      * 用户的id
      */
@@ -32,7 +31,7 @@ public class UserCommentSongRequest implements Serializable {
     /**
      * 评论的内容
      */
-    private String content;
+    private String commentContent;
 
     /**
      * 是否公开
@@ -47,4 +46,7 @@ public class UserCommentSongRequest implements Serializable {
 
     /*歌曲的id信息*/
     private Long songId;
+
+    /*评论的类型 0--歌单  1--歌曲*/
+    private Integer type;
 }

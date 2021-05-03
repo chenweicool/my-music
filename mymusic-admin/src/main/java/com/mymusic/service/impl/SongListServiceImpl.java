@@ -4,14 +4,19 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mymusic.common.enums.SongConsumerType;
 import com.mymusic.common.exception.SongException;
+import com.mymusic.common.utils.Constants;
+import com.mymusic.common.utils.ParameterCheckUtils;
 import com.mymusic.domain.SongList;
 import com.mymusic.mapper.SongListMapper;
 import com.mymusic.model.SysUserSonglist;
 import com.mymusic.service.SongListService;
 import com.mymusic.service.SysUserSonglistService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,8 +35,9 @@ public class SongListServiceImpl implements SongListService {
      * @param songList
      * @return
      */
+    @Deprecated
     @Override
-    public boolean addSongList(SongList songList,Long userId) {
+    public boolean addSongListUserId(SongList songList,Long userId) {
         SysUserSonglist sysUserSonglist = new SysUserSonglist();
         String uuid = UUID.randomUUID().toString();
         songList.setUuid(uuid);
@@ -47,9 +53,28 @@ public class SongListServiceImpl implements SongListService {
 
     @Override
     public boolean addSongList(SongList songList) {
+        ParameterCheckUtils.checkParamIsBlank(songList.getUserId());
+        SysUserSonglist sysUserSonglist = new SysUserSonglist();
+        if (StringUtils.isEmpty(songList.getPic())) {
+             songList.setPic(Constants.DEFAULT_PIC);
+        }
+        if(StringUtils.isEmpty(songList.getStyle())){
+            songList.setStyle("未知");
+        }
+        songList.setCreateTime(new Date());
+        songList.setUpdateTime(new Date());
         String uuid = UUID.randomUUID().toString();
         songList.setUuid(uuid);
-        return songListMapper.insert(songList) > 0;
+        songList.setType(1);
+        if(songListMapper.insert(songList) > 0){
+            SongList  songListDb = songListMapper.findSongListByUUID(uuid);
+            //addSongListUserId(songListDb,songList.getUserId());
+            sysUserSonglist.setSonglistId(songListDb.getId());
+            sysUserSonglist.setUserId(songList.getUserId());
+            boolean result = sysUserSonglistService.addSysUserSongList(sysUserSonglist);
+            return result ;
+        }
+        return false;
     }
 
     @Override

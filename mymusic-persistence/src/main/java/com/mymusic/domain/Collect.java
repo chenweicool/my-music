@@ -16,7 +16,7 @@ import java.util.Date;
 public class Collect implements Serializable {
 
     private static final long serialVersionUID = 8941957612376513900L;
-    /*歌曲的id*/
+    /*收藏的id*/
     private Integer id;
 
     /*用户的id信息*/

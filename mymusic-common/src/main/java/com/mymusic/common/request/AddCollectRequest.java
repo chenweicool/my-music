@@ -11,12 +11,15 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddCollectSongListRequest implements Serializable {
+public class AddCollectRequest implements Serializable {
     private static final long serialVersionUID = 2749696849549338576L;
     /*用户的id的信息*/
     private Long userId;
 
     /*歌单的id的信息*/
     private Integer songListId;
+
+    /*收藏歌曲的id的信息*/
+    private Long songId;
 
 }

@@ -26,7 +26,7 @@
     <!--设置--> 
     <div class="header-right" v-show="loginIn">
       <div id="user">
-        <img :src="attachImageUrl(avator)" alt="">
+        <img :src="attachImageUrl(avator)" alt="用户中心">
       </div>
       <ul class="menu">
         <li v-for="(item, index) in menuList" :key="index" @click="goMenuList(item.path)">{{item.name}}</li>
@@ -49,14 +49,15 @@ export default {
       navMsg: [], // 左侧导航栏
       loginMsg: [], // 右侧导航栏
       menuList: [], // 用户下拉菜单项
-      keywords: ''
+      keywords: '',
+      avator:'',
     }
   },
   computed: {
     ...mapGetters([
       'userId',
       'activeName',
-      'avator',
+     // 'avator',
       'username',
       'loginIn'
     ])
@@ -65,6 +66,7 @@ export default {
     this.navMsg = navMsg
     this.loginMsg = loginMsg
     this.menuList = menuList
+    this.avator = localStorage.getItem("avator");
   },
   mounted () {
     document.querySelector('#user').addEventListener('click', function (e) {

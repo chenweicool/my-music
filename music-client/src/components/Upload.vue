@@ -42,11 +42,13 @@ export default {
     },
     handleAvatarSuccess (res, file) {
       console.log(res)
+      console.log(res)
       if (res.isok) {
         this.imageUrl = URL.createObjectURL(file.raw)
-        this.$store.commit('setAvator', res.avator)
+        localStorage.setItem("avator",res.data.result);  
+       // this.$store.commit('setAvator', res.avator)
         this.$message({
-          message: res.data,
+          message: res.data.message,
           type: 'success'
         })
       } else {

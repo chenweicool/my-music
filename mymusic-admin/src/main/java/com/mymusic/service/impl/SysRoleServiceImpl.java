@@ -1,7 +1,9 @@
 package com.mymusic.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.Query;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.mymusic.common.utils.ParameterCheckUtils;
 import com.mymusic.domain.SysRole;
 import com.mymusic.domain.SysUserRole;
 import com.mymusic.mapper.MySystemMapper;
@@ -52,6 +54,17 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         return sysRoleMapper.selectList(query);
     }
 
+    /**
+     * 根据角色role_code来查询角色信息
+     * @param roleCode 角色的role_code
+     * @return
+     */
+    public SysRole queryRoleByRoleCode(String roleCode){
+        QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("role_code",roleCode);
+        return sysRoleMapper.selectOne(queryWrapper);
+    }
+
     public void updateRole(SysRole sysrole){
         Assert.isTrue(sysrole.getId() != null,
                 "更新数据必须指定数据更新条件（主键）");
@@ -97,5 +110,14 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         sysRole.setId(id);
         sysRole.setStatus(status);
         sysRoleMapper.updateById(sysRole);
+    }
+
+
+    public void updateUserRoleByUserId(Long userId, Long roleId) {
+        ParameterCheckUtils.checkParamIsBlank(userId, roleId);
+        SysUserRole sysUserRole = new SysUserRole();
+        sysUserRole.setUserId(userId);
+        sysUserRole.setRoleId(roleId);
+        sysUserRoleMapper.insert(sysUserRole);
     }
 }

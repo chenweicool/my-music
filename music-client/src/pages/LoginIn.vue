@@ -81,9 +81,9 @@ export default {
       loginIn(this.loginForm.username,this.loginForm.password)
         .then(res => {
              setJwtToken(res.data)
-            _this.$store.commit('setLoginIn', true)
-            _this.getUser()
+             //this.getUser()
             localStorage.setItem("username",this.loginForm.username);
+            _this.$store.commit('setLoginIn', true)
             this.changeIndex('首页')
              _this.$router.push({path: '/'})
              _this.$router.go(0)
@@ -94,18 +94,18 @@ export default {
     },
 
     // 根据用户名反查用户的详细信息并存储。
-     getUser(){
-      getUserInfo().then(res =>{
-         console.log(res);
-        this.setdata(res) 
-      })
-    },
+  //    getUser(){
+  //     getUserInfo().then(res =>{
+  //        console.log(res);
+  //       this.setdata(res) 
+  //     })
+  //   },
    
-   setdata(item){
-      this.$store.commit('setUserId', item.id)
-      this.$store.commit('setUsername', item.username)
-      this.$store.commit('setAvator', item.avator)
-   },
+  //  setdata(item){
+  //     this.$store.commit('setUserId', item.id)
+  //     this.$store.commit('setUsername', item.username)
+  //     this.$store.commit('setAvator', item.avator)
+  //  },
 
    // 注册的页面
     goSignUp () {

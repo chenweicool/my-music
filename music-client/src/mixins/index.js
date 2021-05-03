@@ -18,7 +18,7 @@ export const mixin = {
     },
     // 获取图片信息
     attachImageUrl (srcUrl) {
-      return srcUrl ? this.$store.state.configure.ONHOST +"/"+ srcUrl || '../assets/img/user.jpg' : ''
+      return srcUrl ? this.$store.state.configure.ONHOST+"/"+srcUrl || '../assets/img/user.jpg' : ''
     },
     attachBirth (val) {
       let birth = String(val).match(/[0-9-]+(?=\s)/)
@@ -43,6 +43,8 @@ export const mixin = {
       this.$store.commit('setTitle', this.replaceFName(songName))
       this.$store.commit('setArtist', this.replaceLName(songName))
       this.$store.commit('setLyric', this.parseLyric(lyric))
+
+      //  这里实现歌曲的收藏
       // if (this.loginIn) {
       //   this.$store.commit('setIsActive', false)
       //   getCollectionOfUser(this.userId)

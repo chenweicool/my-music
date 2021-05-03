@@ -31,7 +31,7 @@ public class SongListServiceImplTest extends BaseTest {
         songList.setStyle("运动风格");
         songList.setType(1);
         Long userId = 1297873308628307970l;
-        boolean result = songListService.addSongList(songList, userId);
+        boolean result = songListService.addSongListUserId(songList, userId);
         Assert.assertEquals(true, result);
     }
 

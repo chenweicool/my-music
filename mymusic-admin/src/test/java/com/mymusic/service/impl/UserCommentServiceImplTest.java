@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mymusic.ConvertService;
 import com.mymusic.common.domain.UserCommentVo;
+import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.domain.UserComment;
 import com.mymusic.domain.UserCommentConsumer;
 import com.mymusic.formvo.UserCommentSongRequest;
@@ -30,7 +31,7 @@ public class UserCommentServiceImplTest extends BaseTest {
         UserCommentSongRequest userComment = new UserCommentSongRequest();
         userComment.setUserId(1297873308628307970l);
         userComment.setUserName("admin");
-        userComment.setContent("这首歌真的难听");
+        userComment.setCommentContent("这首歌真的难听");
         userComment.setSongId(12l);
        // userComment.setCommentStatus(1);
         Boolean aBoolean = userCommentService.addComment(userComment);
@@ -125,6 +126,14 @@ public class UserCommentServiceImplTest extends BaseTest {
         Page<UserCommentVo> page = new Page<>(1, 20);
         IPage<UserCommentVo> userCommentByUserId = userCommentService.getUserCommentByUserId(page, 1297873308628307970l);
         System.out.println(userCommentByUserId.getTotal());
+    }
+
+    @Test
+    public void testLikeNum(){
+        Long id = 1389077018032144386L;
+        Integer likeNum = 123;
+        AjaxResponse ajaxResponse = userCommentService.updateCommentLikeNum(id, likeNum);
+        Assert.assertNotNull(ajaxResponse);
     }
 
 }

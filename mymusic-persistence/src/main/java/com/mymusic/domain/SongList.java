@@ -29,11 +29,11 @@ public class SongList implements Serializable {
     private String uuid;
 
     //todo 待实现的功能
-//    private Date createTime;
+    private Date createTime;
+
+    private Date updateTime;
 //
-//    private Date updateTime;
-//
-//    private Long userId;
+    private Long userId;
 //
 //    private String userName;
 

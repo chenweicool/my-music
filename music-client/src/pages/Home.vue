@@ -15,6 +15,7 @@ import Swiper from '../components/Swiper'
 import ContentList from '../components/ContentList'
 import { getSongListByHot } from '../api/system/songlist'
 import { getSingerHot } from '../api/system/singer'
+import { getUserInfo } from '../api/system/sysuser'
 export default {
   name: 'home',
   components: {
@@ -26,7 +27,10 @@ export default {
       songsList: [
         {name: '歌单', list: []},
         {name: '歌手', list: []}
-      ]
+      ],
+      username: '',
+      avator:'',
+
     }
   },
   created () {
@@ -34,12 +38,15 @@ export default {
     this.getSongList('songList')
     // 获取歌手列表
     this.getSinger('singer')
+   
+   // 获取用户信息，并存储
+   this.getUser()
   },
   methods: {
     getSongList (path) {
       getSongListByHot()
         .then(res => {
-          console.log(res)
+        //  console.log(res)
           this.songsList[0].list = res.slice(0, 10)
         })
         .catch(err => {
@@ -54,7 +61,33 @@ export default {
         .catch(err => {
           console.log(err)
         })
+    },
+     // 根据用户名反查用户的详细信息并存储。
+     getUser(){
+       this.username = localStorage.getItem("username")
+       if(this.username != null){
+           getUserInfo().then(res =>{
+         this.setdata(res) 
+      })
     }
+    },
+
+    setdata(item){
+      
+      this.$store.commit('setUserId', item.id)
+      this.$store.commit('setUsername', item.username)
+      this.$store.commit('setAvator', item.avator)
+
+      // 存储用户信息
+      console.log(item)
+      localStorage.setItem("avator",item.data.avator)
+      localStorage.setItem("sex",item.data.sex)
+      localStorage.setItem("birth",item.data.birth)
+      localStorage.setItem("introduction",item.data.introduction)
+      localStorage.setItem("location",item.data.location)
+      localStorage.setItem("userId",item.data.id)
+   },
+    
   }
 }
 </script>

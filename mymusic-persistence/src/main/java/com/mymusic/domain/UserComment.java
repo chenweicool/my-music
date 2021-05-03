@@ -75,4 +75,6 @@ public class UserComment implements Serializable {
      * 评论的唯一标识
      */
     private  String uuid;
+
+    private Integer type;
 }

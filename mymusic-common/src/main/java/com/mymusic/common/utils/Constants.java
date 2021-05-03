@@ -39,4 +39,14 @@ public class Constants {
 
     /*用户的头像*/
     public static final String  USER_PIC = "/consumer_pic/";
+
+    //================角色信息使用到的常量
+    /*普通用户*/
+    public static final String ROLE_COMMON = "common";
+
+    /*创作者*/
+    public static final String ROLE_CREATE = "create";
+
+    /*管理员*/
+    public static final String ROLE_ADMIN = "admin";
 }

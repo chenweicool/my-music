@@ -2,6 +2,8 @@ package com.mymusic.controller.system;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.mymusic.common.domain.ResultBean;
+import com.mymusic.common.domain.ResultVo;
 import com.mymusic.common.domain.SysUserVO;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.Constants;
@@ -84,8 +86,7 @@ public class SysUserController {
     //用户管理：新增
     @PostMapping(value = "/add")
     public AjaxResponse add(@RequestBody SysUser sysUser) {
-        sysuserService.addUser(sysUser);
-        return AjaxResponse.success("新增用户成功");
+        return sysuserService.addUser(sysUser);
     }
 
     //用户管理：删除
@@ -141,8 +142,11 @@ public class SysUserController {
             SysUser sysUser = sysuserService.getUserById(id);
             sysUser.setAvator(fileKey);
             boolean updateResult = sysuserService.updateUser(sysUser);
+            ResultVo resultVo = new ResultVo();
+            resultVo.setMessage("更新图片成功");
+            resultVo.setResult(fileKey);
             if(updateResult){
-                return AjaxResponse.success("更新图片信息成功");
+                return AjaxResponse.success(resultVo);
             }else{
                 return AjaxResponse.error("更新图片失败");
             }
@@ -150,14 +154,5 @@ public class SysUserController {
             return AjaxResponse.error("上传图片失败");
         }
     }
-
-
-
-
-
-
-
-
-
 }
 

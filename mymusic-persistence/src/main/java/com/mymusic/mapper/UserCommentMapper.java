@@ -52,4 +52,7 @@ public interface UserCommentMapper extends BaseMapper<UserComment> {
      * @return {@link IPage}
      */
     IPage<UserCommentVo> getUserCommentByUserId(Page<UserCommentVo> page, @Param("userId") Long userId);
+
+    /*更新用户的点赞数*/
+    int updateCommentLikeNum(@Param("commentId") Long commentId, @Param("likeNum") Integer likeNum);
 }

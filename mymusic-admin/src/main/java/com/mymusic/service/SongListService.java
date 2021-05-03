@@ -9,9 +9,9 @@ import java.util.List;
 public interface SongListService {
 
     /*增加一个歌单*/
-    boolean addSongList (SongList songList,Long userId);
+    boolean addSongListUserId (SongList songList,Long userId);
 
-    /*只有管理员才能增加的歌单信息*/
+    /*增加的歌单信息*/
     boolean addSongList(SongList songList);
 
     /*更新一个歌单的信息*/

@@ -2,18 +2,13 @@ package com.mymusic.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.common.domain.SongListCollectVo;
-import com.mymusic.common.request.AddCollectSongListRequest;
-import com.mymusic.domain.Collect;
+import com.mymusic.common.exception.AjaxResponse;
+import com.mymusic.common.request.AddCollectRequest;
 import org.junit.Assert;
 import org.junit.Test;
-import org.omg.CORBA.CODESET_INCOMPATIBLE;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-
-import java.util.Date;
-
-import static org.junit.Assert.*;
 
 public class CollectServiceImplTest extends BaseTest {
 
@@ -22,24 +17,27 @@ public class CollectServiceImplTest extends BaseTest {
 
     @Test
     public void addCollectionSongList() {
-        AddCollectSongListRequest collect = new AddCollectSongListRequest();
+        AddCollectRequest collect = new AddCollectRequest();
         collect.setUserId(1298090120930418690l);
-        collect.setSongListId(14);
-        boolean result = collectService.addCollectionSongList(collect);
-        Assert.assertEquals(true, result);
+        collect.setSongId(1l);
+        AjaxResponse result = collectService.addCollection(collect);
+        System.out.println(result.getMessage());
+        //Assert.assertEquals(true, result);
     }
 
     @Test
     @Transactional
     public void deleteCollectBySongListId() {
-        boolean result = collectService.deleteCollectBySongListId(3);
+        boolean result = collectService.deleteCollectBySongListId(3,1298090120930418690L);
         Assert.assertEquals(true, result);
     }
 
     @Test
     public void getCollectsByUserId() {
-        IPage<SongListCollectVo> collectsByUserId = collectService.getCollectsByUserId(1, 20, 1297873308628307970l);
-        Assert.assertNotNull(collectsByUserId);
+        AjaxResponse response = collectService.getCollectsByUserId(1, 20, 1298090120930418690L,1);
+        System.out.println(response.getData());
+        Assert.assertNotNull(response);
+
     }
 
     @Test

@@ -28,12 +28,12 @@ public class SysUserRole implements Serializable {
     /**
      * 角色自增id
      */
-    private Integer roleId;
+    private Long  roleId;
 
     /**
      * 用户自增id
      */
-    private Integer userId;
+    private Long userId;
 
 
 }

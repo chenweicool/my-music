@@ -21,7 +21,7 @@ public class UserReplyCommentController {
     public AjaxResponse addReplyComment(@RequestBody UserReplyComment userComment){
         Boolean result = replyCommentService.addReplyComment(userComment);
         if (result) {
-            return AjaxResponse.success();
+            return AjaxResponse.success("添加评论成功");
         }else{
             return AjaxResponse.error("添加评论失败");
         }

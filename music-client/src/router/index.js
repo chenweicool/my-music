@@ -11,6 +11,13 @@ import SingerAlbum from '@/pages/SingerAlbum'
 import Search from '@/pages/Search'
 import Setting from '@/pages/Setting'
 import Lyric from '@/pages/Lyric'
+import Recommander from '@/pages/Recommander'
+import HotSong from '@/pages/HotSong'
+
+import MySongList from '@/pages/MySongList'
+import MyCollection from '@/pages/MyCollection'
+import MyHistory from '@/pages/MyHistory'
+import MyCreate from '@/pages/MyCreate'
 
 Vue.use(Router)
 
@@ -78,7 +85,40 @@ export default new Router({
       path: '/setting',
       name: 'setting',
       component: Setting
-    }
+    },
+    {
+      path: '/hotSong',
+      name: 'hotSong',
+      component: HotSong
+    },
+    {
+      path: '/todayRecommander',
+      name: 'recommander',
+      component: Recommander
+    },
+    
+    //个人中心的页面展示
+    {
+      path: '/my-collection',
+      name: 'mycollection',
+      component: MyCollection
+    },
+    {
+      path: '/my-songList',
+      name: 'mysongList',
+      component: MySongList
+    },
+    {
+      path: '/my-create',
+      name: 'mycreate',
+      component: MyCreate
+    },
+    {
+      path: '/my-history',
+      name: 'myhistory',
+      component: MyHistory
+    },
+
   ],
   scrollBehavior (to, from, savedPosition) {
     return { x: 0, y: 0 }

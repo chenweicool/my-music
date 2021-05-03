@@ -11,7 +11,7 @@ const navMsg = [{
 },
 {
   name: '热门歌曲',
-  path: '/hotSinger'
+  path: '/hotSong'
 },
 {
     name: '每日推荐',
@@ -36,10 +36,27 @@ const loginMsg = [{
 const menuList = [{
   name: '个人中心',
   path: '/setting'
-}, {
+}, 
+{
+  name: '我的收藏',
+  path: '/my-collection'
+},
+{
+  name: '我的分类',
+  path: '/my-songList'
+},
+{
+  name: '我的创作',
+  path: '/my-create'
+},
+{
+  name: '我的浏览',
+  path: '/my-history'
+},{
   name: '退出登录',
-  path: 0
-}]
+  path: '0'
+}, 
+]
 
 export {
   navMsg,

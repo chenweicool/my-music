@@ -1,6 +1,7 @@
 package com.mymusic.mapper;
 
 import com.mymusic.domain.Rank;
+import org.apache.ibatis.annotations.Param;
 
 public interface RankMapper {
     int insert(Rank record);
@@ -19,5 +20,5 @@ public interface RankMapper {
      * @param songListId 总评分人数
      * @return 返回总的评分内容
      */
-    int selectRankNum(Long songListId);
+    int selectRankNum(@Param("songListId") Long songListId);
 }

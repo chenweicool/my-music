@@ -18,8 +18,6 @@ public interface SongListMapper {
    /*根据主键查询歌单*/
     SongList selectByPrimaryKey(Integer id);
 
-   /*查询所有的歌单的信息*/
-    List<SongList> selectAll();
 
     /*更新歌单的信息*/
     int updateByPrimaryKey(SongList record);
@@ -44,4 +42,5 @@ public interface SongListMapper {
 
     /*获取10个歌单信息*/
     List<SongList> getSongListHot();
+
 }

@@ -14,6 +14,9 @@
         </div>
       </li>
       <li class="list-content" v-for="(item, index) in songList" :key="index">
+         <div style="float:right;">
+           <el-button type="success" size="mini">添加收藏</el-button>
+        </div>
         <div class="song-item" :class="{'is-play': id === item.id}"  @click="toplay(item.id, item.url, item.pic, index, item.songName, item.lyric)">
           <span class="item-index">
             <span v-if="id !== item.id">{{index + 1}}</span>
@@ -44,6 +47,28 @@ export default {
     ...mapGetters([
       'id' // 音乐ID
     ])
+  },
+
+   data(){
+     return{
+         mySongListArr:[],
+         mysongList:{
+           id:'',
+           title:'',
+         }
+     }
+  },
+  created(){
+   // console.log( JSON.parse(localStorage.getItem("mySongList")))
+    this.getmysongList()
+  }, 
+   
+   //添加歌曲的方法
+  methods: {
+    getmysongList(){
+        this.mySongListArr = JSON.parse(localStorage.getItem("mySongList"))
+        console.log(this.mySongListArr[0].id);
+     },
   }
 }
 </script>

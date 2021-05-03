@@ -13,7 +13,7 @@
         <span>暂无歌词</span>
       </div>
     </transition-group>
-    <comment :playId="id" :type="0"></comment>
+    <comment :playId="id" :type="1"></comment>
   </div>
 </template>
 

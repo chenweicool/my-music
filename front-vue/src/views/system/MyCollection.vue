@@ -130,7 +130,7 @@
           pageSize: 20,
           total: null
         },
-
+        type: '0' ,  // 返回收藏的类型 0 代表收藏的是歌单  1--代表收藏的是歌曲。
         dialogFormVisible: false,
         dialogTitle:"",
         dialogRefName:"dialogForm",
@@ -169,7 +169,7 @@
       getData(){
 
         // 返回我的收藏信息
-        getSongListByUserId(this.pagination.pageNum,this.pagination.pageSize,this.userId)
+        getSongListByUserId(this.pagination.pageNum,this.pagination.pageSize,this.userId,this.type)
           .then(res => {
              console.log(res)
              this.setData(res)
