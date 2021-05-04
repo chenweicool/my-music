@@ -22,7 +22,7 @@
    select sl.id, sl.title, sl.pic, sl.style, sl.introduction,su.update_time as updateTime from song_list sl
       left join collect su on su.song_list_id = sl.id
       left join sys_user u on u.id = su.user_id
-      where u.id  = #{userIdDB, jdbcType=BIGINT}
+      where u.id  = #{userIdDB, jdbcType=BIGINT} and sl.type=0
   </select>
 
 

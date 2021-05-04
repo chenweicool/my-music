@@ -12,6 +12,7 @@ import com.mymusic.domain.SongList;
 import com.mymusic.service.SongService;
 import com.mymusic.service.UpdatePictureOrFileService;
 import io.swagger.annotations.Api;
+import jdk.nashorn.internal.objects.annotations.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.weaver.loadtime.Aj;
@@ -142,8 +143,8 @@ public class SongController {
      * @return
      */
     @RequestMapping(value = "/SongOfQuerySongNameOrSingerName", method = RequestMethod.GET)
-    public  AjaxResponse querySongBySongNameOrSingerName( @RequestParam("pageNum") Integer pageNum,
-                                                        @RequestParam("pageSize") Integer pageSize,
+    public  AjaxResponse querySongBySongNameOrSingerName( @RequestParam(value = "pageNum",defaultValue = "1") Integer pageNum,
+                                                        @RequestParam(value = "pageSize",defaultValue = "20") Integer pageSize,
                                                         @RequestParam("queryName") String queryName) {
         if(StringUtils.isEmpty(queryName)){
             return AjaxResponse.success("参数不能为空");
@@ -208,4 +209,16 @@ public class SongController {
         return AjaxResponse.success(page);
     }
 
+    /**
+     * 返回热门歌曲
+     */
+    @GetMapping("/getHotSong")
+    public  AjaxResponse getHotSong(){
+         return songService.getHotSong();
+    }
+
+    @PostMapping("/getRecommendSong")
+    public AjaxResponse getRecommendSong(@RequestParam("userId") Long userId) {
+        return songService.getRecommendSong(userId);
+    }
 }

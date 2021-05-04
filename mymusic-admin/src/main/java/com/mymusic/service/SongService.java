@@ -1,6 +1,7 @@
 package com.mymusic.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.common.domain.SongVo;
+import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.domain.Song;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,4 +49,14 @@ public interface SongService {
      * @return
      */
     List<Song> songOfName(String songName);
+
+    /*返回热门歌曲*/
+    AjaxResponse getHotSong();
+
+    /**
+     * 根据个人信息返回推荐的音乐
+     * @param userId
+     * @return
+     */
+    AjaxResponse getRecommendSong(Long userId);
 }

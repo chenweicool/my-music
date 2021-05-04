@@ -91,4 +91,28 @@
   <select id="getSongListHot" resultMap="BaseResultMap">
       select  sl.id, sl.title, sl.pic, sl.style, sl.introduction ,sl.type from song_list sl limit 10;
   </select>
+
+  <!--查询歌曲单个的关联记录-->
+  <select id="getSongToSongList" resultType="com.mymusic.common.domain.SongToSongList">
+       select id,songlist_id,song_id from songlist_song where song_id = #{songId} and songlist_id = #{songListId} and type= #{type}
+  </select>
+
+  <select id="getSongToSongLists" resultType="com.mymusic.common.domain.SongToSongList">
+        select id,songlist_id,song_id from songlist_song where
+               <foreach collection="songListIds" item="songListId" open=" (" close=")" separator="or" >
+                  song_id = #{songId} and songlist_id = #{songListId} and type= #{type}
+               </foreach>
+  </select>
+  <!--添加多个歌曲的收藏-->
+  <insert id="addSongToSongList">
+     insert  into songlist_song(song_id,songlist_id,type) values
+    <foreach collection="songListIds" item="songListId" separator=",">
+      (#{songId},#{songListId},#{type})
+    </foreach>
+  </insert>
+  <!--移除歌曲收藏-->
+  <delete id="deleteSongToSongList" >
+       delete from songlist_song where song_id = #{songId} and songlist_id = #{songListId} and type = #{type}
+  </delete>
+
 </mapper>

@@ -2,7 +2,9 @@ package com.mymusic.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mymusic.common.domain.SongToSongList;
 import com.mymusic.common.enums.SongConsumerType;
+import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.exception.SongException;
 import com.mymusic.common.utils.Constants;
 import com.mymusic.common.utils.ParameterCheckUtils;
@@ -11,6 +13,7 @@ import com.mymusic.mapper.SongListMapper;
 import com.mymusic.model.SysUserSonglist;
 import com.mymusic.service.SongListService;
 import com.mymusic.service.SysUserSonglistService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -163,4 +167,37 @@ public class SongListServiceImpl implements SongListService {
         IPage<SongList> mySongList = songListMapper.findMySongList(page,userId);
         return mySongList;
     }
+
+    /*添加之前也是检查一下这个记录是否存在*/
+    @Override
+    public AjaxResponse addSongToSongList(Long songId,  List<Integer> songListId,Integer type) {
+        ParameterCheckUtils.checkParamIsBlank(songId, songListId);
+        List<SongToSongList> songToSongList = songListMapper.getSongToSongLists(songId,songListId,type);
+        if (songToSongList.size()>0) {
+            return AjaxResponse.success("已被收藏的歌单，不能重复收藏");
+        }
+        int result =  songListMapper.addSongToSongList(songId,songListId,type);
+        if(result > 0){
+            return AjaxResponse.success("收藏成功");
+        }
+        return AjaxResponse.error("收藏失败");
+    }
+
+
+    /*删除前必须校验一下，删除记录是否存在*/
+    @Override
+    public AjaxResponse deleteSongToSongList(Long songId, Integer songListId,Integer type) {
+        ParameterCheckUtils.checkParamIsBlank(songId, songListId);
+       SongToSongList songToSongList = songListMapper.getSongToSongList(songId,songListId,type);
+        if (Objects.isNull(songToSongList)) {
+              return AjaxResponse.success("该歌曲还没被收藏,不能移除");
+        }
+       int result =  songListMapper.deleteSongToSongList(songId,songListId,type);
+        if(result > 0){
+            return AjaxResponse.success("移除收藏");
+        }
+        return AjaxResponse.error("移除收藏失败");
+    }
+
+
 }

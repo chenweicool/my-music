@@ -16,6 +16,12 @@ export const getSongOfSingerId = (pageNum,pageSize,singerId) => get(`song/getSon
 // 根据歌单id返回该歌单具有的歌曲信息
 export const getSongOfSongListId = (pageNum,pageSize,songListId) => get(`song/getSongOfSongListId?pageNum=${pageNum}&pageSize=${pageSize}&songListId=${songListId}`);
 
+// 返回每日推荐
+export const getRecommendSong = (params) => post(`song/getRecommendSong`,params)
+
+// 查询热门歌曲
+export const getHotSong= () => get(`song/getHotSong`)
+
 // 根据歌曲id查询歌曲
 export const getSongOfId = (id) => get(`song/detail?id=${id}`)
 
