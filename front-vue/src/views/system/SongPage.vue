@@ -46,7 +46,7 @@
           </template>
         </el-table-column>
         <el-table-column label="歌名" prop="songName" width="100" align="center"></el-table-column>
-        <el-table-column label="歌手名" prop="singerName" width="100" align="center"></el-table-column>
+        <!-- <el-table-column label="歌手名" prop="singerName" width="100" align="center"></el-table-column> -->
         <el-table-column label="歌词"  width="350" align="center">
           <template slot-scope="scope">
             <ul style="height: 100px; overflow: scroll">
@@ -73,6 +73,22 @@
               <el-button size="mini">更新图片</el-button>
             </el-upload>
         </template>
+      </el-table-column>
+        <el-table-column  label="歌曲文件" width="100" align="center">
+        <template slot-scope="scope">
+             <el-upload
+              class="upload-demo" 
+               :action="uploadSongUrl(scope.row.id)"
+               :headers="myHeaders"
+              :limit="1" 
+              :on-success="handleSongSuccess"
+              :multiple="false" 
+              :show-file-list="false"
+              >
+              <el-button size="mini">更新文件</el-button>
+            </el-upload>
+        </template>
+        
       </el-table-column>
         <el-table-column label="歌曲评论" width="130" align="center">
             <template  slot-scope="scope">
@@ -121,9 +137,9 @@
                  <div>
                  <label>歌曲上传</label>
                   <br>
-                     <input type="file" name="file" id="upadte-file-input">
+                     <input type="file" name="file"  id="upadte-file-input">
                  </div>
-                </el-form-item>
+                </el-form-item>  
          </el-row>
          <el-row :gutter="20">
             <el-form-item  label="歌词" prop="lyric">
@@ -169,9 +185,9 @@ export default {
       songListId:'',  // 歌单id
       singerName: '',
       tableData: [],
+      file: '',
       delVisible: false,
       myHeaders:{JWTHeaderName: token},
-
       dialogFormVisible: false,
       dialogTitle:"",
       dialogRefName:"dialogForm",
@@ -183,6 +199,7 @@ export default {
         pic: '',
         lyric: '',
       },
+      fileList: [],
       queryFormRefName:"songQueryForm",
       songQueryForm:{
           queryName: "",   // 查询的参数可以是歌曲或者用户名
@@ -299,12 +316,45 @@ export default {
     
     // 添加数据
      addData(){
+        // let params = new URLSearchParams()
+        // console.log(this.dialogForm.name);
+        // params.append('name', this.dialogForm.name)
+        // params.append('introduction', this.dialogForm.introduction)
+        // params.append('lyric',this.dialogForm.lyric)
+        // params.append('file', this.fileList[0])
          addSong(this.dialogForm).then(res => {
           this.$message({message: res, type: 'success'});
           this.submitQueryForm();
           this.handleCloseDialog();
         })
       },
+   
+   // 和表单一起提交的方法还是没有实现
+  //   addData(){
+  //     console.log("zhehsi ")
+  //     if (this.$refs.dialogForm.validate()){
+  //       console.log("zhehsijfiegg  ")
+  //       this.requestFile(this.fileList)
+  //     }
+       
+  //   },
+
+  //  // 上传歌曲的实现
+  //   requestFile(fileList){
+  //      // let uploadUrl="localhost:9999/song/addSong";
+  //       let form = new FormData()    // FormData 对象
+  //       form.append('file',fileList[0])    // 文件对象
+  //       form.append('name', this.dialogForm.name)  //表单其他参数。。
+  //       form.append('introduction', this.dialogForm.introduction)
+  //       form.append('lyric',this.dialogForm.lyric)
+  //        addSong(this.form).then(res => {
+  //         this.$message({message: res, type: 'success'});
+  //         this.submitQueryForm();
+  //         this.handleCloseDialog();
+  //       })
+  //   },
+
+
     
     // 提交表单数据信息
     saveEdit(){
@@ -337,7 +387,7 @@ export default {
             })
           });
     },
-
+    
     // 播放歌曲实现
     setSongUrl (url, name) {
       //console.log("歌曲的url"+url)
@@ -352,7 +402,20 @@ export default {
       }
     },
 
+     //完成歌曲文件的上传
+    uploadSongUrl(id){
+       return `${this.$store.state.HOST}/song/updateSongFile?id=${id}`
+    },
 
+     handleSongSuccess(res,file){
+       console.log(res)
+       if (res.isok) {    
+        this.$message({message: res.data, type: 'success'});
+        this.submitQueryForm();
+        }else{
+         this.$message({message: res.data, type: 'success'}); 
+       }
+     },
     // 得到图片地址信息
     getUrl (url) {
       return `${this.$store.state.ONHOST}/${url}`
@@ -411,14 +474,14 @@ export default {
         this.getData();
       },
 
-     handleSongSuccess (res, file) {
-      if (res.code === 1) {
-        this.getData()
-        this.notify('上传成功', 'success')
-      } else {
-        this.notify('上传失败', 'error')
-      }
-    },
+    //  handleSongSuccess (res, file) {
+    //   if (res.code === 1) {
+    //     this.getData()
+    //     this.notify('上传成功', 'success')
+    //   } else {
+    //     this.notify('上传失败', 'error')
+    //   }
+    //},
     getComment (id) {
       this.$router.push({path: '/home/comment', query: {songId: id, type: 0}})
     }, 

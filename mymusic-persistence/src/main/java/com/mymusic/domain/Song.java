@@ -3,6 +3,7 @@ package com.mymusic.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -40,6 +41,4 @@ public class Song implements Serializable {
 
     /**/
     private String lyric;
-
-
 }

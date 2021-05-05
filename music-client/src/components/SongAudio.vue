@@ -48,7 +48,9 @@ export default {
       let player = this.$refs.player
       if (this.isPlay) {
         console.log(player)
+        console.log("开始播放")
         player.play()
+        console.log("又开始播放了")
       } else {
         player.pause()
       }

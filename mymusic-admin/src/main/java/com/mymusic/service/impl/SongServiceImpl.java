@@ -51,19 +51,20 @@ public class SongServiceImpl implements SongService
      */
     @Transactional
     @Override
-    public boolean insertSong(Song record, MultipartFile file) {
+    public boolean insertSong(Song record) {
         record.setUpdateTime(new Date());
         record.setCreateTime(new Date());
-        String fileName = System.currentTimeMillis() + file.getOriginalFilename();
-        String fileKey = Constants.SONG_FILE+fileName;
-        String uploadResult = FileUtils.upLoadPicture(file, cosProperties, fileKey);
-        if(StringUtils.isEmpty(uploadResult)){
-            throw new RuntimeException("上传歌曲信息失败");
-        }else{
-            record.setUrl(fileKey);
+//        String fileName = System.currentTimeMillis() + file.getOriginalFilename();
+//        String fileKey = Constants.SONG_FILE+fileName;
+//        String uploadResult = FileUtils.upLoadPicture(file, cosProperties, fileKey);
+//        if(StringUtils.isEmpty(uploadResult)){
+//            throw new RuntimeException("上传歌曲信息失败");
+//        }else{
+          //  record.setUrl(fileKey);
             record.setPic(Constants.DEFAULT_PIC);
+            record.setUrl(Constants.DEFAULT_SONG_FILE);
             return songMapper.insert(record) > 0;
-        }
+       // }
     }
 
     @Override

@@ -13,7 +13,7 @@ public interface SongService {
     boolean deleteSong(Long id);
 
     /*插入歌曲的信息*/
-    boolean insertSong(Song record, MultipartFile file);
+    boolean insertSong(Song record);
 
     /*根据歌曲的id进行查询*/
     Song selectSong(Long id);

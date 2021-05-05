@@ -6,7 +6,7 @@ import {Message} from 'element-ui'
 axios.defaults.timeout = 5000;  //超时时间设置
 axios.defaults.withCredentials = true;  //true允许跨域
 //Content-Type 响应头
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;application/json;charset=UTF-8';
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;application/json;multipart/form-data;charset=UTF-8';
 
 // 设置环境
 if (process.env.NODE_ENV === 'production') {
@@ -186,6 +186,7 @@ export function post(url, data = {}) {
       })
   })
 }
+
 
 /**
    * 封装delete请求

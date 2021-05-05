@@ -119,6 +119,23 @@ const menuRouter = [
       path: 'myListenStatistic',
       component: () => import('@/views/system/PlayMusic.vue')
     },
+   
+    //============================统计信息的实现
+    {
+      name: 'userstatic',
+      path: 'userstatic',
+      component: () => import('@/views/system/UserstaticPage.vue')
+    }, 
+    {
+      name: 'singerstatic',
+      path: 'singerstatic',
+      component: () => import('@/views/system/SingerstaticPage.vue')
+    }, 
+    {
+      name: 'songliststatic',
+      path: 'songliststatic',
+      component: () => import('@/views/system/SongliststaticPage.vue')
+    },
 
 ];
 
