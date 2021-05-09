@@ -19,14 +19,14 @@ public interface UserCommentService {
      * @param userComment {@link  UserComment}
      * @return
      */
-    Boolean addComment(UserCommentSongRequest userComment);
+    AjaxResponse addComment(UserCommentSongRequest userComment);
 
     /**
      * 更新一条评论内容
      * @param userComment {@link  UserComment}
      * @return
      */
-    Boolean updateComment(UserComment userComment);
+    AjaxResponse updateComment(UserComment userComment);
 
     /**
      * 删除一条评论内容

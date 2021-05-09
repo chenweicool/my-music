@@ -53,7 +53,7 @@
     <select id="selectByUUID" parameterType="java.lang.String" resultType="com.mymusic.domain.UserComment">
        select * from user_comment where uuid = #{commentUUID}
     </select>
-    <update id="updateCommentLikeNum"   >
+    <update id="updateCommentLikeNum" >
           UPDATE user_comment SET like_num=#{likeNum} where id = #{commentId}
     </update>
 </mapper>

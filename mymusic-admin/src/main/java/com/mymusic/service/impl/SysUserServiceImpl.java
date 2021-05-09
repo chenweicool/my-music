@@ -87,28 +87,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 createEndTime);
     }
 
-//     public List<SysUserVo> getAllUser(){
-//         List<SysUser> sysUserList = sysUserMapper.selectList(null);
-//
-//         List<SysUserVo> sysUserVos = new ArrayList<>();
-//         SysUserVo userVo = null;
-//         for (SysUser sysUser : sysUserList) {
-//             userVo = new SysUserVo();
-//             userVo.setAvator(sysUser.getAvator());
-//             userVo.setBirth(sysUser.getBirth());
-//             userVo.setCreateTime(sysUser.getCreateTime());
-//             userVo.setEmail(sysUser.getEmail());
-//             userVo.setEnabled(sysUser.getEnabled());
-//             userVo.setIntroduction(sysUser.getIntroduction());
-//             userVo.setLocation(sysUser.getLocation());
-//             userVo.setPhone(sysUser.getPhone());
-//             userVo.setSex(sysUser.getSex());
-//             userVo.setUsername(sysUser.getUsername());
-//             sysUserVos.add(userVo);
-//         }
-//         return sysUserVos;
-//     }
-
     //用户管理：修改
     public boolean updateUser(SysUser sysuser){
         Assert.isTrue(sysuser.getId() != null,

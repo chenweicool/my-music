@@ -28,3 +28,9 @@ export const updateSongListMsg = (params) => post(`songList/update`, params)
 
 // 删除歌单
 export const deleteSongList = (id) => get(`songList/delete?id=${id}`)
+
+// 添加歌曲到指定的歌单
+export const addSongToSongList = (params) => post(`songList/addSongToSongList`,params)
+
+// 从歌单中移除歌曲
+export const deleteSongToSongList = (params) => post(`songList/deleteSongToSongList`,params)

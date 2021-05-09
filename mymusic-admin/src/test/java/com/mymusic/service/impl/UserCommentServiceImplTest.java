@@ -34,7 +34,7 @@ public class UserCommentServiceImplTest extends BaseTest {
         userComment.setCommentContent("这首歌真的难听");
         userComment.setSongId(12l);
        // userComment.setCommentStatus(1);
-        Boolean aBoolean = userCommentService.addComment(userComment);
+        AjaxResponse aBoolean = userCommentService.addComment(userComment);
         Assert.assertEquals(true, aBoolean);
 
     }
@@ -54,7 +54,7 @@ public class UserCommentServiceImplTest extends BaseTest {
     public void updateComment() {
         UserComment userComment = userCommentService.selectByCommentId(1380828400825323521l);
         userComment.setContent("就是这样的歌曲信息");
-        Boolean aBoolean = userCommentService.updateComment(userComment);
+        AjaxResponse aBoolean = userCommentService.updateComment(userComment);
         Assert.assertEquals(true, aBoolean);
     }
 

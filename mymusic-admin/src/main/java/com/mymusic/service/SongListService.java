@@ -1,6 +1,7 @@
 package com.mymusic.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.domain.SongList;
 
 import java.util.List;
@@ -40,4 +41,10 @@ public interface SongListService {
 
     /*获取10个热门的歌单信息*/
     List<SongList> getSongListHot();
+
+    /*删除歌单中收藏的歌曲*/
+    AjaxResponse deleteSongToSongList(Long songId, Integer songListId,Integer type);
+
+    /*添加歌单中收藏的歌曲*/
+    AjaxResponse addSongToSongList(Long songId, List<Integer> songListId,Integer type);
 }

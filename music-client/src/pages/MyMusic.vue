@@ -93,7 +93,7 @@ export default {
     getCollection (userId) {
       getSongListByUserId(this.pagination.pageNum,this.pagination.pageSize,this.userId,this.type)
         .then(res => {
-          console.log(res.records)
+        //  console.log(res.records)
           this.collectList = res.records
           this.$store.commit('setListOfSongs', this.collectList)
         })

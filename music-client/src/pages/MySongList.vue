@@ -2,8 +2,9 @@
   <div class="song-list">
     <ul class="song-list-header">
     </ul>
-    <div style="float:right;padding: 10px,20px ">
-         <el-button type="primary" icon="el-icon-edit" circle @click="handleAdd('新增歌单')"></el-button>
+    <div style="float:right;padding: 10px,20px 20px 10px ">
+         <!-- <el-button type="primary" icon="el-icon-edit" circle @click="handleAdd('新增歌单')"></el-button> -->
+          <el-button type="primary" @click="handleAdd('新增歌单')">新建歌单</el-button>
     </div> 
     <div class="song-content">
       <content-list :contentList="tableData"></content-list>
@@ -90,12 +91,11 @@ export default {
     ]),
   },
      created () {
-   // this.songStyle = songStyle
-   // this.handleChangeView('全部歌单')
-   this.getData()
+    // this.songStyle = songStyle
+    // this.handleChangeView('全部歌单')
+     this.getData()
   },
-  methods: {
-    
+  methods: {   
     // 获取我收藏的歌单信息
      getData(){
         this.userId = localStorage.getItem("userId")

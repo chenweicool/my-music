@@ -40,6 +40,8 @@ public class Constants {
     /*用户的头像*/
     public static final String  USER_PIC = "/consumer_pic/";
 
+    public static final String  DEFAULT_SONG_FILE = "/song_file/赵梓婷%20-%20我伪装的很简单%20(抖音完整原版).mp3";
+
     //================角色信息使用到的常量
     /*普通用户*/
     public static final String ROLE_COMMON = "common";

@@ -48,4 +48,10 @@ public interface SongMapper extends BaseMapper<Song> {
 
     /*根据歌手的id查询所有的歌曲*/
     IPage<SongVo> selectSongBySingerId(IPage<SongVo> page, @Param("singerId") Integer singerId);
+
+    /*返回20首歌曲*/
+    List<SongVo> getHotSong();
+
+    /*返回20首歌曲*/
+    List<SongVo> getRecommendSong();
 }

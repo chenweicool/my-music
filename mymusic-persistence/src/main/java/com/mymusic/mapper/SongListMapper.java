@@ -1,6 +1,7 @@
 package com.mymusic.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.mymusic.common.domain.SongToSongList;
 import com.mymusic.domain.SongList;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,7 +18,6 @@ public interface SongListMapper {
 
    /*根据主键查询歌单*/
     SongList selectByPrimaryKey(Integer id);
-
 
     /*更新歌单的信息*/
     int updateByPrimaryKey(SongList record);
@@ -43,4 +43,14 @@ public interface SongListMapper {
     /*获取10个歌单信息*/
     List<SongList> getSongListHot();
 
+    /*歌曲和歌单关联记录是否存在，只是一条记录*/
+    SongToSongList getSongToSongList(@Param("songId") Long songId, @Param("songListId") Integer songListId,@Param("type")Integer type);
+
+    List<SongToSongList> getSongToSongLists(@Param("songId") Long songId, @Param("songListIds") List<Integer> songListIds,@Param("type")Integer type);
+
+    /*移除收藏*/
+    int deleteSongToSongList(@Param("songId") Long songId, @Param("songListId") Integer songListId,@Param("type")Integer type);
+
+    /*添加收藏*/
+    int addSongToSongList(@Param("songId") Long songId, @Param("songListIds") List<Integer> songListIds,@Param("type")Integer type);
 }

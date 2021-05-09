@@ -19,22 +19,12 @@ public class UserReplyCommentController {
     @ResponseBody
     @PostMapping("/addReplyComment")
     public AjaxResponse addReplyComment(@RequestBody UserReplyComment userComment){
-        Boolean result = replyCommentService.addReplyComment(userComment);
-        if (result) {
-            return AjaxResponse.success("添加评论成功");
-        }else{
-            return AjaxResponse.error("添加评论失败");
-        }
+        return  replyCommentService.addReplyComment(userComment);
     }
 
     @PostMapping("/updateReplyComment")
     public AjaxResponse  updateReplyComment(@RequestBody UserReplyComment userComment){
-        Boolean result = replyCommentService.updateReplyComment(userComment);
-        if (result) {
-            return AjaxResponse.success();
-        }else{
-            return AjaxResponse.error("更新评论失败");
-        }
+        return replyCommentService.updateReplyComment(userComment);
     }
 
     // todo 删除需要判断一下

@@ -54,7 +54,7 @@ const menuList = [{
   path: '/my-history'
 },{
   name: '退出登录',
-  path: '0'
+  path: 0
 }, 
 ]
 

@@ -147,10 +147,13 @@ public class SongListController {
 
     /*根据歌单的标题信息查找具体的歌单*/
     @RequestMapping(value = "/getTitleByPage", method = RequestMethod.GET)
-    public AjaxResponse songListOfTitle(@RequestParam("pageNum") Integer pageNum,
-                                        @RequestParam("pageSize") Integer pageSize,
+    public AjaxResponse songListOfTitle(@RequestParam(value = "pageNum",defaultValue = "1") Integer pageNum,
+                                        @RequestParam(value = "pageSize",defaultValue = "20") Integer pageSize,
                                         @RequestParam("title") String title){
         IPage<SongList> iPage = songListService.songListOfTitle(pageNum,pageSize,title);
+        if (iPage.getSize() < 1) {
+            return AjaxResponse.success("查询的信息不存在，请重新输入查询");
+        }
         return AjaxResponse.success(iPage);
     }
 
@@ -173,5 +176,28 @@ public class SongListController {
         return AjaxResponse.success(songLists);
     }
 
+    /**
+     * 移除歌曲收藏
+     * @param songId 歌曲id
+     * @param songListId 歌单id
+     * @param type 歌单类型
+     * @return
+     */
+    @RequestMapping("/deleteSongToSongList")
+    public AjaxResponse deleteSongToSongList(@RequestParam("songId") Long songId,@RequestParam("songListId") Integer songListId,@RequestParam("type")Integer type){
+        return songListService.deleteSongToSongList(songId, songListId,type);
+    }
+
+    /**
+     * 添加歌曲到歌单
+     * @param songId 歌曲id
+     * @param songListIds 歌单Id
+     * @param type 歌单类型
+     * @return
+     */
+    @RequestMapping("/addSongToSongList")
+    public AjaxResponse addSongToSongList(@RequestParam("songId") Long songId,@RequestParam("songListIds") List<Integer> songListIds,@RequestParam("type")Integer type){
+        return songListService.addSongToSongList(songId, songListIds,type);
+    }
 
 }

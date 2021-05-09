@@ -1,11 +1,9 @@
 package com.mymusic;
 
+import com.mymusic.common.domain.SongVo;
 import com.mymusic.common.domain.SysUserVO;
 import com.mymusic.common.domain.UserCommentVo;
-import com.mymusic.domain.SysUser;
-import com.mymusic.domain.UserComment;
-import com.mymusic.domain.UserCommentConsumer;
-import com.mymusic.domain.UserReplyComment;
+import com.mymusic.domain.*;
 import com.mymusic.formvo.UserCommentSongRequest;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +35,7 @@ public class ConvertService {
     }
 
     public UserComment convertUserComment(UserCommentSongRequest userComment) {
-        UserComment userComment1 = new UserComment();
+            UserComment userComment1 = new UserComment();
             userComment1.setUserId(userComment.getUserId());
             userComment1.setUserName(userComment.getUserName());
             userComment1.setAvatar(userComment.getAvatar());
@@ -86,5 +84,17 @@ public class ConvertService {
         sysUserVO.setIntroduction(sysUser.getIntroduction());
         sysUserVO.setSex(sysUser.getSex());
         return sysUserVO;
+    }
+
+    public SongVo convertSongVo(Song song) {
+        SongVo songVo = new SongVo();
+        songVo.setCreateTime(song.getCreateTime());
+        songVo.setId(song.getId());
+        songVo.setIntroduction(song.getIntroduction());
+        songVo.setLyric(song.getLyric());
+        songVo.setSongName(song.getName());
+        songVo.setUrl(song.getUrl());
+        songVo.setPic(song.getPic());
+        return songVo;
     }
 }

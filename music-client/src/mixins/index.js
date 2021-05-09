@@ -1,4 +1,4 @@
-import { getSongOfSingerName, getCollectionOfUser } from '../api/index'
+import { querySongByName } from '../api/system/song'
 import { mapGetters } from 'vuex'
 
 export const mixin = {
@@ -100,14 +100,14 @@ export const mixin = {
         this.$store.commit('setListOfSongs', [])
         this.notify('您输入内容为空', 'warning')
       } else {
-        getSongOfSingerName(this.$route.query.keywords)
+        querySongByName(1,20,this.$route.query.keywords)
           .then(res => {
-            if (!res.length) {
-              this.$store.commit('setListOfSongs', [])
-              this.notify('系统暂无该歌曲', 'warning')
-            } else {
-              this.$store.commit('setListOfSongs', res)
-            }
+            if(res.records!= null){
+              this.$store.commit('setListOfSongs', res.records)
+            }else{ this.$store.commit('setListOfSongs', [])
+            this.$message({message: res, type: 'success'});
+             }
+            console.log(res)
           })
           .catch(err => {
             console.log(err)

@@ -131,7 +131,7 @@ export default {
     // 提交评论
     postComment () {
       if (this.loginIn) {
-        // 0 代表歌曲， 1 代表歌单
+        // 0 代表歌单， 1 代表歌曲
         let params = new URLSearchParams()
         if (this.type === 0) {
          this.commentForm.songListId = this.playId

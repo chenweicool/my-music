@@ -1,5 +1,7 @@
 package com.mymusic.controller.system;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.common.domain.SongVo;
 import com.mymusic.common.enums.ResultCodeEnum;
@@ -12,9 +14,11 @@ import com.mymusic.domain.SongList;
 import com.mymusic.service.SongService;
 import com.mymusic.service.UpdatePictureOrFileService;
 import io.swagger.annotations.Api;
+import jdk.nashorn.internal.objects.annotations.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.weaver.loadtime.Aj;
+import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,9 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.security.acl.LastOwnerException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * 歌曲的控制类
@@ -45,18 +47,46 @@ public class SongController {
      * 添加歌曲
      * 这里的歌曲只是添加歌曲,同时还要添加歌曲的文件
      * //TODO 歌曲的上传逻辑这里需要实现一下
-     * @param file 歌曲文件
      * @return 添加的结果
      */
-    @ResponseBody
+   // @ResponseBody
     @RequestMapping(value = "/addSong", method = RequestMethod.POST)
-    public AjaxResponse addSong(@RequestBody Song song, @RequestParam(value = "file", required = false)
-            MultipartFile file) {
-        boolean res = songService.insertSong(song,file);
+    public AjaxResponse addSong(@RequestBody Song song) {
+//        Song song = new Song();
+//        song.setIntroduction(introduction);
+//        song.setLyric(lyric);
+//        song.setName(name);
+        boolean res = songService.insertSong(song);
         if (res) {
             return AjaxResponse.success("添加歌曲成功");
         } else {
             return AjaxResponse.error("添加歌曲失败");
+        }
+    }
+
+    /**
+     * 更新歌曲的信息
+     * @return 返回歌曲的海报信息
+     */
+    @PostMapping("/updateSongFile")
+    public AjaxResponse updateSongFile(@RequestParam("file") MultipartFile songFile, @RequestParam("id") Long id){
+        if (songFile.isEmpty()) {
+            return AjaxResponse.error("上传的文件信息不能为空");
+        }
+        String fileName = System.currentTimeMillis() + songFile.getOriginalFilename();
+        String fileKey = Constants.SONG_FILE+fileName;
+        String result = pictureOrFileService.updatePictureOrFile(songFile, fileKey);
+        if(!StringUtils.isEmpty(result)){
+            Song song  = songService.selectSong(id);
+            song.setUrl(fileKey);
+            boolean updateResult = songService.updateSong(song);
+            if(updateResult){
+                return AjaxResponse.success("更新歌曲文件成功");
+            }else{
+                return AjaxResponse.error("更新歌曲文件失败");
+            }
+        }else{
+            return AjaxResponse.error("歌曲更新失败");
         }
     }
 
@@ -101,6 +131,8 @@ public class SongController {
             return AjaxResponse.error("上传图片失败");
         }
     }
+
+
     /*删除歌曲的信息*/
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public AjaxResponse deleteSongBySongId(HttpServletRequest request) {
@@ -142,8 +174,8 @@ public class SongController {
      * @return
      */
     @RequestMapping(value = "/SongOfQuerySongNameOrSingerName", method = RequestMethod.GET)
-    public  AjaxResponse querySongBySongNameOrSingerName( @RequestParam("pageNum") Integer pageNum,
-                                                        @RequestParam("pageSize") Integer pageSize,
+    public  AjaxResponse querySongBySongNameOrSingerName( @RequestParam(value = "pageNum",defaultValue = "1") Integer pageNum,
+                                                        @RequestParam(value = "pageSize",defaultValue = "20") Integer pageSize,
                                                         @RequestParam("queryName") String queryName) {
         if(StringUtils.isEmpty(queryName)){
             return AjaxResponse.success("参数不能为空");
@@ -208,4 +240,34 @@ public class SongController {
         return AjaxResponse.success(page);
     }
 
+    /**
+     * 返回热门歌曲
+     */
+    @GetMapping("/getHotSong")
+    public  AjaxResponse getHotSong(){
+         return songService.getHotSong();
+    }
+
+    @PostMapping("/getRecommendSong")
+    public AjaxResponse getRecommendSong(@RequestParam("userId") Long userId) {
+        return songService.getRecommendSong(userId);
+    }
+
+    @RequestMapping("/getHistorySong")
+    public AjaxResponse getHistorySong(@RequestBody Map<String,List> songIds) {
+//        System.out.println(songIds);
+//        JSONArray array = JSONObject.parseArray(songIds);
+//         List<Long> songIdList = new ArrayList<>();
+//        for (Object o : array) {
+//            songIdList.add((Long) o);
+//        }
+        List<String> songIdStr = songIds.get("songIds");
+        List<Long> songIdList = new ArrayList<>();
+        for (String s : songIdStr) {
+            Long songId = Long.parseLong(s);
+            songIdList.add(songId);
+        }
+    //    return AjaxResponse.success();
+       return songService.getHistorySong(songIdList);
+    }
 }

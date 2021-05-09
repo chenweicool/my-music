@@ -3,13 +3,16 @@ package com.mymusic.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mymusic.ConvertService;
 import com.mymusic.common.config.CosProperties;
 import com.mymusic.common.domain.SongVo;
 import com.mymusic.common.enums.SongConsumerType;
+import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.exception.CustomException;
 import com.mymusic.common.exception.SongException;
 import com.mymusic.common.utils.Constants;
 import com.mymusic.common.utils.FileUtils;
+import com.mymusic.common.utils.ParameterCheckUtils;
 import com.mymusic.domain.Song;
 import com.mymusic.mapper.SongMapper;
 import com.mymusic.service.ListSongService;
@@ -18,21 +21,24 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import sun.java2d.pipe.AAShapePipe;
 
 import javax.annotation.Resource;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
 public class SongServiceImpl implements SongService
 {
-
     @Resource
     private SongMapper songMapper;
-
     @Resource
     private CosProperties cosProperties;
+
+    @Resource
+    private ConvertService convertService;
 
     @Override
     public boolean deleteSong(Long id) {
@@ -51,19 +57,20 @@ public class SongServiceImpl implements SongService
      */
     @Transactional
     @Override
-    public boolean insertSong(Song record, MultipartFile file) {
+    public boolean insertSong(Song record) {
         record.setUpdateTime(new Date());
         record.setCreateTime(new Date());
-        String fileName = System.currentTimeMillis() + file.getOriginalFilename();
-        String fileKey = Constants.SONG_FILE+fileName;
-        String uploadResult = FileUtils.upLoadPicture(file, cosProperties, fileKey);
-        if(StringUtils.isEmpty(uploadResult)){
-            throw new RuntimeException("上传歌曲信息失败");
-        }else{
-            record.setUrl(fileKey);
+//        String fileName = System.currentTimeMillis() + file.getOriginalFilename();
+//        String fileKey = Constants.SONG_FILE+fileName;
+//        String uploadResult = FileUtils.upLoadPicture(file, cosProperties, fileKey);
+//        if(StringUtils.isEmpty(uploadResult)){
+//            throw new RuntimeException("上传歌曲信息失败");
+//        }else{
+          //  record.setUrl(fileKey);
             record.setPic(Constants.DEFAULT_PIC);
+            record.setUrl(Constants.DEFAULT_SONG_FILE);
             return songMapper.insert(record) > 0;
-        }
+       // }
     }
 
     @Override
@@ -75,7 +82,6 @@ public class SongServiceImpl implements SongService
         return song;
     }
 
-
     /**
      * 更新歌曲
      * @param record
@@ -86,8 +92,6 @@ public class SongServiceImpl implements SongService
         record.setUpdateTime(new Date());
         return songMapper.updateByPrimaryKey(record)>0;
     }
-
-
 
     /**
      * 分页查询歌曲的实现
@@ -113,11 +117,6 @@ public class SongServiceImpl implements SongService
     }
 
     @Override
-    public List<Song> songOfName(String songName) {
-        return songMapper.songName(songName);
-    }
-
-    @Override
     public IPage<SongVo> querySongBySongNameOrSingerName(Integer pageNum, Integer pageSize, String queryName) {
         IPage<SongVo> page = new Page<>(pageNum, pageSize);
         return songMapper.querySongBySongNameOrSingerName(page,queryName);
@@ -128,4 +127,44 @@ public class SongServiceImpl implements SongService
         IPage<SongVo> page = new Page<>(pageNum, pageSize);
         return  songMapper.selectSongBySingerId(page, singerId);
     }
+    @Override
+    public List<Song> songOfName(String songName) {
+        return songMapper.songName(songName);
+    }
+
+    /**
+     * 返回20首歌曲
+     * todo 待完善
+     * @return
+     */
+    @Override
+    public AjaxResponse getHotSong() {
+       List<SongVo> list =  songMapper.getHotSong();
+        return AjaxResponse.success(list);
+    }
+
+    /**
+     * 返回20首歌曲
+     * todo 待完善
+     * @param userId
+     * @return
+     */
+    @Override
+    public AjaxResponse getRecommendSong(Long userId) {
+        List<SongVo>  list = songMapper.getRecommendSong();
+        return AjaxResponse.success(list);
+    }
+
+    @Override
+    public AjaxResponse getHistorySong(List<Long> songIds) {
+        ParameterCheckUtils.checkParamIsBlank(songIds);
+        List<SongVo> songList = new ArrayList<>();
+        for (Long songId : songIds) {
+            Song song = songMapper.selectByPrimaryKey(songId);
+            SongVo songVo = convertService.convertSongVo(song);
+            songList.add(songVo);
+        }
+        return AjaxResponse.success(songList);
+    }
+
 }
