@@ -76,5 +76,8 @@ public class UserComment implements Serializable {
      */
     private  String uuid;
 
-    private Integer type;
+    /**
+     * 评论的类型 0--歌单  1--歌曲  默认是1
+     */
+    private Integer type = 1;
 }

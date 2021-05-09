@@ -1,7 +1,9 @@
 package com.mymusic.service.impl;
 
+import com.github.houbb.sensitive.word.bs.SensitiveWordBs;
 import com.mymusic.ConvertService;
 import com.mymusic.common.domain.UserCommentVo;
+import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.ParameterCheckUtils;
 import com.mymusic.domain.UserReplyComment;
 import com.mymusic.mapper.UserReplyCommentMapper;
@@ -21,29 +23,41 @@ public class UserReplyCommentServiceImpl implements UserReplyCommentService {
     private ConvertService convertService;
 
     @Override
-    public Boolean addReplyComment(UserReplyComment replyComment) {
+    public AjaxResponse addReplyComment(UserReplyComment replyComment) {
         ParameterCheckUtils.checkParamIsBlank(replyComment);
         ParameterCheckUtils.checkParamIsBlank(replyComment.getContent(),
                 replyComment.getReplyUserId(),replyComment.getUserId());
-        if (replyComment.getCreateTime() == null) {
-            replyComment.setCreateTime(new Date());
-        }
-        if (replyComment.getUpdateTime() == null) {
-            replyComment.setUpdateTime(new Date());
-        }
 
-
-        return replyCommentMapper.insert(replyComment)> 0;
+        boolean containsSensitive = SensitiveWordBs.newInstance().contains(replyComment.getContent());
+        if(containsSensitive){
+            return AjaxResponse.success("评论中包含敏感词，请重新评论");
+        }
+        replyComment.setCreateTime(new Date());
+        replyComment.setUpdateTime(new Date());
+        int result = replyCommentMapper.insert(replyComment);
+        if (result > 0) {
+            return  AjaxResponse.success("评论成功");
+        }else{
+           return AjaxResponse.success("评论失败");
+        }
     }
 
     @Override
-    public Boolean updateReplyComment(UserReplyComment replyComment) {
+    public AjaxResponse updateReplyComment(UserReplyComment replyComment) {
         ParameterCheckUtils.checkParamIsBlank(replyComment);
         ParameterCheckUtils.checkParamIsBlank(replyComment.getContent(),
                 replyComment.getReplyUserId(),replyComment.getUserId());
+        boolean containsSensitive = SensitiveWordBs.newInstance().contains(replyComment.getContent());
+        if(containsSensitive){
+            return AjaxResponse.success("评论中包含敏感词，请重新评论");
+        }
         replyComment.setUpdateTime(new Date());
-
-        return replyCommentMapper.updateById(replyComment) >0;
+        int result = replyCommentMapper.updateById(replyComment);
+        if (result > 0) {
+            return  AjaxResponse.success("评论成功");
+        }else{
+            return AjaxResponse.success("评论失败");
+        }
     }
 
     @Override

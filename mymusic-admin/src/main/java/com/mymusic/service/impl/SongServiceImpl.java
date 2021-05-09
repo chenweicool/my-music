@@ -3,6 +3,7 @@ package com.mymusic.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mymusic.ConvertService;
 import com.mymusic.common.config.CosProperties;
 import com.mymusic.common.domain.SongVo;
 import com.mymusic.common.enums.SongConsumerType;
@@ -11,6 +12,7 @@ import com.mymusic.common.exception.CustomException;
 import com.mymusic.common.exception.SongException;
 import com.mymusic.common.utils.Constants;
 import com.mymusic.common.utils.FileUtils;
+import com.mymusic.common.utils.ParameterCheckUtils;
 import com.mymusic.domain.Song;
 import com.mymusic.mapper.SongMapper;
 import com.mymusic.service.ListSongService;
@@ -23,6 +25,7 @@ import sun.java2d.pipe.AAShapePipe;
 
 import javax.annotation.Resource;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +36,9 @@ public class SongServiceImpl implements SongService
     private SongMapper songMapper;
     @Resource
     private CosProperties cosProperties;
+
+    @Resource
+    private ConvertService convertService;
 
     @Override
     public boolean deleteSong(Long id) {
@@ -147,6 +153,18 @@ public class SongServiceImpl implements SongService
     public AjaxResponse getRecommendSong(Long userId) {
         List<SongVo>  list = songMapper.getRecommendSong();
         return AjaxResponse.success(list);
+    }
+
+    @Override
+    public AjaxResponse getHistorySong(List<Long> songIds) {
+        ParameterCheckUtils.checkParamIsBlank(songIds);
+        List<SongVo> songList = new ArrayList<>();
+        for (Long songId : songIds) {
+            Song song = songMapper.selectByPrimaryKey(songId);
+            SongVo songVo = convertService.convertSongVo(song);
+            songList.add(songVo);
+        }
+        return AjaxResponse.success(songList);
     }
 
 }

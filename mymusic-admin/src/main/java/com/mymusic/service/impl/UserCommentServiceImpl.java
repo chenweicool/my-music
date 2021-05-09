@@ -2,6 +2,7 @@ package com.mymusic.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.houbb.sensitive.word.bs.SensitiveWordBs;
 import com.mymusic.ConvertService;
 import com.mymusic.common.domain.SysUserVO;
 import com.mymusic.common.domain.UserCommentVo;
@@ -36,40 +37,47 @@ public class UserCommentServiceImpl implements UserCommentService {
     @Resource
     private SongServiceImpl songService;
 
-    // todo  这里必须对评论的内容进行过率
+    /**
+     * 已对评论的内容进行了过滤
+     * @param request {@link UserCommentSongRequest}
+     * @return
+     */
     @Override
-    public Boolean addComment(UserCommentSongRequest request) {
+    public AjaxResponse addComment(UserCommentSongRequest request) {
         ParameterCheckUtils.checkParamIsBlank(request);
         ParameterCheckUtils.checkParamIsBlank(request.getCommentContent(),request.getUserName(),
                 request.getUserId(),request.getSongId());
 
         UserComment userComment = convertService.convertUserComment(request);
-        if (userComment.getUpdateTime() == null) {
-            userComment.setUpdateTime(new Date());
+        boolean isContainsSensitive = SensitiveWordBs.newInstance().contains(userComment.getContent());
+        // 检测评论的内容是否包含敏感词
+        if(isContainsSensitive){
+            return AjaxResponse.success("评论中包含敏感词，请重新提交");
         }
-        if (userComment.getCreateTime() == null) {
-            userComment.setCreateTime(new Date());
-        }
+        userComment.setCommentStatus(1);  // 审核通过
+        userComment.setCreateTime(new Date());
+        userComment.setUpdateTime(new Date());
         if (userComment.getSongId() != null) {
             userComment.setType(1);
         }
-
         String commentUUID = UUID.randomUUID().toString();
         userComment.setUuid(commentUUID);
         userComment.setLikeNum(0);  // 点赞数默认是0
-        userComment.setCommentStatus(0);  // 默认是审核中
-        //todo 这里需要添加一个评论过滤的接口
-      return userCommentMapper.insert(userComment)> 0;
+        int result = userCommentMapper.insert(userComment);
+        if (result > 0) {
+            return AjaxResponse.success("评论成功");
+        }else{
+            return AjaxResponse.success("评论失败");
+        }
     }
 
     /**
      * 更新的能力
-     * 1
      * @param userComment {@link  UserComment}
      * @return
      */
     @Override
-    public Boolean updateComment(UserComment userComment) {
+    public AjaxResponse updateComment(UserComment userComment) {
         ParameterCheckUtils.checkParamIsBlank(userComment);
         ParameterCheckUtils.checkParamIsBlank(userComment.getContent(),userComment.getUserName());
 
@@ -79,8 +87,17 @@ public class UserCommentServiceImpl implements UserCommentService {
         if (userComment.getCreateTime() == null) {
             userComment.setCreateTime(new Date());
         }
-
-        return userCommentMapper.updateById(userComment) >0 ;
+        boolean isContainsSensitive = SensitiveWordBs.newInstance().contains(userComment.getContent());
+        // 检测评论的内容是否包含敏感词
+        if(isContainsSensitive){
+            return AjaxResponse.success("评论中包含敏感词，请重新提交");
+        }
+        int result = userCommentMapper.updateById(userComment);
+        if (result > 0) {
+            return AjaxResponse.success("更新成功");
+        }else{
+            return AjaxResponse.success("更新失败");
+        }
     }
 
     @Override
@@ -136,7 +153,6 @@ public class UserCommentServiceImpl implements UserCommentService {
             songIds.add(songId);
         }
         IPage<UserCommentVo> ipage = userCommentMapper.getCommentBySongName(page,songIds);
-
         return ipage;
     }
 

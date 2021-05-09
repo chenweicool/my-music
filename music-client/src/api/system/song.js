@@ -1,5 +1,6 @@
 import { get, post, deletes } from '../http'
-
+import {jwtServerInstance} from "../index";
+import qs from	'qs'
 
 
 // =======================> 歌曲 API
@@ -33,3 +34,30 @@ export const updateSongMsg = (params) => post(`song/update`, params)
 
 // 删除歌曲
 export const deleteSong = (id) => get(`song/delete?songId=${id}`)
+
+
+// 用户播放历史有关的接口实现
+
+// 增加播放历史
+export const addPlayCount = (params) => post(`playCount/add`,params)
+
+//查询一首歌曲总的播放量
+export const getTotalPlayCount = (songId) => get(`playCount/getTotalPlayCount?songId=${songId}`);
+
+// 查询一用户播放歌曲的总数
+export const getUserTotal = (userId) => get(`playCount/getUserTotal?userId=${userId}`);
+
+// 查询用户听歌历史信息
+export const getUserHistory = (userId) => get(`playCount/getUserHistory?userId=${userId}`);
+
+
+// 查询用户具体的历史记录信息
+export const getHistorySong = (songIds) => {
+    return jwtServerInstance.request({
+      url:'/song/getHistorySong',
+      method:'post',
+      data:{
+        songIds:songIds,
+      }
+    })
+  }

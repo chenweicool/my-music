@@ -1,6 +1,7 @@
 package com.mymusic.service;
 
 import com.mymusic.common.domain.UserCommentVo;
+import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.domain.UserComment;
 import com.mymusic.domain.UserReplyComment;
 
@@ -12,14 +13,14 @@ public interface  UserReplyCommentService {
      * @param  replyComment {@link  UserReplyComment}
      * @return
      */
-    Boolean addReplyComment(UserReplyComment replyComment);
+    AjaxResponse addReplyComment(UserReplyComment replyComment);
 
     /**
      * 更新一条评论内容
      * @param replyComment {@link  UserReplyComment}
      * @return
      */
-    Boolean updateReplyComment(UserReplyComment replyComment);
+    AjaxResponse updateReplyComment(UserReplyComment replyComment);
 
     /**
      * 删除一条回复

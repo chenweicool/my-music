@@ -14,6 +14,11 @@ public interface SongPlayCountService {
     Boolean addSongPlayCount(SongPlayCount songPlayCount);
 
     /**
+     * 根据userId和播放的Id查询一条地址
+     */
+    SongPlayCount getSongPlayCountByUserId(Long userId, Long songId);
+
+    /**
      * 一首歌曲总的播放次数
      * @param songId 歌曲id的信息
      * @return

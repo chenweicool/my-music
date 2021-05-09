@@ -59,4 +59,11 @@ public interface SongService {
      * @return
      */
     AjaxResponse getRecommendSong(Long userId);
+
+    /**
+     * 返回用户的浏览历史记录信息
+     * @param songIds 歌曲的id的信息
+     * @return
+     */
+    AjaxResponse getHistorySong(List<Long> songIds);
 }

@@ -1,5 +1,7 @@
 package com.mymusic.controller.system;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.common.domain.SongVo;
 import com.mymusic.common.enums.ResultCodeEnum;
@@ -24,9 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.security.acl.LastOwnerException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * 歌曲的控制类
@@ -251,5 +251,23 @@ public class SongController {
     @PostMapping("/getRecommendSong")
     public AjaxResponse getRecommendSong(@RequestParam("userId") Long userId) {
         return songService.getRecommendSong(userId);
+    }
+
+    @RequestMapping("/getHistorySong")
+    public AjaxResponse getHistorySong(@RequestBody Map<String,List> songIds) {
+//        System.out.println(songIds);
+//        JSONArray array = JSONObject.parseArray(songIds);
+//         List<Long> songIdList = new ArrayList<>();
+//        for (Object o : array) {
+//            songIdList.add((Long) o);
+//        }
+        List<String> songIdStr = songIds.get("songIds");
+        List<Long> songIdList = new ArrayList<>();
+        for (String s : songIdStr) {
+            Long songId = Long.parseLong(s);
+            songIdList.add(songId);
+        }
+    //    return AjaxResponse.success();
+       return songService.getHistorySong(songIdList);
     }
 }

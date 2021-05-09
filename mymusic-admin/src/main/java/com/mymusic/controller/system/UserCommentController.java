@@ -26,22 +26,12 @@ public class UserCommentController {
     @ResponseBody
     @PostMapping("/addComment")
     public AjaxResponse  addComment(@RequestBody UserCommentSongRequest userComment){
-        Boolean result = userCommentService.addComment(userComment);
-        if (result) {
-            return AjaxResponse.success("评论成功");
-        }else{
-            return AjaxResponse.error("添加评论失败");
-        }
+        return userCommentService.addComment(userComment);
     }
 
     @PostMapping("/updateComment")
     public AjaxResponse  updateComment(@RequestBody UserComment userComment){
-        Boolean result = userCommentService.updateComment(userComment);
-        if (result) {
-            return AjaxResponse.success("更新评论成功");
-        }else{
-            return AjaxResponse.error("更新评论失败");
-        }
+        return userCommentService.updateComment(userComment);
     }
 
     @GetMapping("/deleteComment")

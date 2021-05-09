@@ -13,9 +13,16 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import {addPlayCount} from '../api/system/song'
 
 export default {
   name: 'song-audio',
+  data(){
+     return {
+         userId: '',
+         
+     }
+  },
   computed: {
     ...mapGetters([
       'id', // 音乐id
@@ -47,20 +54,21 @@ export default {
     togglePlay () {
       let player = this.$refs.player
       if (this.isPlay) {
-        console.log(player)
-        console.log("开始播放")
         player.play()
+        // 增加播放的历史
+        this.addSongPlayCount()
         console.log("又开始播放了")
       } else {
         player.pause()
       }
     },
+
     // 获取歌曲链接后准备播放
     startPlay () {
       let player = this.$refs.player
       //  记录音乐时长
       this.$store.commit('setDuration', player.duration)
-      //  开始播放
+      //开始播放
       player.play()
       this.$store.commit('setIsPlay', true)
     },
@@ -74,7 +82,18 @@ export default {
       this.$store.commit('setIsPlay', false)
       this.$store.commit('setCurTime', 0)
       this.$store.commit('setAutoNext', !this.autoNext)
-    }
+    },
+     
+     // 增加历史的播放记录
+    addSongPlayCount(){
+      let params = new URLSearchParams()
+      params.append("userId",localStorage.getItem("userId"))
+      params.append("songId",this.id)
+      addPlayCount(params).then(res=>{
+        console.log(res)
+      })
+    },
+    
   }
 }
 </script>
