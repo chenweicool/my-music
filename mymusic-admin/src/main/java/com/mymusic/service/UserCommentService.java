@@ -79,5 +79,6 @@ public interface UserCommentService {
      */
     IPage<UserCommentVo> getUserCommentByUserId(Page<UserCommentVo> page, Long userIdDb);
 
+    /*返回评论的点赞内容*/
     AjaxResponse updateCommentLikeNum(Long commentId, Integer likeNum);
 }
