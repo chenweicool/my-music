@@ -5,20 +5,20 @@
     </div>
   <div style="display:flex; width: 100%;margin: 10px;">
      <div class="userbox" style="flex:1;width: 100%;" >
-      <div style="text-align: center;">用户的下载来源的统计</div>
+      <div style="text-align: center;">歌手信息统计</div>
       <br/>
       <div id="allUser" style="width: 100%;height:400px;"></div>
     </div>
 
     <div class="online" style="flex:1;width: 100%;">
-      <div style="text-align: center; ">用户在线时长人数统计</div> <br/>
+      <div style="text-align: center; ">每天登录人数</div> <br/>
       <div id="online" style="width: 100%;height:400px;"></div>
     </div>
   </div>
     
   <div style="display:flex; width: 100%;margin: 10px ">
       <div class="mobile" style="flex:1;width: 100%;' '">
-      <div style="text-align: center;">用户手机来源</div>
+      <div style="text-align: center;">歌单风格</div>
 
       <div id="mobile" style="width: 100%;height:400px;"></div>
     </div>
@@ -78,19 +78,19 @@ export default {
        
        // 测试数据
       let echartData = [{
-              name: "A类",
+              name: "男",
               value: "3720"
           },
           {
-              name: "B类",
+              name: "女",
               value: "2920"
           },
           {
-              name: "C类",
+              name: "组合",
               value: "2200"
           },
           {
-              name: "D类",
+              name: "未知",
               value: "1420"
           }
       ];
@@ -115,7 +115,7 @@ export default {
             color: color,
             title: [{
                 // text: '{name|' + title + '}\n{val|' + formatNumber(total) + '}',
-                text: '用户的下载来源',
+                text: '歌手信息统计',
                 top: 'center',
                 left: 'center',
                 textStyle: {
