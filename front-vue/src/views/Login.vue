@@ -1,7 +1,7 @@
 <template>
     <div class="login">
         <el-form class="login-form">
-            <h3 class="title">DongBB</h3>
+            <h3 class="title">FreeMusic</h3>
 
             <el-alert :title="loginForm.errorMsg" type="error" v-show="loginForm.errorVisible">
             </el-alert>
@@ -26,7 +26,7 @@
                 </el-col>
                 <el-col :span="12">
                   <el-button @click="dialogVisible = true" size="medium" type="success" style="width:100%;">
-                    <span>获取密码</span>
+                    <span>注册</span>
                   </el-button>
                 </el-col>
               </el-row>
@@ -34,11 +34,11 @@
 
         </el-form>
         <el-dialog
-          title="扫描二维码"
+          title="系统管理员注册"
           :visible.sync="dialogVisible"
           width="20%">
-          <span>关注公众号，回复'dongbb'，字母哥所有资源均在此首发</span>
-          <img src="../assets/img/wx-zimug-ketang.png" style="height: 200px;">
+          <span>管理员的超级权限不能乱给</span>
+          <img src="../assets/img/school.jpg" style="height: 200px;">
           <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="dialogVisible = false">关闭</el-button>
           </span>

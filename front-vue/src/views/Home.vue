@@ -11,14 +11,14 @@
         <i :class="getMenuCollapse()" @click="handleCollapse"></i>
 
         <div class="header-right">
-          <a style="align-self: center;" target="_blank"
+          <!-- <a style="align-self: center;" target="_blank"
              href="https://www.kancloud.cn/hanxt/vue-spring/content">
             <img class="right-item" src="../assets/font/doc.svg">
           </a>
           <a style="align-self: center;" target="_blank"
              href="https://gitee.com/hanxt/dongbb">
             <img class="right-item" src="../assets/font/github.svg">
-          </a>
+          </a> -->
           <el-dropdown>
             <span class="el-dropdown-link">
                 <el-avatar style="float: left"> {{username}} </el-avatar>
