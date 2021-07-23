@@ -23,5 +23,19 @@
     <sql id="Base_Column_List">
         id, username, password, sex, phone_num, email, birth, introduction, location, avator, create_time, update_time, enabled
     </sql>
+    <select id="getStaticSex" resultType="com.mymusic.common.domain.StatisticsVo">
+          select sex as name,count(1) as value from sys_user GROUP BY sex;
+    </select>
 
+    <select id="getStaticLocation" resultType="com.mymusic.common.domain.StatisticsVo">
+         select location as name,count(1) as value from sys_user GROUP BY location;
+    </select>
+
+    <select id="getTotalUsers" resultType="java.lang.Long" >
+          select count(1) from sys_user;
+    </select>
+
+    <select id="getAddNumbers" resultType="java.lang.Long">
+         select count(1) from sys_user where create_time between  #{startTime} and #{endTime}
+    </select>
 </mapper>

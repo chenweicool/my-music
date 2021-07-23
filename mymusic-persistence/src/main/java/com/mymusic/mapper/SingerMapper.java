@@ -1,6 +1,7 @@
 package com.mymusic.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.mymusic.common.domain.StatisticsVo;
 import com.mymusic.domain.Singer;
 import org.apache.ibatis.annotations.Param;
 
@@ -65,4 +66,13 @@ public interface SingerMapper {
 
     /*获取前10的歌手信息*/
     List<Singer> getSingerHot();
+
+    /*获取总的歌手数量*/
+    Long getTotalSinger();
+
+    /*获取歌手拥有歌曲的数量*/
+    List<StatisticsVo> getMaxSongsOfSinger();
+
+     /*获取歌手的性别数量*/
+    List<StatisticsVo> getSexSingers();
 }

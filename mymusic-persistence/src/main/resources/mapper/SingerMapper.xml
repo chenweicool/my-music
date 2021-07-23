@@ -135,4 +135,20 @@
             and date_format(birth,'%Y-%m-%d %H:%i:%s') &lt;= str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
         </if>
     </select>
+
+    <select id="getTotalSinger" resultType="java.lang.Long">
+          select count(1) from singer;
+    </select>
+
+    <!--获取一个歌手拥有专辑数的歌手信息-->
+    <select id="getMaxSongsOfSinger" resultType="com.mymusic.common.domain.StatisticsVo">
+          select singer.name as name,song.value as value from (select singer_id,count(1) as value from song GROUP BY singer_id) as song join
+          singer on song.singer_id = singer.id ORDER BY song.value desc limit 10;
+    </select>
+
+    <!--获取歌手的性别信息-->
+    <select id="getSexSingers" resultType="com.mymusic.common.domain.StatisticsVo">
+         select sex as name,count(1) as value from singer
+                GROUP BY sex;
+    </select>
 </mapper>

@@ -79,7 +79,7 @@ export default {
       this.$store.commit('setAvator', item.avator)
 
       // 存储用户信息
-      console.log(item)
+     // console.log(item)
       localStorage.setItem("avator",item.data.avator)
       localStorage.setItem("sex",item.data.sex)
       localStorage.setItem("birth",item.data.birth)

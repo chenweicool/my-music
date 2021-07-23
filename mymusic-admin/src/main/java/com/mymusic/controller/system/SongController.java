@@ -4,10 +4,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.common.domain.SongVo;
+import com.mymusic.common.domain.StatisticsVo;
 import com.mymusic.common.enums.ResultCodeEnum;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.Constants;
 import com.mymusic.common.utils.FileUtils;
+import com.mymusic.common.utils.ParameterCheckUtils;
 import com.mymusic.domain.Singer;
 import com.mymusic.domain.Song;
 import com.mymusic.domain.SongList;
@@ -20,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.aspectj.weaver.loadtime.Aj;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.remoting.jaxws.AbstractJaxWsServiceExporter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,10 +55,6 @@ public class SongController {
    // @ResponseBody
     @RequestMapping(value = "/addSong", method = RequestMethod.POST)
     public AjaxResponse addSong(@RequestBody Song song) {
-//        Song song = new Song();
-//        song.setIntroduction(introduction);
-//        song.setLyric(lyric);
-//        song.setName(name);
         boolean res = songService.insertSong(song);
         if (res) {
             return AjaxResponse.success("添加歌曲成功");
@@ -75,7 +74,7 @@ public class SongController {
         }
         String fileName = System.currentTimeMillis() + songFile.getOriginalFilename();
         String fileKey = Constants.SONG_FILE+fileName;
-        String result = pictureOrFileService.updatePictureOrFile(songFile, fileKey);
+        String result = pictureOrFileService.updateFile(songFile, fileKey);
         if(!StringUtils.isEmpty(result)){
             Song song  = songService.selectSong(id);
             song.setUrl(fileKey);
@@ -255,19 +254,55 @@ public class SongController {
 
     @RequestMapping("/getHistorySong")
     public AjaxResponse getHistorySong(@RequestBody Map<String,List> songIds) {
-//        System.out.println(songIds);
-//        JSONArray array = JSONObject.parseArray(songIds);
-//         List<Long> songIdList = new ArrayList<>();
-//        for (Object o : array) {
-//            songIdList.add((Long) o);
-//        }
         List<String> songIdStr = songIds.get("songIds");
         List<Long> songIdList = new ArrayList<>();
         for (String s : songIdStr) {
             Long songId = Long.parseLong(s);
             songIdList.add(songId);
         }
-    //    return AjaxResponse.success();
        return songService.getHistorySong(songIdList);
     }
+
+    /**
+     * 根据歌曲的Id 查找用户的下载的信息
+     * @param songId 歌曲的id的信息
+     * @return
+     */
+    @RequestMapping("/getDownloadUrl")
+    public AjaxResponse getSongDownLoadUrl(@RequestParam("songId") Long songId) {
+        ParameterCheckUtils.checkParamIsBlank(songId);
+        Song song = songService.selectSong(songId);
+        String downLoadUrl = pictureOrFileService.getSongDownLoadUrl(song.getUrl());
+        if (StringUtils.isEmpty(downLoadUrl)) {
+            return AjaxResponse.success("该歌曲的Url不存在");
+        }else{
+            return AjaxResponse.success(downLoadUrl);
+        }
+    }
+
+    // ================================歌曲的统计信息
+    @RequestMapping("/getTotalSongs")
+    public AjaxResponse getTotalSongs(){
+        Long totalSongs = songService.getTotalSongs();
+        return AjaxResponse.success(totalSongs);
+    }
+
+    // 统计当歌曲播放前20的信息
+    @RequestMapping("/getMaxPlaySongs")
+    public AjaxResponse getMaxPlaySongs() {
+         List<StatisticsVo> getMaxPlaySongs = songService.getMaxPlaySongs();
+        return AjaxResponse.success(getMaxPlaySongs);
+    }
+
+    @RequestMapping("/getMaxComment")
+   public AjaxResponse getMaxComment(){
+        List<StatisticsVo> getMaxCommentSongs = songService.getMaxComment();
+        return AjaxResponse.success(getMaxCommentSongs);
+   }
+
+   @RequestMapping("/getMaxCollect")
+   public AjaxResponse getMaxCollect(){
+        List<StatisticsVo> getMaxCollects = songService.getMaxCollect();
+       return AjaxResponse.success(getMaxCollects);
+   }
 }

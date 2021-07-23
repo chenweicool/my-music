@@ -1,336 +1,357 @@
 <template>
-  <div id="test">
-    <div id="main" style="width: 100%;height:650px;"></div>
+  <div id="box" class="container">
+    <div class = "header">
+      <p>歌手信息分析</p>
+    </div>
+    
+  <div style="display:flex; width: 100%;margin: 10px ">
+      <div class="mobile" style="flex:1;width: 100%;' '">
+      <div style="text-align: center;">歌手组合分析</div>
+
+      <div id="singer" style="width: 100%;height:400px;"></div>
+    </div>
+
+    <div class="online" style="flex:1;width: 100%;">
+      <div style="text-align: center;">歌手拥有歌曲统计</div>
+      <div id="online" style="width: 100%;height:400px;"></div>
+    </div>
+   </div>
+    
+    
   </div>
 </template>
 
 <script>
-// import {statisticUser} from '../api/index'
+import {getSexSingers,getMaxSongOfSingers} from  '../../api/system/statistic'
 import echarts from 'echarts'
-
 export default {
-    
-   name: "test",
+   name: "infoPage",
    data (){
       return{
-          xarr: [],    //存放横坐标的数据
-          sarr:[]     // 存放具体横坐标中的值
+          onlineXarr: [],    //存放用户在线时长的纵坐标
+          onlineSarr:[] ,    // 用户在线时长的每个坐标值
+          
+          loginXarr:[],   // 用户登陆的时间的纵坐标
+          loginSarr:[],   // 登陆时间点的具体坐标
+
+          pieData:[],   // 用户的手机类型
+          originData:[] , // 用户的数据来源的图形
+          originNumber: '',    // 下载商品的用户的总的数量
       }
    },
   methods: {
-    drawChart() {
+ 
+   // 歌手性别情况
+    mobileChart() {
       // 基于准备好的dom，初始化echarts实例
-      let myChart = echarts.init(document.getElementById("main"));
-      //指定图表的配置项和数据
-      
-    var name_title = "用户人数的全国分布"
-    var subname = ''
-    var nameColor = " rgb(55, 75, 113)"
-    var name_fontFamily = '等线'
-    var subname_fontSize = 15
-    var name_fontSize = 18
-    var mapName = 'china'
-    var data = [
-            {name:"北京",value:69,scale:'2.72%'},
-            {name:"天津",value:93,scale:'3.67%'},
-            {name:"河北",value:113,scale:'4.46%'},
-            {name:"山西",value:31,scale:'1.22%'},
-            {name:"内蒙古",value:31,scale:'1.22%'},
-            {name:"辽宁",value:55,scale:'2.17%'},
-            {name:"吉林",value:29,scale:'1.14%'},
-            {name:"黑龙江",value:71,scale:'2.80%'},
-            {name:"上海",value:50,scale:'1.97%'},
-            {name:"江苏",value:436,scale:'17.2%'},
-            {name:"浙江",value:132,scale:'5.21%'},
-            {name:"安徽",value:160,scale:'6.31%'},
-            {name:"福建",value:68,scale:'2.68%'},
-            {name:"江西",value:49,scale:'1.93%'},
-            {name:"山东",value:143,scale:'5.64%'},
-            {name:"河南",value:99,scale:'3.91%'},
-            {name:"湖北",value:44,scale:'1.74%'},
-            {name:"湖南",value:47,scale:'1.85%'},
-            {name:"重庆",value:53,scale:'2.09%'},
-            {name:"四川",value:83,scale:'3.27%'},
-            {name:"贵州",value:60,scale:'2.37%'},
-            {name:"云南",value:55,scale:'2.17%'},
-            {name:"西藏",value:7,scale:'0.28%'},
-            {name:"陕西",value:232,scale:'9.15%'},
-            {name:"甘肃",value:44,scale:'1.74%'},
-            {name:"青海",value:15,scale:'0.59%'},
-            {name:"宁夏",value:61,scale:'2.41%'},
-            {name:"新疆",value:76,scale:'3.00%'},
-            {name:"广东",value:41,scale:'1.62%'},
-            {name:"广西",value:44,scale:'1.74%'},
-            {name:"海南",value:44,scale:'1.74%'},
-        ];
-        
-    var geoCoordMap = {};
-
-    /*获取地图数据*/
-    myChart.showLoading();
-    var mapFeatures = echarts.getMap(mapName).geoJson.features;
-    myChart.hideLoading();
-    mapFeatures.forEach(function(v) {
-        // 地区名称
-        var name = v.properties.name;
-        // 地区经纬度
-        geoCoordMap[name] = v.properties.cp;
-
-    });
-
-    console.log(data)
-    var max = 500,
-        min = 10; // todo 
-    var maxSize4Pin = 50,
-        minSize4Pin = 20;
-
-    var convertData = function(data) {
-        var res = [];
-        for (var i = 0; i < data.length; i++) {
-            var geoCoord = geoCoordMap[data[i].name];
-            if (geoCoord) {
-                res.push({
-                    name: data[i].name,
-                    value: geoCoord.concat(data[i].value),
-                });
-            }
-        }
-        console.log(res)
-        return res;
-    };
-  let option = {
-        title: {
-            text: name_title,
-            subtext: subname,
-            x: 'center',
-            textStyle: {
-                color: nameColor,
-                fontFamily: name_fontFamily,
-                fontSize: name_fontSize
-            },
-            subtextStyle:{
-                fontSize:subname_fontSize,
-                fontFamily:name_fontFamily
-            }
-        },
-        tooltip: {
-            trigger: 'item',
-            formatter: function(params) {
-                console.log(params.data)
-                if(params.data.scale){
-                    var toolTiphtml = params.data.name+':<br>'+params.data.scale
-                    return toolTiphtml;
-                }
-                return;
-            }
-        },
-        visualMap: {
-            show: true,
-            min: 0,
-            max: 500,
-            left: 'left',
-            top: 'bottom',
-            text: ['高', '低'], // 文本，默认为数值文本
-            calculable: true,
-            seriesIndex: [1],
-            inRange: {
-                // color: ['#3B5077', '#031525'] // 蓝黑
-                // color: ['#ffc0cb', '#800080'] // 红紫
-                // color: ['#3C3B3F', '#605C3C'] // 黑绿
-                // color: ['#0f0c29', '#302b63', '#24243e'] // 黑紫黑
-                // color: ['#23074d', '#cc5333'] // 紫红
-                // color: ['#00467F', '#A5CC82'] // 蓝绿
-                // color: ['#1488CC', '#2B32B2'] // 浅蓝
-                color: ['#00467F', '#A5CC82'] // 蓝绿
-                // color: ['#00467F', '#A5CC82'] // 蓝绿
-                // color: ['#00467F', '#A5CC82'] // 蓝绿
-                // color: ['#00467F', '#A5CC82'] // 蓝绿
-
-            }
-        },
-
-        geo: {
-            show: true,
-            map: mapName,
-            label: {
-                normal: {
-                    show: false
-                },
-                emphasis: {
-                    show: false,
-                }
-            },
-            roam: true,
-            itemStyle: {
-                normal: {
-                    areaColor: '#031525',
-                    borderColor: '#3B5077',
-                },
-                emphasis: {
-                    areaColor: '#2B91B7',
-                }
-            }
-        },
-        series: [{
-                name: '散点',
-                type: 'scatter',
-                coordinateSystem: 'geo',
-                data: convertData(data),
-                symbolSize: function(val) {
-                    return val[2] / 10;
-                },
-                label: {
-                    normal: {
-                        formatter: '{b}',
-                        position: 'right',
-                        show: true
-                    },
-                    emphasis: {
-                        show: true
-                    }
-                },
-                itemStyle: {
-                    normal: {
-                        color: '#05C3F9'
-                    }
-                }
-            },
-            {
-                type: 'map',
-                map: mapName,
-                geoIndex: 0,
-                aspectScale: 0.75, //长宽比
-                showLegendSymbol: false, // 存在legend时显示
-                label: {
-                    normal: {
-                        show: true
-                    },
-                    emphasis: {
-                        show: false,
-                        textStyle: {
-                            color: '#fff'
-                        }
-                    }
-                },
-                roam: true,
-                itemStyle: {
-                    normal: {
-                        areaColor: '#031525',
-                        borderColor: '#3B5077',
-                    },
-                    emphasis: {
-                        areaColor: '#2B91B7'
-                    }
-                },
-                animation: false,
-                data: data
-            },
-            {
-                name: '点',
-                type: 'scatter',
-                coordinateSystem: 'geo',
-                symbol: 'pin', //气泡
-            
-                symbolSize: function(val) {
-                    var a = (maxSize4Pin - minSize4Pin) / (max - min);
-                    var b = minSize4Pin - a * min;
-                    b = maxSize4Pin - a * max;
-                    return a * val[2] + b;
-                },
-                label: {
-                    normal: {
-                        formatter: '{@[2]}',
-                        show: true,
-                        textStyle: {
-                            color: '#fff',
-                            fontSize: 9,
-                        }
-                    }
-                },
-                itemStyle: {
-                    normal: {
-                        color: '#F62157', //标志颜色
-                    }
-                },
-                zlevel: 6,
-                data: convertData(data),
-            },
-            {
-                name: 'Top 5',
-                type: 'effectScatter',
-                coordinateSystem: 'geo',
-                data: convertData(data.sort(function(a, b) {
-                    return b.value - a.value;
-                }).slice(0, 5)),
-                symbolSize: function(val) {
-                    return val[2] / 25;
-                },
-                showEffectOn: 'render',
-                rippleEffect: {
-                    brushType: 'stroke'
-                },
-                hoverAnimation: true,
-                label: {
-                    normal: {
-                        formatter: '{b}',
-                        position: 'right',
-                        show: true
-                    }
-                },
-                itemStyle: {
-                    normal: {
-                        color: 'yellow',
-                        shadowBlur: 10,
-                        shadowColor: 'yellow'
-                    }
-                },
-                zlevel: 1
-            },
-
-        ]
-    };
+      let myChart = echarts.init(document.getElementById("singer"));
+           
+      let option = {
+            tooltip: {},
+            series: [{
+                type: 'pie',
+                data: [],
+            }]
+        };
+      // 初始化ehcars
       myChart.setOption(option);
-    //   myChart.showLoading();
-    //   // 动态渲染数据
-    //   statisticUser().then(res =>{
-    //        console.log(res)
-    //         myChart.hideLoading();
-    //        for(let i = 0; i < res.length;i++){
-    //             this.xarr[i] = res[i].act;
-    //             this.sarr[i] = res[i].count;
-    //        }
-    //         console.log(this.xarr);
-    //         console.log(this.sarr);
-    //         myChart.setOption({
-    //           legend: {
-    //             data: ["用户"]
-    //           },
-    //           title: {
-    //             text: "用户的点击量的信息"
-    //           },
-    //           tooltip: {},
-    //           xAxis: {
-    //             data: this.xarr,
-    //              axisLabel:{
-    // 	       	     interval: 0
-    //             }
-    //           },
-    //           series: [{
-    //             // 根据名字对应到相应的系列
-    //             name: '用户',
-    //             type: "bar",
-    //             barWidth : 50,//柱图宽度
-    //             data: this.sarr,
-    //           }]
-    //         });
-    //     })
+  
+      // 进行数据的渲染
+      getSexSingers().then(res =>{
+            for(let i = 0; i < res.length;i++){
+                 this.pieData[i] = res[i];
+                console.log(this.pieData[i]['value']);
+            }
+          // console.log(this.pieData);
+           myChart.setOption(option1);
+           window.addEventListener('resize', () => {
+				if (myChart) {
+					myChart.resize();
+				}
+			});
+        });
+
+       // 设置新的值
+      let index = 0;
+      let bgColor = '#fff';
+      var colorList = ['#73DDFF', '#73ACFF', '#FDD56A', '#FDB36A', '#FD866A', '#9E87FF', '#58D5FF']
+      function fun() {
+        var timer = setInterval(function() {
+         myChart.dispatchAction({
+            type: 'hideTip',
+            seriesIndex: 0,
+            dataIndex: index
+        });
+        // 显示提示框
+        myChart.dispatchAction({
+            type: 'showTip',
+            seriesIndex: 0,
+            dataIndex: index
+        });
+        // 取消高亮指定的数据图形
+        myChart.dispatchAction({
+            type: 'downplay',
+            seriesIndex: 0,
+            dataIndex: index == 0? 5 : index -1
+        });
+         myChart.dispatchAction({
+            type: 'highlight',
+            seriesIndex: 0,
+            dataIndex: index
+        });
+        index++;
+        if (index > 5) {
+            index = 0;
+        }
+      },3000)
+     }
+
+      fun()
+      setTimeout(function() {fun()}, 5000);
+
+      let option1 = {
+      backgroundColor: bgColor,
+      title: {
+          text: '歌手类别',
+          x: 'center',
+          y: 'center',
+          textStyle: {
+              fontSize: 17
+          }
+      },
+      tooltip: {
+          trigger: 'item'
+      },
+      series: [{
+          type: 'pie',
+          radius: ['45%', '60%'],
+          center: ['50%', '50%'],
+          clockwise: true,
+          avoidLabelOverlap: true,
+          hoverOffset: 15,
+          itemStyle: {
+              normal: {
+                  color: function(params) {
+                      return colorList[params.dataIndex]
+                  }
+              }
+          },
+          label: {
+              show: true,
+              position: 'outside',
+              formatter: '{a|{b}：{d}%}\n{hr|}',
+              rich: {
+                  hr: {
+                      backgroundColor: 't',
+                      borderRadius: 3,
+                      width: 3,
+                      height: 3,
+                      padding: [3, 3, 0, -12]
+                  },
+                  a: {
+                      padding: [-30, 15, -20, 15]
+                  }
+              }
+          },
+          labelLine: {
+              normal: {
+                  length: 20,
+                  length2: 30,
+                  lineStyle: {
+                      width: 1
+                  }
+              }
+          },
+          data: this.pieData,
+       }]
+      };
+   },
+
+  // 歌手拥有歌曲数量显示
+  lineChart() {
+      // 基于准备好的dom，初始化echarts实例
+        let myChart = echarts.init(document.getElementById("online"));
+        
+        // 测试数据
+        let bgColor = '#fff';
+        let data = {
+            xData: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11','12'],
+            yData: [100, 200, 300, 300, 500, 600, 700, 800, 900, 900, 1000,1300]
+        }
+        let option1 = {
+            tooltip: {},
+            xAxis: {
+                data: [],
+            },
+            yAxis: {},
+            series: [{
+                type: 'bar',
+                data: [],
+            }]
+        };
+
+         // 第一次最简单的初始化ehars图
+        myChart.setOption(option1);
+
+        // 个性化图表的样式
+        let option = {
+                backgroundColor: bgColor,
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                grid: [
+                    {
+                        top: 30,
+                        bottom: 70,
+                        left: 30
+                    },
+                    {
+                        height: 30,
+                        bottom: 0
+                    }
+                ],
+                xAxis: [{
+                    nameLocation: 'middle',
+                    type: 'category',
+                    //data: data.xData,
+                    data: this.onlineXarr,
+                    gridIndex: 0,
+                    axisLabel: {
+                        interval: 0,
+                         color: '#333',
+                        formatter: function (value) {
+                        //x轴的文字改为竖版显示
+                        var str = value.split("");
+                        return str.join("\n");
+                        }
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#e7e7e7'
+                        }
+                    },
+                    axisTick: {
+                        lineStyle: {
+                            color: '#e7e7e7'
+                        }
+                    },
+                    zlevel: 2
+                },
+                {
+                    type: 'category',
+                    gridIndex: 1,
+                    axisLine: {
+                        show: false
+                    },
+                    zlevel: 1
+                } 
+                ],
+                yAxis: [{
+                    name:'歌曲数量',
+                    type: 'value',
+                    gridIndex: 0,
+                    minInterval: 1,  // 显示整数
+                    axisLabel: {
+                        color: '#333'
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed'
+                        }
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#ccc'
+                        }
+                    },
+                    axisTick: {
+                        lineStyle: {
+                            color: '#ccc'
+                        }
+                    }
+                },{
+                    type: 'value',
+                    gridIndex: 1,
+                    axisLabel: {
+                        show: false
+                    },
+                    axisLine: {
+                        show: false
+                    },
+                    splitLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    }
+                }],
+                series: [{
+                   // data: data.yData,
+                   data: this.onlineSarr,
+                    type: 'bar',
+                    barWidth: 35,
+                    label: {
+                        show: true,
+                        position: 'top',
+                        textStyle: {
+                            color: '#555'
+                        }
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: (params) => {
+                                let colors = ['#4150d8', '#28bf7e', '#ed7c2f', '#f2a93b', '#f9cf36', '#4a5bdc', '#4cd698', '#f4914e', '#fcb75b', '#ffe180', '#b6c2ff', '#96edc1']
+                                return colors[params.dataIndex]
+                            }
+                        }
+                    },
+                    xAxisIndex: 0,
+                    yAxisIndex: 0
+                },
+                ]
+            };
+           
+           // 动态渲染数据
+            getMaxSongOfSingers().then(res =>{
+                console.log(res)
+                for(let i = 0; i<res.length; i++){
+                     this.onlineXarr[i] = res[i].name;
+                     this.onlineSarr[i] = res[i].value;
+                }
+                myChart.setOption(option);
+                window.addEventListener('resize', () => {
+                    if (myChart) {
+                        myChart.resize();
+                    }
+                }); 
+            })
+           
     },
 
-  },
+   },
   // 视图渲染完毕
   mounted() {
-    this.drawChart();
+    this.mobileChart();
+    this.lineChart();
   },
-
 }
 </script>
+
+<style scoped>
+.container{
+  background-color: '#fff'
+}
+.header{
+  text-align: center; /*让div内部文字居中*/
+	border-radius: 20px;
+	height: 50px;
+	margin: 20px;
+	top: 10px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+</style>

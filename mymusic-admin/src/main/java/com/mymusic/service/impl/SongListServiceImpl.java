@@ -3,6 +3,7 @@ package com.mymusic.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mymusic.common.domain.SongToSongList;
+import com.mymusic.common.domain.StatisticsVo;
 import com.mymusic.common.enums.SongConsumerType;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.exception.SongException;
@@ -19,10 +20,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class SongListServiceImpl implements SongListService {
@@ -181,6 +179,26 @@ public class SongListServiceImpl implements SongListService {
             return AjaxResponse.success("收藏成功");
         }
         return AjaxResponse.error("收藏失败");
+    }
+
+    @Override
+    public Long getTotalSongList() {
+        return songListMapper.getTotalSongList();
+    }
+
+    @Override
+    public List<StatisticsVo> getSongCateGory() {
+        List<StatisticsVo> songCateGory = songListMapper.getSongCateGory();
+        List<StatisticsVo> result = new ArrayList<>();
+        for (StatisticsVo statisticsVo : songCateGory) {
+            if (Integer.parseInt(statisticsVo.getName()) == 0) {
+                  statisticsVo.setName("系统歌单");
+            }else{
+                statisticsVo.setName("用户自定义歌单");
+            }
+            result.add(statisticsVo);
+        }
+       return result;
     }
 
 

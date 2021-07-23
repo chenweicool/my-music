@@ -86,7 +86,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { mixin } from '../mixins'
-import { setCollection, download } from '../api/index'
+import {  downloadSong } from '../api/system/song'
 import {addCollection} from '../api/system/collection'
 
 export default {
@@ -169,27 +169,51 @@ export default {
     }, false)
   },
   methods: {
-    // 下载
+ 
     download () {
-      download(this.url)
-        .then(res => {
-          let content = res.data
-          let eleLink = document.createElement('a')
-          eleLink.download = `${this.artist}-${this.title}.mp3`
-          eleLink.style.display = 'none'
-          // 字符内容转变成blob地址
-          let blob = new Blob([content])
-          eleLink.href = URL.createObjectURL(blob)
-          // 触发点击
-          document.body.appendChild(eleLink)
-          eleLink.click()
-          // 然后移除
-          document.body.removeChild(eleLink)
-        })
-        .catch(err => {
-          console.log(err)
-        })
+  // 这是传统的下载方式,还是没有实现
+      const downloadFileA = document.createElement('a')
+      document.body.append(downloadFileA)
+      downloadFileA.href= this.url
+      downloadFileA.download = `${this.artist}-${this.title}.mp3`
+      // 超链接 target="_blank" 要增加 rel="noopener noreferrer" 来堵住钓鱼安全漏洞。如果你在链接上使用 target="_blank"属性，并且不加上rel="noopener"属性，那么你就让用户暴露在一个非常简单的钓鱼攻击之下。(摘要)
+      downloadFileA.rel = 'noopener noreferrer'
+      downloadFileA.click()
+      document.body.removeChild(downloadFileA)
+
     },
+
+    //   download () {
+    //   console.log("歌曲播放的url:"+this.url)
+    //   downloadSong(this.id)
+    //     .then(res => {
+    //         console.log("下载Url:"+res)
+    //     })
+    //     .catch(err => {
+    //       console.log(err)
+    //     })
+    // },
+    // download () {
+    //   console.log("歌曲播放的url:"+this.url)
+    //   downloadSong(this.id)
+    //     .then(res => {
+    //       let content = res.data
+    //       let eleLink = document.createElement('a')
+    //       eleLink.download = `${this.artist}-${this.title}.mp3`
+    //       eleLink.style.display = 'none'
+    //       // 字符内容转变成blob地址
+    //       let blob = new Blob([content])
+    //       eleLink.href = URL.createObjectURL(blob)
+    //       // 触发点击
+    //       document.body.appendChild(eleLink)
+    //       eleLink.click()
+    //       // 然后移除
+    //       document.body.removeChild(eleLink)
+    //     })
+    //     .catch(err => {
+    //       console.log(err)
+    //     })
+    // },
     changeAside () {
       let temp = !this.showAside
       this.$store.commit('setShowAside', temp)

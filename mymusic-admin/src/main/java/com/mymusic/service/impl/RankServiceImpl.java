@@ -21,8 +21,6 @@ public class RankServiceImpl implements RankService {
         }else{
             return  SumScore/rankNum;
         }
-
-
     }
 
     @Override

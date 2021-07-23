@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mymusic.common.domain.SongVo;
+import com.mymusic.common.domain.StatisticsVo;
 import com.mymusic.domain.Song;
 import org.apache.ibatis.annotations.Param;
 
@@ -54,4 +55,16 @@ public interface SongMapper extends BaseMapper<Song> {
 
     /*返回20首歌曲*/
     List<SongVo> getRecommendSong();
+
+    /*获取歌曲的总数量*/
+    Long getTotalSongs();
+
+    /*获取最多播放的歌曲信息*/
+    List<StatisticsVo> getMaxPlaySongs();
+
+    /*获取评论最多的歌曲信息*/
+    List<StatisticsVo> getMaxComment();
+
+    /*获取最多收藏的歌曲信息*/
+    List<StatisticsVo> getMaxCollect();
 }

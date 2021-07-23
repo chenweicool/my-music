@@ -1,5 +1,6 @@
 package com.mymusic.controller.system;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.mymusic.common.domain.StatisticsVo;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.Constants;
 import com.mymusic.domain.Singer;
@@ -154,6 +155,35 @@ public class SingerController {
     public  AjaxResponse getSingerHot(){
        List<Singer> singerList =  singerService.getSingerHot();
        return AjaxResponse.success(singerList);
+    }
+
+
+    //================================================歌手的信息统计
+    /*得到总的歌手信息*/
+    @RequestMapping("/getTotalSingers")
+    public AjaxResponse getTotalSingers(){
+        Long totalSingers = singerService.getTotalSingers();
+        return AjaxResponse.success(totalSingers);
+    }
+
+    /**
+     * 获取歌手的性别信息
+     * @return
+     */
+    @RequestMapping("/getSexSingers")
+    public AjaxResponse getSexSingers(){
+        List<StatisticsVo> sexList = singerService.getSexSingers();
+        return AjaxResponse.success(sexList);
+    }
+
+    /**
+     * 获取歌手的歌手信息
+     * @return
+     */
+    @RequestMapping("/getMaxSongOfSingers")
+    public AjaxResponse getMaxSongsOfSinger(){
+         List<StatisticsVo> singerMaxSongs = singerService.getMaxSongsOfSinger();
+        return AjaxResponse.success(singerMaxSongs);
     }
 
 }

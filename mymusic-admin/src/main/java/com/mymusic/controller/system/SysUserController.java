@@ -4,6 +4,7 @@ package com.mymusic.controller.system;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.common.domain.ResultBean;
 import com.mymusic.common.domain.ResultVo;
+import com.mymusic.common.domain.StatisticsVo;
 import com.mymusic.common.domain.SysUserVO;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.Constants;
@@ -153,6 +154,42 @@ public class SysUserController {
         }else{
             return AjaxResponse.error("上传图片失败");
         }
+    }
+
+    //实现用户性别统计
+    @RequestMapping("/statistic/sex")
+    public Object getStaticSex(){
+        List<StatisticsVo> listSex = sysuserService.getStaticSex();
+        return  listSex;
+    }
+
+    /**
+     * 用户地域信息的统计
+     * @return
+     */
+    @RequestMapping("/statistic/location")
+    public AjaxResponse getLocation(){
+        List<StatisticsVo> listLocation =  sysuserService.getStaticLocation();
+        return AjaxResponse.success(listLocation);
+    }
+
+    /**
+     * 得到用户的总的人数
+     * @return
+     */
+    @RequestMapping("/statistic/total")
+    public AjaxResponse getTotalUsers(){
+        Long getTotalUsers = sysuserService.getTotalUsers();
+        return AjaxResponse.success(getTotalUsers);
+    }
+
+    /**
+     * 得到今日总的注册人数
+     */
+    @RequestMapping("/statistic/newUsers")
+    public AjaxResponse addNewUsers(){
+        Long  getNewUsers = sysuserService.addNewUsers();
+        return AjaxResponse.success(getNewUsers);
     }
 }
 

@@ -2,6 +2,7 @@ package com.mymusic.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mymusic.common.domain.StatisticsVo;
 import com.mymusic.common.utils.Constants;
 import com.mymusic.common.utils.FileUtils;
 import com.mymusic.common.utils.TimeUtils;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -117,6 +119,48 @@ public class SingerServiceImpl implements SingerService{
     @Override
     public List<Singer> getSingerHot() {
         return singerMapper.getSingerHot();
+    }
+
+    @Override
+    public Long getTotalSingers() {
+        return singerMapper.getTotalSinger();
+    }
+
+    @Override
+    public List<StatisticsVo> getSexSingers() {
+        List<StatisticsVo> sexSingers = singerMapper.getSexSingers();
+        List<StatisticsVo> resultSex = new ArrayList<>(sexSingers.size());
+        for (StatisticsVo sex : sexSingers) {
+            if (Integer.parseInt(sex.getName()) == 0) {
+                sex.setName("女");
+            }else if((Integer.parseInt(sex.getName()) == 1)){
+                sex.setName("男");
+            }else if((Integer.parseInt(sex.getName()) == 2)){
+                sex.setName("组合");
+            }else{
+                sex.setName("未知组合");
+            }
+            resultSex.add(sex);
+        }
+        return  resultSex;
+    }
+
+    @Override
+    public List<StatisticsVo> getMaxSongsOfSinger() {
+        List<StatisticsVo> listSex = singerMapper.getMaxSongsOfSinger();
+//        List<StatisticsVo> resultSex = new ArrayList<>(listSex.size());
+//        for (StatisticsVo sex : listSex) {
+//            if (Integer.parseInt(sex.getName()) == 0) {
+//                sex.setName("女");
+//            }else if((Integer.parseInt(sex.getName()) == 1)){
+//                sex.setName("男");
+//            }else{
+//                sex.setName("组合");
+//            }
+//            resultSex.add(sex);
+//        }
+//        return resultSex;
+        return listSex;
     }
 
     public static void main(String[] args) {

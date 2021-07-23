@@ -1,11 +1,27 @@
-<template>
-  <div id="test">
-    <div id="main" style="width: 100%;height:650px;"></div>
+<template >
+  <div id="box" class="container">
+    <div class = "header">
+      <p>歌曲信息分析</p>
+    </div>
+    
+  <div style="display:flex; width: 100%;margin: 20px ">
+      <div class="mobile" style="flex:1;width: 100%; margin-right:50px;">
+        <div style="text-align: center;">歌曲播放统计</div>
+        <div id="main" style="width: 100%; height:400px;margin-top:20px;"></div>
+     </div>
+     <div class="online" style="flex:1;width: 100%;">
+      <div style="text-align: center;">歌曲评论统计</div>
+      <div id="song" style="width: 100%;height:450px;"></div>
+    </div>
+   </div>
+
+    
   </div>
 </template>
 
 <script>
 // import {statisticUser} from '../api/index'
+import {getMaxPlaySongs,getMaxComment,getUserLocation} from  '../../api/system/statistic'
 import echarts from 'echarts'
 
 export default {
@@ -13,324 +29,341 @@ export default {
    name: "test",
    data (){
       return{
-          xarr: [],    //存放横坐标的数据
-          sarr:[]     // 存放具体横坐标中的值
+         onlineXarr: [],    //存放用户在线时长的纵坐标
+         onlineSarr:[] ,    // 用户在线时长的每个坐标值
+
+         songXarr:[],   // 用户登陆的时间的纵坐标
+         songSarr:[],   // 登陆时间点的具体坐标
       }
    },
+//       created (){
+//         this.getLocation();
+//    },
   methods: {
-    drawChart() {
+
+   drawChart() {
       // 基于准备好的dom，初始化echarts实例
-      let myChart = echarts.init(document.getElementById("main"));
-      //指定图表的配置项和数据
-      
-    var name_title = "用户人数的全国分布"
-    var subname = ''
-    var nameColor = " rgb(55, 75, 113)"
-    var name_fontFamily = '等线'
-    var subname_fontSize = 15
-    var name_fontSize = 18
-    var mapName = 'china'
-    var data = [
-            {name:"北京",value:69,scale:'2.72%'},
-            {name:"天津",value:93,scale:'3.67%'},
-            {name:"河北",value:113,scale:'4.46%'},
-            {name:"山西",value:31,scale:'1.22%'},
-            {name:"内蒙古",value:31,scale:'1.22%'},
-            {name:"辽宁",value:55,scale:'2.17%'},
-            {name:"吉林",value:29,scale:'1.14%'},
-            {name:"黑龙江",value:71,scale:'2.80%'},
-            {name:"上海",value:50,scale:'1.97%'},
-            {name:"江苏",value:436,scale:'17.2%'},
-            {name:"浙江",value:132,scale:'5.21%'},
-            {name:"安徽",value:160,scale:'6.31%'},
-            {name:"福建",value:68,scale:'2.68%'},
-            {name:"江西",value:49,scale:'1.93%'},
-            {name:"山东",value:143,scale:'5.64%'},
-            {name:"河南",value:99,scale:'3.91%'},
-            {name:"湖北",value:44,scale:'1.74%'},
-            {name:"湖南",value:47,scale:'1.85%'},
-            {name:"重庆",value:53,scale:'2.09%'},
-            {name:"四川",value:83,scale:'3.27%'},
-            {name:"贵州",value:60,scale:'2.37%'},
-            {name:"云南",value:55,scale:'2.17%'},
-            {name:"西藏",value:7,scale:'0.28%'},
-            {name:"陕西",value:232,scale:'9.15%'},
-            {name:"甘肃",value:44,scale:'1.74%'},
-            {name:"青海",value:15,scale:'0.59%'},
-            {name:"宁夏",value:61,scale:'2.41%'},
-            {name:"新疆",value:76,scale:'3.00%'},
-            {name:"广东",value:41,scale:'1.62%'},
-            {name:"广西",value:44,scale:'1.74%'},
-            {name:"海南",value:44,scale:'1.74%'},
-        ];
-        
-    var geoCoordMap = {};
-
-    /*获取地图数据*/
-    myChart.showLoading();
-    var mapFeatures = echarts.getMap(mapName).geoJson.features;
-    myChart.hideLoading();
-    mapFeatures.forEach(function(v) {
-        // 地区名称
-        var name = v.properties.name;
-        // 地区经纬度
-        geoCoordMap[name] = v.properties.cp;
-
-    });
-
-    console.log(data)
-    var max = 500,
-        min = 10; // todo 
-    var maxSize4Pin = 50,
-        minSize4Pin = 20;
-
-    var convertData = function(data) {
-        var res = [];
-        for (var i = 0; i < data.length; i++) {
-            var geoCoord = geoCoordMap[data[i].name];
-            if (geoCoord) {
-                res.push({
-                    name: data[i].name,
-                    value: geoCoord.concat(data[i].value),
-                });
-            }
+        let myChart = echarts.init(document.getElementById("main"));
+        //指定图表的配置项和数据
+        var salvProName =["安徽省","河南省","浙江省","湖北省","贵州省","江西省","江苏省","四川省","云南省","湖南省"];
+        var salvProValue =[239,181,154,144,135,117,74,72,67,55];
+        var salvProMax =[];//背景按最大值
+        for (let i = 0; i < salvProValue.length; i++) {
+            salvProMax.push(salvProValue[0])
         }
-        console.log(res)
-        return res;
-    };
-  let option = {
-        title: {
-            text: name_title,
-            subtext: subname,
-            x: 'center',
-            textStyle: {
-                color: nameColor,
-                fontFamily: name_fontFamily,
-                fontSize: name_fontSize
+      // 测试数据
+        let bgColor = '#fff';
+        let data = {
+            xData: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11','12'],
+            yData: [100, 200, 300, 300, 500, 600, 700, 800, 900, 900, 1000,1300]
+        }
+        let option1 = {
+            tooltip: {},
+            xAxis: {
+                data: [],
             },
-            subtextStyle:{
-                fontSize:subname_fontSize,
-                fontFamily:name_fontFamily
-            }
-        },
-        tooltip: {
-            trigger: 'item',
-            formatter: function(params) {
-                console.log(params.data)
-                if(params.data.scale){
-                    var toolTiphtml = params.data.name+':<br>'+params.data.scale
-                    return toolTiphtml;
+            yAxis: {},
+            series: [{
+                type: 'bar',
+                data: [],
+            }]
+        };
+
+         // 第一次最简单的初始化ehars图
+        myChart.setOption(option1);
+
+        let option = {
+            backgroundColor:"#003366",
+            grid: {
+                left: '2%',
+                right: '2%',
+                bottom: '2%',
+                top: '2%',
+                containLabel: true
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'none'
+                },
+                formatter: function(params) {
+                    return params[0].name  + ' : ' + params[0].value
                 }
-                return;
-            }
-        },
-        visualMap: {
-            show: true,
-            min: 0,
-            max: 500,
-            left: 'left',
-            top: 'bottom',
-            text: ['高', '低'], // 文本，默认为数值文本
-            calculable: true,
-            seriesIndex: [1],
-            inRange: {
-                // color: ['#3B5077', '#031525'] // 蓝黑
-                // color: ['#ffc0cb', '#800080'] // 红紫
-                // color: ['#3C3B3F', '#605C3C'] // 黑绿
-                // color: ['#0f0c29', '#302b63', '#24243e'] // 黑紫黑
-                // color: ['#23074d', '#cc5333'] // 紫红
-                // color: ['#00467F', '#A5CC82'] // 蓝绿
-                // color: ['#1488CC', '#2B32B2'] // 浅蓝
-                color: ['#00467F', '#A5CC82'] // 蓝绿
-                // color: ['#00467F', '#A5CC82'] // 蓝绿
-                // color: ['#00467F', '#A5CC82'] // 蓝绿
-                // color: ['#00467F', '#A5CC82'] // 蓝绿
-
-            }
-        },
-
-        geo: {
-            show: true,
-            map: mapName,
-            label: {
-                normal: {
+            },
+            xAxis: {
+                show: false,
+                type: 'value'
+            },
+            yAxis: [{
+                type: 'category',
+                inverse: true,
+                axisLabel: {
+                    show: true,
+                    textStyle: {
+                        color: '#fff'
+                    },
+                },
+                splitLine: {
                     show: false
                 },
-                emphasis: {
-                    show: false,
-                }
-            },
-            roam: true,
-            itemStyle: {
-                normal: {
-                    areaColor: '#031525',
-                    borderColor: '#3B5077',
+                axisTick: {
+                    show: false
                 },
-                emphasis: {
-                    areaColor: '#2B91B7',
-                }
-            }
-        },
-        series: [{
-                name: '散点',
-                type: 'scatter',
-                coordinateSystem: 'geo',
-                data: convertData(data),
-                symbolSize: function(val) {
-                    return val[2] / 10;
+                axisLine: {
+                    show: false
                 },
-                label: {
-                    normal: {
-                        formatter: '{b}',
-                        position: 'right',
-                        show: true
+                // data: salvProName
+                data: this.onlineXarr
+            }, {
+                type: 'category',
+                inverse: true,
+                axisTick: 'none',
+                axisLine: 'none',
+                show: true,
+                axisLabel: {
+                    textStyle: {
+                        color: '#ffffff',
+                        fontSize: '12'
                     },
-                    emphasis: {
-                        show: true
-                    }
                 },
-                itemStyle: {
-                    normal: {
-                        color: '#05C3F9'
-                    }
-                }
-            },
-            {
-                type: 'map',
-                map: mapName,
-                geoIndex: 0,
-                aspectScale: 0.75, //长宽比
-                showLegendSymbol: false, // 存在legend时显示
-                label: {
-                    normal: {
-                        show: true
+                data:this.onlineSarr
+            }],
+            series: [{
+                    name: '值',
+                    type: 'bar',
+                    zlevel: 1,
+                    itemStyle: {
+                        normal: {
+                            barBorderRadius: 30,
+                            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
+                                offset: 0,
+                                color: 'rgb(57,89,255,1)'
+                            }, {
+                                offset: 1,
+                                color: 'rgb(46,200,207,1)'
+                            }]),
+                        },
                     },
-                    emphasis: {
-                        show: false,
-                        textStyle: {
-                            color: '#fff'
+                    barWidth: 20,
+                    data: this.onlineSarr
+                },
+                {
+                    name: '背景',
+                    type: 'bar',
+                    barWidth: 20,
+                    barGap: '-100%',
+                    data: salvProMax,
+                    itemStyle: {
+                        normal: {
+                            color: 'rgba(24,31,68,1)',
+                            barBorderRadius: 30,
                         }
-                    }
-                },
-                roam: true,
-                itemStyle: {
-                    normal: {
-                        areaColor: '#031525',
-                        borderColor: '#3B5077',
                     },
-                    emphasis: {
-                        areaColor: '#2B91B7'
-                    }
                 },
-                animation: false,
-                data: data
-            },
-            {
-                name: '点',
-                type: 'scatter',
-                coordinateSystem: 'geo',
-                symbol: 'pin', //气泡
+            ]
+        };
+        myChart.setOption(option);
+        getMaxPlaySongs().then(res =>{
+                    console.log(res)
+                    for(let i = 0; i<res.length; i++){
+                        this.onlineXarr[i] = res[i].name;
+                        this.onlineSarr[i] = res[i].value;
+                    }
+                    myChart.setOption(option);
+                    window.addEventListener('resize', () => {
+                        if (myChart) {
+                            myChart.resize();
+                        }
+                    }); 
+                })
             
-                symbolSize: function(val) {
-                    var a = (maxSize4Pin - minSize4Pin) / (max - min);
-                    var b = minSize4Pin - a * min;
-                    b = maxSize4Pin - a * max;
-                    return a * val[2] + b;
+        },
+    songChart() {
+      // 基于准备好的dom，初始化echarts实例
+        let myChart = echarts.init(document.getElementById("song"));
+        
+        // 测试数据
+        let bgColor = '#fff';
+        let data = {
+            xData: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11','12'],
+            yData: [100, 200, 300, 300, 500, 600, 700, 800, 900, 900, 1000,1300]
+        }
+        let option1 = {
+            tooltip: {},
+            xAxis: {
+                data: [],
+            },
+            yAxis: {},
+            series: [{
+                type: 'bar',
+                data: [],
+            }]
+        };
+
+         // 第一次最简单的初始化ehars图
+        myChart.setOption(option1);
+
+        // 个性化图表的样式
+        let option = {
+                backgroundColor: bgColor,
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
                 },
-                label: {
-                    normal: {
-                        formatter: '{@[2]}',
-                        show: true,
-                        textStyle: {
-                            color: '#fff',
-                            fontSize: 9,
+                grid: [
+                    {
+                        top: 30,
+                        bottom: 70,
+                        left: 30
+                    },
+                    {
+                        height: 30,
+                        bottom: 0
+                    }
+                ],
+                xAxis: [{
+                    nameLocation: 'middle',
+                    type: 'category',
+                    //data: data.xData,
+                    data: this.songXarr,
+                    gridIndex: 0,
+                    axisLabel: {
+                        interval: 0,
+                         color: '#333',
+                        formatter: function (value) {
+                        //x轴的文字改为竖版显示
+                        var str = value.split("");
+                        return str.join("\n");
+                        }
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#e7e7e7'
+                        }
+                    },
+                    axisTick: {
+                        lineStyle: {
+                            color: '#e7e7e7'
+                        }
+                    },
+                    zlevel: 2
+                },
+                {
+                    type: 'category',
+                    gridIndex: 1,
+                    axisLine: {
+                        show: false
+                    },
+                    zlevel: 1
+                } 
+                ],
+                yAxis: [{
+                    name:'评论次数',
+                    type: 'value',
+                    gridIndex: 0,
+                    minInterval: 1,  // 显示整数
+                    axisLabel: {
+                        color: '#333'
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed'
+                        }
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#ccc'
+                        }
+                    },
+                    axisTick: {
+                        lineStyle: {
+                            color: '#ccc'
                         }
                     }
-                },
-                itemStyle: {
-                    normal: {
-                        color: '#F62157', //标志颜色
+                },{
+                    type: 'value',
+                    gridIndex: 1,
+                    axisLabel: {
+                        show: false
+                    },
+                    axisLine: {
+                        show: false
+                    },
+                    splitLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
                     }
+                }],
+                series: [{
+                   // data: data.yData,
+                   data: this.songSarr,
+                    type: 'bar',
+                    barWidth: 35,
+                    label: {
+                        show: true,
+                        position: 'top',
+                        textStyle: {
+                            color: '#555'
+                        }
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: (params) => {
+                                let colors = ['#4150d8', '#28bf7e', '#ed7c2f', '#f2a93b', '#f9cf36', '#4a5bdc', '#4cd698', '#f4914e', '#fcb75b', '#ffe180', '#b6c2ff', '#96edc1']
+                                return colors[params.dataIndex]
+                            }
+                        }
+                    },
+                    xAxisIndex: 0,
+                    yAxisIndex: 0
                 },
-                zlevel: 6,
-                data: convertData(data),
-            },
-            {
-                name: 'Top 5',
-                type: 'effectScatter',
-                coordinateSystem: 'geo',
-                data: convertData(data.sort(function(a, b) {
-                    return b.value - a.value;
-                }).slice(0, 5)),
-                symbolSize: function(val) {
-                    return val[2] / 25;
-                },
-                showEffectOn: 'render',
-                rippleEffect: {
-                    brushType: 'stroke'
-                },
-                hoverAnimation: true,
-                label: {
-                    normal: {
-                        formatter: '{b}',
-                        position: 'right',
-                        show: true
+                ]
+            };
+           
+           // 动态渲染数据
+            getMaxComment().then(res =>{
+                console.log(res)
+                for(let i = 0; i<res.length; i++){
+                     this.songXarr[i] = res[i].name;
+                     this.songSarr[i] = res[i].value;
+                }
+                myChart.setOption(option);
+                window.addEventListener('resize', () => {
+                    if (myChart) {
+                        myChart.resize();
                     }
-                },
-                itemStyle: {
-                    normal: {
-                        color: 'yellow',
-                        shadowBlur: 10,
-                        shadowColor: 'yellow'
-                    }
-                },
-                zlevel: 1
-            },
-
-        ]
-    };
-      myChart.setOption(option);
-    //   myChart.showLoading();
-    //   // 动态渲染数据
-    //   statisticUser().then(res =>{
-    //        console.log(res)
-    //         myChart.hideLoading();
-    //        for(let i = 0; i < res.length;i++){
-    //             this.xarr[i] = res[i].act;
-    //             this.sarr[i] = res[i].count;
-    //        }
-    //         console.log(this.xarr);
-    //         console.log(this.sarr);
-    //         myChart.setOption({
-    //           legend: {
-    //             data: ["用户"]
-    //           },
-    //           title: {
-    //             text: "用户的点击量的信息"
-    //           },
-    //           tooltip: {},
-    //           xAxis: {
-    //             data: this.xarr,
-    //              axisLabel:{
-    // 	       	     interval: 0
-    //             }
-    //           },
-    //           series: [{
-    //             // 根据名字对应到相应的系列
-    //             name: '用户',
-    //             type: "bar",
-    //             barWidth : 50,//柱图宽度
-    //             data: this.sarr,
-    //           }]
-    //         });
-    //     })
-    },
-
-  },
+                }); 
+            })
+           
+   },
+   
+},
+ 
   // 视图渲染完毕
   mounted() {
     this.drawChart();
+    this.songChart();
   },
 
 }
 </script>
+
+<style scoped>
+.container{
+  background-color: '#041730'
+}
+.header{
+  text-align: center; /*让div内部文字居中*/
+	border-radius: 20px;
+	height: 50px;
+	margin: 20px;
+	top: 10px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+</style>

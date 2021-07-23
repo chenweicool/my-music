@@ -47,7 +47,7 @@ public class RankController {
      * @param req 请求的信息
      * @return 具体的评分信息
      */
-    @RequestMapping(value = "/rank", method = RequestMethod.GET)
+    @RequestMapping(value = "/rank/getSongList", method = RequestMethod.GET)
     public Object rankOfSongListId(HttpServletRequest req){
         String songListId = req.getParameter("songListId");
         Integer rank = rankService.rankOfSongListId(Long.parseLong(songListId));

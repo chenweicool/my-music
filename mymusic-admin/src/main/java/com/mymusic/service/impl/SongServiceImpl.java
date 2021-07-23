@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mymusic.ConvertService;
 import com.mymusic.common.config.CosProperties;
 import com.mymusic.common.domain.SongVo;
+import com.mymusic.common.domain.StatisticsVo;
 import com.mymusic.common.enums.SongConsumerType;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.exception.CustomException;
@@ -165,6 +166,26 @@ public class SongServiceImpl implements SongService
             songList.add(songVo);
         }
         return AjaxResponse.success(songList);
+    }
+
+    @Override
+    public Long getTotalSongs() {
+        return songMapper.getTotalSongs();
+    }
+
+    @Override
+    public List<StatisticsVo> getMaxPlaySongs() {
+        return songMapper.getMaxPlaySongs();
+    }
+
+    @Override
+    public List<StatisticsVo> getMaxComment() {
+        return songMapper.getMaxComment();
+    }
+
+    @Override
+    public List<StatisticsVo> getMaxCollect() {
+        return songMapper.getMaxCollect();
     }
 
 }

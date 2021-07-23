@@ -1,6 +1,7 @@
 package com.mymusic.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.mymusic.common.domain.StatisticsVo;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.domain.SongList;
 
@@ -47,4 +48,10 @@ public interface SongListService {
 
     /*添加歌单中收藏的歌曲*/
     AjaxResponse addSongToSongList(Long songId, List<Integer> songListId,Integer type);
+
+    /*获取总的歌单数量*/
+    Long getTotalSongList();
+
+    /*获取歌单类别信息*/
+    List<StatisticsVo> getSongCateGory();
 }

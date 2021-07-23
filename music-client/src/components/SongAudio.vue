@@ -54,6 +54,7 @@ export default {
     togglePlay () {
       let player = this.$refs.player
       if (this.isPlay) {
+        console.log(player)
         player.play()
         // 增加播放的历史
         this.addSongPlayCount()

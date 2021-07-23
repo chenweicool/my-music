@@ -1,6 +1,7 @@
 package com.mymusic.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.mymusic.common.domain.StatisticsVo;
 import com.mymusic.domain.Singer;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,5 +59,14 @@ public interface SingerService {
 
     /*查询歌手热度最高的歌手信息*/
     List<Singer> getSingerHot();
+
+    /*获取歌歌手的总数*/
+    Long getTotalSingers();
+
+    /*获取歌手性别信息*/
+    List<StatisticsVo> getSexSingers();
+
+    /*统计个歌手拥有的总的歌曲数量*/
+    List<StatisticsVo> getMaxSongsOfSinger();
 }
 

@@ -1,6 +1,7 @@
 package com.mymusic.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.common.domain.SongVo;
+import com.mymusic.common.domain.StatisticsVo;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.domain.Song;
 import org.springframework.web.multipart.MultipartFile;
@@ -66,4 +67,16 @@ public interface SongService {
      * @return
      */
     AjaxResponse getHistorySong(List<Long> songIds);
+
+    /*获取总的歌曲数量*/
+    Long getTotalSongs();
+
+    /*获取总的播放次数最高的歌曲*/
+    List<StatisticsVo> getMaxPlaySongs();
+
+    /*获取评论数最多的个歌曲*/
+    List<StatisticsVo> getMaxComment();
+
+    /*我的喜欢中最多的歌曲*/
+    List<StatisticsVo> getMaxCollect();
 }

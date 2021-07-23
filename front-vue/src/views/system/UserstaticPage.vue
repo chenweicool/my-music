@@ -7,6 +7,7 @@
 <script>
 // import {statisticUser} from '../api/index'
 import echarts from 'echarts'
+import {getUserLocation,getUsersex} from  '../../api/system/statistic'
 
 export default {
     
@@ -14,10 +15,31 @@ export default {
    data (){
       return{
           xarr: [],    //存放横坐标的数据
-          sarr:[]     // 存放具体横坐标中的值
+          sarr:[] ,    // 存放具体横坐标中的值
+          location:[]  // 存放地域信息
       }
    },
+
+//    created (){
+//         this.getLocation();
+//    },
   methods: {
+
+    //得到用户的地域信息
+    // getLocation(){
+    //     getUsersex().then(res =>{
+    //         //  console.log("用户的地域信息",res)
+    //          console.log(res.length)
+    //         //  for(let i = 0; i < res.length;i++){
+    //         //      console.log(res[i].name);
+    //         //      console.log(res[i].value)
+    //         //  }
+    //          this.location = res;
+    //          //console.log(this.location)
+    //     }) 
+        
+    // },
+
     drawChart() {
       // 基于准备好的dom，初始化echarts实例
       let myChart = echarts.init(document.getElementById("main"));
@@ -31,7 +53,7 @@ export default {
     var name_fontSize = 18
     var mapName = 'china'
     var data = [
-            {name:"北京",value:69,scale:'2.72%'},
+            {name:"北京",value:69},
             {name:"天津",value:93,scale:'3.67%'},
             {name:"河北",value:113,scale:'4.46%'},
             {name:"山西",value:31,scale:'1.22%'},
@@ -58,11 +80,12 @@ export default {
             {name:"甘肃",value:44,scale:'1.74%'},
             {name:"青海",value:15,scale:'0.59%'},
             {name:"宁夏",value:61,scale:'2.41%'},
-            {name:"新疆",value:76,scale:'3.00%'},
+            {name:"新疆",value:76},
             {name:"广东",value:41,scale:'1.62%'},
             {name:"广西",value:44,scale:'1.74%'},
             {name:"海南",value:44,scale:'1.74%'},
         ];
+   // var data =  this.location;
         
     var geoCoordMap = {};
 
@@ -78,13 +101,13 @@ export default {
 
     });
 
-    console.log(data)
+   // console.log(data)
     var max = 500,
         min = 10; // todo 
     var maxSize4Pin = 50,
         minSize4Pin = 20;
 
-    var convertData = function(data) {
+ var convertData = function(data) {
         var res = [];
         for (var i = 0; i < data.length; i++) {
             var geoCoord = geoCoordMap[data[i].name];
@@ -113,17 +136,17 @@ export default {
                 fontFamily:name_fontFamily
             }
         },
-        tooltip: {
-            trigger: 'item',
-            formatter: function(params) {
-                console.log(params.data)
-                if(params.data.scale){
-                    var toolTiphtml = params.data.name+':<br>'+params.data.scale
-                    return toolTiphtml;
-                }
-                return;
-            }
-        },
+        // tooltip: {
+        //     trigger: 'item',
+        //     formatter: function() {
+        //         console.log(params.data)
+        //         if(params.data.value){
+        //             var toolTiphtml = params.data.name+':<br>'+params.data.value
+        //             return toolTiphtml;
+        //         }
+        //         return;
+        //     }
+        // },
         visualMap: {
             show: true,
             min: 0,
@@ -136,12 +159,12 @@ export default {
             inRange: {
                 // color: ['#3B5077', '#031525'] // 蓝黑
                 // color: ['#ffc0cb', '#800080'] // 红紫
-                // color: ['#3C3B3F', '#605C3C'] // 黑绿
+                 color: ['#3C3B3F', '#605C3C'] // 黑绿
                 // color: ['#0f0c29', '#302b63', '#24243e'] // 黑紫黑
                 // color: ['#23074d', '#cc5333'] // 紫红
                 // color: ['#00467F', '#A5CC82'] // 蓝绿
                 // color: ['#1488CC', '#2B32B2'] // 浅蓝
-                color: ['#00467F', '#A5CC82'] // 蓝绿
+               // color: ['#00467F', '#A5CC82'] // 蓝绿
                 // color: ['#00467F', '#A5CC82'] // 蓝绿
                 // color: ['#00467F', '#A5CC82'] // 蓝绿
                 // color: ['#00467F', '#A5CC82'] // 蓝绿

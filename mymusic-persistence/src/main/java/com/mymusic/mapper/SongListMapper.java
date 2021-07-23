@@ -2,6 +2,7 @@ package com.mymusic.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mymusic.common.domain.SongToSongList;
+import com.mymusic.common.domain.StatisticsVo;
 import com.mymusic.domain.SongList;
 import org.apache.ibatis.annotations.Param;
 
@@ -53,4 +54,8 @@ public interface SongListMapper {
 
     /*添加收藏*/
     int addSongToSongList(@Param("songId") Long songId, @Param("songListIds") List<Integer> songListIds,@Param("type")Integer type);
+
+    Long getTotalSongList();
+
+    List<StatisticsVo> getSongCateGory();
 }

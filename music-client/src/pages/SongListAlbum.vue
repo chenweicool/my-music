@@ -58,7 +58,7 @@ import { mixin } from '../mixins'
 import { mapGetters } from 'vuex'
 import AlbumContent from '../components/AlbumContent'
 //import Comment from '../components/Comment'
-import { getRankOfSongListId, setRank, getSongOfId, } from '../api/index'
+import { setRank,getRankOfSongListId} from '../api/system/songlist'
 import { getSongOfSongListId} from '../api/system/song'
 
 export default {
@@ -75,6 +75,7 @@ export default {
       songListId: '', // 歌单ID
       value3: 0,
       value5: 0,
+      userId:'',
       pagination:{
           pageNum: 1,
           pageSize: 20,
@@ -87,32 +88,19 @@ export default {
       'loginIn', // 登录标识
       'tempList', // 单个歌单信息
       'listOfSongs', // 存放的音乐
-      'userId', // 用户ID
-      'avator' // 用户头像
+      // 'userId', // 用户ID
+      // 'avator' // 用户头像
     ])
   },
   created () {
     this.songListId = this.tempList.id // 将歌单的id传入到这里
     this.singers = this.tempList
+    this.userId = localStorage.getItem("userId")
     this.getSongBySongList() // 获取歌单里面的歌曲ID
     this.getRank(this.songListId) // 获取评分
   },
   mixins: [mixin],
   methods: {
-    // 歌单中的歌曲进行展示
-    // getSongId () {
-    //   getListSongOfSongId(this.songListId)
-    //     .then(res => {
-    //       // 获取歌单里的歌曲信息
-    //       for (let item of res) {
-    //         this.getSongList(item.songId)
-    //       }
-    //       this.$store.commit('setListOfSongs', this.songLists)
-    //     })
-    //     .catch(err => {
-    //       console.log(err)
-    //     })
-    // },
     // 获取单里的歌曲
     getSongBySongList () {
        // 查询歌单中具有的歌曲信息
@@ -161,12 +149,8 @@ export default {
         params.append('score', this.value3 * 2)
         setRank(params)
           .then(res => {
-            if (res.code === 1) {
-              this.getRank(this.songListId)
-              this.notify('评分成功', 'success')
-            } else {
-              this.notify('评分失败', 'error')
-            }
+            console.log("评分的结果"+res)
+            this.$message({message: res, type: 'success'});
           })
           .catch(err => {
             console.log(err)

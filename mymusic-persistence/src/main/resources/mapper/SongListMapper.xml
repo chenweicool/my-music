@@ -115,4 +115,11 @@
        delete from songlist_song where song_id = #{songId} and songlist_id = #{songListId} and type = #{type}
   </delete>
 
+  <select id="getTotalSongList" resultType="java.lang.Long">
+      select count(1) from song_list;
+  </select>
+
+  <select id="getSongCateGory" resultType="com.mymusic.common.domain.StatisticsVo">
+      select type as name,count(1) as value from song_list GROUP BY type;
+  </select>
 </mapper>

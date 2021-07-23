@@ -12,8 +12,8 @@ spring:
       url: jdbc:mysql://localhost:3306/tp_mymusic?characterEncoding=utf-8&useSSL=false
   servlet:
     multipart:
-      max-file-size: 20MB
-      max-request-size: 20MB
+      max-file-size: 500MB
+      max-request-size: 500MB
   devtools:
     restart:
       enabled: true
@@ -68,6 +68,8 @@ mymusic:
       - /admin/login/status
       - /monitor/server
       - /test/gethost
+      - /sysuser/statistic/sex
+      - /sysuser/statistic/location
 
 mybatis:
   mapper-locations: classpath*:/mapper/*.xml

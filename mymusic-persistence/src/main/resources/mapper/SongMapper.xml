@@ -139,4 +139,18 @@
   <select id="getRecommendSong" resultType="com.mymusic.common.domain.SongVo">
      SELECT s.id,s.name as songName,s.introduction,s.pic,s.lyric,s.url,s.create_time from song s order by create_time asc limit 20
   </select>
+
+  <select id="getTotalSongs" resultType="java.lang.Long">
+      select  count(1) from song;
+  </select>
+
+    <select id="getMaxPlaySongs" resultType="com.mymusic.common.domain.StatisticsVo">
+          select  song.name as name ,playCount.play_count as value from song_play_count  as playCount join song on
+          playCount.song_id = song.id  order by playCount.play_count desc limit 10;
+    </select>
+
+    <select id="getMaxComment" resultType="com.mymusic.common.domain.StatisticsVo">
+         select song.name as name,comment.value from  song join (select count(1)as value,song_id from user_comment GROUP BY song_id )as comment on song.id = comment.song_id
+         order by comment.value desc limit 10;
+    </select>
 </mapper>

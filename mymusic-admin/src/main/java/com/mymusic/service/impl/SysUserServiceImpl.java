@@ -5,9 +5,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mymusic.ConvertService;
+import com.mymusic.common.domain.StatisticsVo;
 import com.mymusic.common.domain.SysUserVO;
 import com.mymusic.common.exception.AjaxResponse;
 import com.mymusic.common.utils.Constants;
+import com.mymusic.common.utils.DateUtils;
+import com.mymusic.common.utils.LocationUtils;
 import com.mymusic.common.utils.ParameterCheckUtils;
 import com.mymusic.config.DbLoadSysConfig;
 import com.mymusic.domain.SysRole;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -111,7 +115,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             return AjaxResponse.success("该用户名已经存在");
         }
 
-        sysUser.setPassword(passwordEncoder.encode(sysUser.getPassword()));
+        if(sysUser.getPassword() != null){
+            sysUser.setPassword(passwordEncoder.encode(sysUser.getPassword()));
+        }
+
         sysUser.setCreateTime(new Date());  //创建时间
         sysUser.setUpdateTime(new Date());  // 更新时间。默认是和创建的时间是一致的
         sysUser.setEnabled(true); //新增用户激活
@@ -189,6 +196,66 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     public SysUser getUserById(Long userId) {
         return sysUserMapper.selectById(userId);
+    }
+
+    //=================================================用户统计的接口实现
+    /**
+     * 统计用户性别信息
+     * @return
+     */
+    public List<StatisticsVo> getStaticSex() {
+        List<StatisticsVo> listSex = sysUserMapper.getStaticSex();
+        List<StatisticsVo> resultSex = new ArrayList<>(listSex.size());
+        for (StatisticsVo sex : listSex) {
+            if (Integer.parseInt(sex.getName()) == 1) {
+                sex.setName("男");
+            }else{
+                 sex.setName("女");
+            }
+            resultSex.add(sex);
+        }
+        return resultSex;
+    }
+
+    /**
+     * 得到用户地域信息
+     * @return
+     */
+    public List<StatisticsVo> getStaticLocation() {
+        List<StatisticsVo> resultLocation = sysUserMapper.getStaticLocation();
+        List<StatisticsVo> location = LocationUtils.getLocation();
+        List<StatisticsVo> statisticsList = new ArrayList<>(location.size());
+
+        for (StatisticsVo statisticsVo : location) {
+            for (StatisticsVo result : resultLocation) {
+                if (statisticsVo.getName().equals(result.getName())) {
+                    statisticsVo.setValue(result.getValue());
+                }
+            }
+            statisticsList.add(statisticsVo);
+        }
+        return statisticsList;
+    }
+
+    /**
+     * 总的用户人数
+     * @return
+     */
+    public Long getTotalUsers() {
+         return sysUserMapper.getTotalUsers();
+    }
+
+    /**
+     * 统计新增的用户信息
+     * @return 返回用户信息
+     */
+    public Long addNewUsers() {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String  startTime = sdf.format(DateUtils.getStartTime());
+        String endTime = sdf.format(DateUtils.getEndTime());
+        Long addNumbers = sysUserMapper.getAddNumbers(startTime, endTime);
+        return addNumbers;
     }
 
 //    public SysUserVO getUserByUserName(String userName) {

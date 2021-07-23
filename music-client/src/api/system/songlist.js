@@ -34,3 +34,12 @@ export const addSongToSongList = (params) => post(`songList/addSongToSongList`,p
 
 // 从歌单中移除歌曲
 export const deleteSongToSongList = (params) => post(`songList/deleteSongToSongList`,params)
+
+
+//===============歌单的评分接口的实现
+
+// 提交评分
+export const setRank = (params) => post(`rank/add`, params)
+// 获取指定歌单的评分
+export const getRankOfSongListId = (songListId) => get(`rank/getSongList?songListId=${songListId}`)
+

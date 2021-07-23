@@ -42,17 +42,14 @@ const menuList = [{
   path: '/my-collection'
 },
 {
-  name: '我的分类',
+  name: '我的创建',
   path: '/my-songList'
-},
-{
-  name: '我的创作',
-  path: '/my-create'
 },
 {
   name: '我的浏览',
   path: '/my-history'
-},{
+},
+{
   name: '退出登录',
   path: 0
 }, 

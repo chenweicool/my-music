@@ -36,4 +36,7 @@ public class SysUserSonglistServiceTest extends BaseTest {
         List<SysUserSonglist> getAllUserSongList = sysUserSonglistService.selectAllSysUserSongList();
         Assert.assertNotNull(getAllUserSongList);
     }
+
+    // ==========================================信息统计的实现的测试信息。
+
 }

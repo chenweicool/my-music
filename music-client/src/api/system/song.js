@@ -61,3 +61,11 @@ export const getHistorySong = (songIds) => {
       }
     })
   }
+
+ // 下载音乐
+export const downloadSong = (songId)  => get(`song/getDownloadUrl?songId=${songId}`);
+export const download = (url) => axios({
+  method: 'get',
+  url: url,
+  responseType: 'blob'
+})

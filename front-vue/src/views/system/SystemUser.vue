@@ -131,16 +131,16 @@
                 </el-switch>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="300" align="center" fixed="right">
+            <el-table-column label="操作" width="200" align="center" fixed="right">
               <template slot-scope="scope">
                 <el-button size="mini" type="primary" icon="el-icon-edit" circle
                            @click="handleEdit(scope.$index, scope.row,'修改用户')"/>
                 <el-button size="mini" type="danger" icon="el-icon-delete" circle
                            @click="handleDelete(scope.$index, scope.row)"/>
-                <el-button size="mini" type="success"
+                <!-- <el-button size="mini" type="success"
                            @click="resetPwd(scope.$index, scope.row)">
                   重置密码
-                </el-button>
+                </el-button> -->
                 <el-button size="mini" type="success"
                            @click="assignRole(scope.$index, scope.row)">
                   分配角色

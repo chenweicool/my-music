@@ -27,4 +27,21 @@ public class UpdatePictureOrFileService {
         String fileTag = FileUtils.upLoadPicture(file, cosProperties, fileKey);
         return  fileTag;
     }
+
+    public  String  updateFile(MultipartFile file,String fileKey){
+        ParameterCheckUtils.checkParamIsBlank(file, fileKey);
+        String fileTag = FileUtils.upLoadFile(file, cosProperties, fileKey);
+        return  fileTag;
+    }
+
+    /**
+     * 返回歌曲的Url的信息
+     * @param key 歌曲存储的key的值
+     * @return 歌曲下载的url的使用。
+     */
+    public String getSongDownLoadUrl(String key){
+        ParameterCheckUtils.checkParamIsBlank(key);
+        String songUrl = FileUtils.getDownLoadURL(key, cosProperties);
+        return songUrl;
+    }
 }

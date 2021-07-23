@@ -5,6 +5,7 @@ import org.apache.commons.lang3.time.*;
 import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -151,5 +152,32 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         // long sec = diff % nd % nh % nm / ns;
         return day + "天" + hour + "小时" + min + "分钟";
     }
+
+    /**
+     * 距离今天的结束的时间
+     * @return
+     */
+    public static Date getStartTime(){
+        Calendar todayStart = Calendar.getInstance();
+        todayStart.set(Calendar.HOUR_OF_DAY, 0);
+        todayStart.set(Calendar.MINUTE, 0);
+        todayStart.set(Calendar.SECOND, 0);
+        todayStart.set(Calendar.MILLISECOND, 0);
+        return todayStart.getTime();
+    }
+
+    /**
+     * 距离今天的结束的时间
+     * @return
+     */
+    public static Date getEndTime(){
+        Calendar todayStart = Calendar.getInstance();
+        todayStart.set(Calendar.HOUR_OF_DAY, 23);
+        todayStart.set(Calendar.MINUTE, 59);
+        todayStart.set(Calendar.SECOND, 59);
+        todayStart.set(Calendar.MILLISECOND, 999);
+        return todayStart.getTime();
+    }
+
 }
 

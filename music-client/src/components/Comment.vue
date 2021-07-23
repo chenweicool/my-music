@@ -38,9 +38,9 @@
           </svg>
           {{item.likeNum}}
         </div>
-         <el-badge :value="3" class="item" :max="10" style="float:right;margin-top:20px;margin-bottom:0px;">
+         <!-- <el-badge :value="3" class="item" :max="10" style="float:right;margin-top:20px;margin-bottom:0px;">
               <el-button size="small">回复</el-button>
-           </el-badge>
+           </el-badge> -->
       </li>
     </ul>
      <div class="pagination">
